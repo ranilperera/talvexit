@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deploy to Azure VM · TalvexIT</title>
+  <style>
+    :root {
+      --fg:        #0f172a;
+      --fg-muted:  #475569;
+      --fg-subtle: #64748b;
+      --accent:    #0d9488;
+      --accent-2:  #0f766e;
+      --bg:        #ffffff;
+      --bg-soft:   #f8fafc;
+      --bg-code:   #f1f5f9;
+      --border:    #e2e8f0;
+      --good:      #15803d;
+      --bad:       #b91c1c;
+      --warn:      #b45309;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--fg);
+      background: var(--bg-soft);
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 32px 96px;
+      background: var(--bg);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      min-height: 100vh;
+    }
+    header.doc-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    header.doc-header .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 56px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 28px 0 10px;
+    }
+    h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 22px 0 8px;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .meta-table {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      column-gap: 16px;
+      row-gap: 4px;
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+    .meta-table dt { font-weight: 600; color: var(--fg); }
+    p { margin: 0 0 14px; }
+    a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 2px; }
+    code {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.9em;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 12px 0 20px;
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+    pre code { background: none; border: 0; padding: 0; color: inherit; }
+    pre .hash { color: #94a3b8; }
+    ul, ol { padding-left: 22px; margin: 0 0 14px; }
+    ul li, ol li { margin-bottom: 6px; }
+    strong { font-weight: 700; color: var(--fg); }
+
+    .tbl-wrap {
+      overflow-x: auto;
+      margin: 14px 0 22px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--bg-soft);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) { background: #fbfdff; }
+
+    .callout {
+      border: 1px solid;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 16px 0 22px;
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+    .callout.warn   { border-color: #fde68a; background: #fffbeb; color: #78350f; }
+    .callout.danger { border-color: #fecaca; background: #fef2f2; color: #7f1d1d; }
+    .callout.info   { border-color: #bae6fd; background: #f0f9ff; color: #075985; }
+    .callout.success { border-color: #bbf7d0; background: #f0fdf4; color: #14532d; }
+
+    .step {
+      border-left: 3px solid var(--accent);
+      padding: 0 0 4px 18px;
+      margin: 22px 0;
+    }
+    .step h3 { margin-top: 0; }
+
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      .wrap { border: 0; max-width: none; padding: 24px; }
+      pre { background: #f1f5f9; color: #0f172a; white-space: pre-wrap; word-wrap: break-word; }
+      h2 { page-break-after: avoid; }
+      tr, table { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc-header">
+  <p class="eyebrow">Operations · TalvexIT</p>
+  <h1>Deploy to Azure VM</h1>
+  <dl class="meta-table">
+    <dt>Date:</dt>     <dd>2026-05-06</dd>
+    <dt>Codebase:</dt> <dd><code>talvex-v1</code> @ <code>main</code></dd>
+    <dt>Target:</dt>   <dd>API VM (<code>vm-aueast-onsys-web-04</code>) at <code>10.1.3.28</code> behind HAProxy at <code>10.1.3.100</code></dd>
+    <dt>Audience:</dt> <dd>Whoever runs the deploy. Assumes shell access via SSH and read-write on <code>/opt/talvex/app</code>.</dd>
+  </dl>
+</header>
+
+<p>Two phases: <strong>first-time setup</strong> (only run once per VM) and <strong>rolling deploy</strong> (every release). Skip Phase A if the VM is already provisioned and running.</p>
+
+<h2>Phase A — First-time setup</h2>
+
+<div class="step">
+  <h3>A1. Generate the secrets</h3>
+  <p>On any machine with <code>openssl</code>:</p>
+<pre><code>echo "JWT_ACCESS_SECRET=$(openssl rand -base64 48)"
+echo "JWT_MFA_SECRET=$(openssl rand -base64 48)"
+echo "MFA_ENCRYPTION_KEY=$(openssl rand -base64 32)"</code></pre>
+  <p>Save these in your password manager / Key Vault. Each must be ≥ 32 chars; the API refuses to boot in production with a missing or weak secret.</p>
+  <div class="callout danger">
+    <strong>Lose <code>MFA_ENCRYPTION_KEY</code> and every MFA-enabled user has to re-enrol.</strong> The key cannot be recovered or guessed. Back it up to a separate Key Vault before you deploy.
+  </div>
+</div>
+
+<div class="step">
+  <h3>A2. Get an ABR GUID</h3>
+  <p>Register at <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank" rel="noopener">abr.business.gov.au/Tools/WebServices</a>. Free; takes a few minutes. The GUID lets the API call ABN lookups against the official Australian Business Register. Without it, every customer hitting the "Verify ABN" button gets a 500 with code <code>ABR_NOT_CONFIGURED</code>.</p>
+</div>
+
+<div class="step">
+  <h3>A3. SSH to the API VM and lay out the directory</h3>
+<pre><code><span class="hash">ssh onsyswebuser@vm-aueast-onsys-web-04</span>
+sudo mkdir -p /opt/talvex/app
+sudo chown $(whoami):$(whoami) /opt/talvex/app
+cd /opt/talvex/app
+git clone https://github.com/ranilperera/talvexit-v1.git .</code></pre>
+</div>
+
+<div class="step">
+  <h3>A4. Create <code>.env.prod</code></h3>
+<pre><code>nano /opt/talvex/app/.env.prod
+chmod 600 /opt/talvex/app/.env.prod</code></pre>
+  <p>Minimum required contents:</p>
+<pre><code><span class="hash"># ── Core ─────────────────────────────────────────────────────────────────</span>
+NODE_ENV=production
+DATABASE_URL=postgresql://&lt;user&gt;:&lt;pass&gt;@&lt;db-host&gt;:5432/onys_prod
+REDIS_URL=redis://onys_redis:6379
+
+<span class="hash"># ── Public site URL (canonical host, no trailing slash) ─────────────────</span>
+FRONTEND_URL=https://talvexit.com
+NEXT_PUBLIC_SITE_URL=https://talvexit.com
+NEXT_PUBLIC_API_URL=https://talvexit.com
+API_URL=http://onys_api:3001
+
+<span class="hash"># ── Auth secrets (from step A1 — 32+ chars, never the dev defaults) ─────</span>
+JWT_ACCESS_SECRET=&lt;paste from A1&gt;
+JWT_MFA_SECRET=&lt;paste from A1&gt;
+MFA_ENCRYPTION_KEY=&lt;paste from A1&gt;
+
+<span class="hash"># ── HAProxy front (proxy IP for rate-limit + IP-aware features) ─────────</span>
+TRUSTED_PROXY=10.1.3.100
+
+<span class="hash"># ── CORS — only the exact prod origin, no trailing slash ────────────────</span>
+CORS_ORIGIN=https://talvexit.com
+
+<span class="hash"># ── ABR (from step A2) ──────────────────────────────────────────────────</span>
+ABR_GUID=&lt;paste your ABR GUID&gt;
+
+<span class="hash"># ── Azure Blob (existing) ───────────────────────────────────────────────</span>
+AZURE_STORAGE_CONNECTION_STRING=&lt;your-connection-string&gt;
+AZURE_STORAGE_CONTAINER=onys-files
+
+<span class="hash"># ── Stripe (paid subscriptions) ─────────────────────────────────────────</span>
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+<span class="hash"># ── Email (Azure Communication Services or your provider) ──────────────</span>
+AZURE_EMAIL_CONNECTION_STRING=&lt;your ACS connection string&gt;
+EMAIL_FROM=no-reply@talvexit.com
+
+<span class="hash"># ── Search-console verification (optional but recommended) ─────────────</span>
+GOOGLE_SITE_VERIFICATION=
+BING_SITE_VERIFICATION=
+
+<span class="hash"># ── Hard-fail guard: must NOT be 'true' in prod ─────────────────────────</span>
+<span class="hash"># TEST_BYPASS_OTP=  ← leave unset</span></code></pre>
+  <div class="callout warn">
+    The API container's <code>validateEnv</code> refuses to boot if any of <code>DATABASE_URL</code>, <code>JWT_ACCESS_SECRET</code>, <code>JWT_MFA_SECRET</code>, <code>MFA_ENCRYPTION_KEY</code>, <code>FRONTEND_URL</code>, <code>CORS_ORIGIN</code>, <code>ABR_GUID</code> is missing. By design — silent fallback to dev defaults is worse than a clear startup crash.
+  </div>
+</div>
+
+<div class="step">
+  <h3>A5. Initial database setup</h3>
+<pre><code>cd /opt/talvex/app
+
+<span class="hash"># Build the API image so we can run prisma against it</span>
+docker compose -f docker-compose.prod.yml build api
+
+<span class="hash"># Apply every migration in apps/api/prisma/migrations/</span>
+docker compose -f docker-compose.prod.yml run --rm api \
+  pnpm --filter api prisma migrate deploy
+
+<span class="hash"># Seed the 8 subscription plans (4 customer + 4 supplier).</span>
+<span class="hash"># With STRIPE_SECRET_KEY set, this also creates Stripe Products + Prices</span>
+<span class="hash"># and writes the IDs back to the plan rows.</span>
+docker compose -f docker-compose.prod.yml run --rm api \
+  pnpm --filter api seed:subscriptions</code></pre>
+</div>
+
+<div class="step">
+  <h3>A6. First start</h3>
+<pre><code>docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml ps</code></pre>
+  <p>You should see <code>onys_api</code>, <code>onys_web</code>, <code>onys_redis</code> all <code>Up</code> and healthy.</p>
+</div>
+
+<div class="step">
+  <h3>A7. HAProxy is already configured</h3>
+  <p>Per the existing <code>/etc/haproxy/haproxy.cfg</code>, the backend <code>portal1_api_backend</code> already points at <code>10.1.3.28:3001</code> with <code>option forwardfor</code>. No HAProxy changes needed for new deploys — the Docker network is the only thing the API container is exposed on.</p>
+</div>
+
+<div class="step">
+  <h3>A8. Sanity check</h3>
+<pre><code><span class="hash"># From the VM:</span>
+curl -s http://localhost:3001/api/v1/health
+<span class="hash"># Expected: {"status":"ok","timestamp":"..."}</span>
+
+<span class="hash"># From outside:</span>
+curl -s https://talvexit.com/api/v1/health</code></pre>
+</div>
+
+<h2>Phase B — Rolling deploy (every release)</h2>
+
+<p>The four-line ritual every time <code>main</code> advances:</p>
+
+<pre><code><span class="hash">ssh onsyswebuser@vm-aueast-onsys-web-04</span>
+cd /opt/talvex/app
+
+<span class="hash"># 1. Pull</span>
+git pull origin main
+
+<span class="hash"># 2. Migrations (idempotent — does nothing if no new ones)</span>
+docker compose -f docker-compose.prod.yml run --rm api \
+  pnpm --filter api prisma migrate deploy
+
+<span class="hash"># 3. Plan seed (idempotent — upsert by slug; safe to run every time)</span>
+docker compose -f docker-compose.prod.yml run --rm api \
+  pnpm --filter api seed:subscriptions
+
+<span class="hash"># 4. Build + restart</span>
+docker compose -f docker-compose.prod.yml up -d --build api web</code></pre>
+
+<div class="callout danger">
+  <strong>Order matters.</strong> Migrations and seed must run <strong>before</strong> the new API container starts, or you'll hit "column does not exist" on first request. The <code>--rm</code> spawn pattern uses the new image but exits before the long-lived container starts.
+</div>
+
+<p>If you want it scripted, the existing <code>deploy.sh</code> already does most of this — add the seed line before the up step.</p>
+
+<h2>What gets exercised on boot</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Layer</th><th>What happens</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>apps/api/src/app.ts</code> <code>validateEnv</code></td>
+      <td>Hard-fails if <code>JWT_ACCESS_SECRET</code>, <code>JWT_MFA_SECRET</code>, <code>MFA_ENCRYPTION_KEY</code>, <code>ABR_GUID</code>, <code>CORS_ORIGIN</code>, <code>FRONTEND_URL</code>, or <code>DATABASE_URL</code> is missing in prod.</td>
+    </tr>
+    <tr>
+      <td>Trust proxy</td>
+      <td><code>TRUSTED_PROXY</code> env makes Fastify read <code>req.ip</code> from <code>X-Forwarded-For</code> (HAProxy at 10.1.3.100). Without it, all rate-limit buckets share one IP and lock the whole site after 20 auth requests.</td>
+    </tr>
+    <tr>
+      <td><code>prisma migrate deploy</code></td>
+      <td>Applies any outstanding migrations — append-only AuditLog trigger, customer subscription rebuild (period columns + counters + history), schema cleanup migrations.</td>
+    </tr>
+    <tr>
+      <td><code>seed:subscriptions</code></td>
+      <td>Upserts the 8 plans from <code>packages/shared/src/subscription-config.ts</code>. With Stripe key set, syncs Products / Prices.</td>
+    </tr>
+    <tr>
+      <td>Web container env</td>
+      <td><code>NEXT_PUBLIC_SITE_URL</code>, <code>JWT_ACCESS_SECRET</code> (passed to web so middleware can verify JWT in edge runtime via <code>jose</code>), Stripe publishable key.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Rollback</h2>
+
+<pre><code>cd /opt/talvex/app
+git log --oneline -10        <span class="hash"># find the last good commit</span>
+git checkout &lt;good-sha&gt;
+docker compose -f docker-compose.prod.yml up -d --build api web</code></pre>
+
+<div class="callout warn">
+  <strong>Migrations don't auto-rollback.</strong> Prisma migrations are forward-only. If a migration is the problem, you need to write a corrective migration. Don't run <code>prisma migrate resolve --rolled-back</code> unless you've manually undone the schema change with SQL first.
+</div>
+
+<h2>Things to verify post-deploy</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Check</th><th>How</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>API booted</td>
+      <td><code>docker compose ... logs api | tail -50</code> — should see <code>[startup] FRONTEND_URL: https://talvexit.com</code> and no env-var errors.</td>
+    </tr>
+    <tr>
+      <td>Migrations applied</td>
+      <td><code>docker compose ... run --rm api pnpm --filter api prisma migrate status</code> — every migration "Applied".</td>
+    </tr>
+    <tr>
+      <td>Plans seeded</td>
+      <td>Hit <code>https://talvexit.com/api/v1/subscriptions/plans</code> — should return 8 plans.</td>
+    </tr>
+    <tr>
+      <td>ABN verify works</td>
+      <td>Login as a test user, go to <code>/customer/profile</code>, enter a real AU ABN → it should hit ABR and populate the entity name.</td>
+    </tr>
+    <tr>
+      <td>Customer registration</td>
+      <td>Register a new customer → check the DB:
+        <pre><code>SELECT id, plan_id, period_start, period_end
+FROM subscriptions WHERE user_id = '&lt;new user id&gt;';</code></pre>
+        Should return one row with the Free Starter plan and a period 1 month out.
+      </td>
+    </tr>
+    <tr>
+      <td>Web JWT verify</td>
+      <td>Open <code>/customer/dashboard</code> in a private window — middleware should verify the JWT (no spoofable cookie). Manually setting <code>onys_account_type=PLATFORM_ADMIN</code> in DevTools should NOT bypass the role gate.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Common failures &amp; fixes</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>[startup] Missing required env vars: ...</code> in API logs, container exits</td>
+      <td><code>.env.prod</code> missing or one of the required keys is unset</td>
+      <td>Edit <code>/opt/talvex/app/.env.prod</code>, add the missing key, <code>docker compose ... up -d</code></td>
+    </tr>
+    <tr>
+      <td>Every API call returns 429 "Rate limit exceeded"</td>
+      <td><code>TRUSTED_PROXY</code> not set — Fastify keys all rate-limit buckets to HAProxy's IP</td>
+      <td>Add <code>TRUSTED_PROXY=10.1.3.100</code> to <code>.env.prod</code> and restart the API container</td>
+    </tr>
+    <tr>
+      <td>CORS errors in browser console after deploy</td>
+      <td><code>CORS_ORIGIN</code> has a trailing slash (e.g. <code>https://talvexit.com/</code>)</td>
+      <td>Browsers send <code>Origin</code> without trailing slash. Strip it. The CORS middleware also strips it defensively but env hygiene is cleanest.</td>
+    </tr>
+    <tr>
+      <td>Customer can't register — 500 error <code>The column current_task_booking_count does not exist</code></td>
+      <td>Migration not applied before API container started</td>
+      <td>Run <code>prisma migrate deploy</code> from step B2, then restart the API container</td>
+    </tr>
+    <tr>
+      <td><code>ABR_NOT_CONFIGURED</code> on every ABN verify attempt</td>
+      <td><code>ABR_GUID</code> missing from <code>.env.prod</code></td>
+      <td>Get a GUID from Step A2, paste, restart</td>
+    </tr>
+    <tr>
+      <td>Stripe webhook events all return 401 INVALID_SIGNATURE</td>
+      <td><code>STRIPE_WEBHOOK_SECRET</code> in <code>.env.prod</code> doesn't match the secret on Stripe's webhook endpoint config</td>
+      <td>Stripe Dashboard → Developers → Webhooks → click your endpoint → "Reveal" the signing secret → paste into <code>.env.prod</code></td>
+    </tr>
+    <tr>
+      <td>Web middleware passes everyone, even spoofed account types</td>
+      <td><code>JWT_ACCESS_SECRET</code> not set in the <strong>web</strong> container's env</td>
+      <td>Confirm <code>docker-compose.prod.yml</code> threads <code>JWT_ACCESS_SECRET</code> into the <code>web</code> service environment block. Restart.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout success">
+  Once you've done one full first-time setup and one rolling deploy, the day-to-day shape is just: <strong>SSH → <code>git pull</code> → migrate deploy → seed → build &amp; up</strong>. ~3 minutes for a typical release.
+</div>
+
+</div>
+</body>
+</html>

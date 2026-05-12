@@ -1,0 +1,15 @@
+port: 7880
+rtc:
+  port_range_start: 50000
+  port_range_end: 50019
+  tcp_port: 7881
+  use_external_ip: false
+  # Set this to the VM's LAN IP so WebRTC candidates are reachable from HAProxy
+  node_ip: 10.1.3.28
+redis:
+  address: onys_redis:6379
+keys:
+  # LIVEKIT_API_KEY: LIVEKIT_API_SECRET  (fill from .env.prod — do not commit real secrets)
+  YOUR_API_KEY: YOUR_API_SECRET
+logging:
+  level: info

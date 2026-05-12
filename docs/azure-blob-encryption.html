@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Azure Blob Storage — Encryption Analysis · TalvexIT</title>
+  <style>
+    :root {
+      --fg:        #0f172a;
+      --fg-muted:  #475569;
+      --fg-subtle: #64748b;
+      --accent:    #0d9488;
+      --accent-2:  #0f766e;
+      --bg:        #ffffff;
+      --bg-soft:   #f8fafc;
+      --bg-code:   #f1f5f9;
+      --border:    #e2e8f0;
+      --border-strong: #cbd5e1;
+      --critical:  #b91c1c;
+      --high:      #b45309;
+      --medium:    #1d4ed8;
+      --low:       #475569;
+      --good:      #15803d;
+      --bad:       #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--fg);
+      background: var(--bg-soft);
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 32px 96px;
+      background: var(--bg);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      min-height: 100vh;
+    }
+    header.doc-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    header.doc-header .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+      color: var(--fg);
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 56px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--fg);
+    }
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 32px 0 12px;
+      color: var(--fg);
+    }
+    h3 em {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--fg-subtle);
+      margin-left: 6px;
+    }
+    .meta-table {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      column-gap: 16px;
+      row-gap: 4px;
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+    .meta-table dt { font-weight: 600; color: var(--fg); }
+    p { margin: 0 0 16px; }
+    a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 2px; }
+    a:hover { color: var(--accent); }
+    code {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.9em;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      color: #0f172a;
+    }
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 12px 0 20px;
+    }
+    pre code { background: none; border: 0; padding: 0; }
+    ul { padding-left: 22px; margin: 0 0 16px; }
+    ul li { margin-bottom: 6px; }
+    ol { padding-left: 22px; margin: 0 0 16px; }
+    ol li { margin-bottom: 8px; }
+    strong { font-weight: 700; color: var(--fg); }
+
+    /* Tables */
+    .tbl-wrap {
+      overflow-x: auto;
+      margin: 16px 0 24px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--bg-soft);
+      font-weight: 700;
+      color: var(--fg);
+      font-size: 13px;
+      letter-spacing: 0.01em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) { background: #fbfdff; }
+
+    /* Severity pills */
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid;
+    }
+    .pill.critical { color: var(--critical); border-color: #fecaca; background: #fef2f2; }
+    .pill.high     { color: var(--high);     border-color: #fed7aa; background: #fff7ed; }
+    .pill.medium   { color: var(--medium);   border-color: #bfdbfe; background: #eff6ff; }
+    .pill.low      { color: var(--low);      border-color: #cbd5e1; background: #f1f5f9; }
+
+    /* Threat-matrix yes/no markers */
+    .yes { color: var(--good); font-weight: 600; }
+    .no  { color: var(--bad);  font-weight: 600; }
+    .warn { color: var(--high); font-weight: 600; }
+
+    /* Callouts */
+    .callout {
+      border: 1px solid;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 16px 0 24px;
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+    .callout.warn   { border-color: #fde68a; background: #fffbeb; color: #78350f; }
+    .callout.danger { border-color: #fecaca; background: #fef2f2; color: #7f1d1d; }
+    .callout.info   { border-color: #bae6fd; background: #f0f9ff; color: #075985; }
+
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      .wrap { border: 0; max-width: none; padding: 24px; }
+      h2 { page-break-after: avoid; }
+      tr, table { page-break-inside: avoid; }
+      pre { white-space: pre-wrap; word-wrap: break-word; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc-header">
+  <p class="eyebrow">Security audit · TalvexIT</p>
+  <h1>Azure Blob Storage — Encryption Analysis</h1>
+  <dl class="meta-table">
+    <dt>Audited:</dt>     <dd>2026-05-06</dd>
+    <dt>Codebase:</dt>    <dd><code>talvex-v1</code> @ <code>main</code></dd>
+    <dt>Scope:</dt>       <dd>Documents and media stored in Azure Blob (<code>onys-files</code> container)</dd>
+  </dl>
+</header>
+
+<h2>What's currently stored in Azure Blob (sensitive items)</h2>
+<p>From the schema and routes, the platform writes these blob types to a single container (<code>onys-files</code> by default):</p>
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Blob</th><th>Stored at</th><th>Sensitivity</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>KYC identity documents (passport, license scans)</td>
+      <td><code>ContractorProfile.identity_document_blob_path</code></td>
+      <td><span class="pill critical">Critical</span> — government ID PII</td>
+    </tr>
+    <tr>
+      <td>Live video KYC recordings</td>
+      <td><code>VideoSession.recording_blob_path</code></td>
+      <td><span class="pill critical">Critical</span> — face + voice biometric</td>
+    </tr>
+    <tr>
+      <td>Insurance certificates (PI / PL / cyber)</td>
+      <td><code>InsuranceCertificate.certificate_blob_path</code></td>
+      <td><span class="pill high">High</span> — commercial confidence + PI numbers</td>
+    </tr>
+    <tr>
+      <td>Compliance docs (BUSINESS_REGISTRATION, BOARD_RESOLUTION, TAX_CERTIFICATE)</td>
+      <td><code>User.compliance_documents[]</code>, <code>ConsultingCompany.authorization_doc_blob_path</code></td>
+      <td><span class="pill high">High</span> — corporate registers + ABN/ACN</td>
+    </tr>
+    <tr>
+      <td>AML documents</td>
+      <td><code>User</code> / <code>ConsultingCompany</code> metadata blobs</td>
+      <td><span class="pill high">High</span> — regulated AML/CTF data</td>
+    </tr>
+    <tr>
+      <td>Payment evidence (bank transfer screenshots)</td>
+      <td><code>Order.payment_evidence_blob_path[]</code></td>
+      <td><span class="pill high">High</span> — bank account numbers visible</td>
+    </tr>
+    <tr>
+      <td>Dispute evidence (uploaded by both parties)</td>
+      <td><code>Dispute.evidence_blob_paths[]</code></td>
+      <td><span class="pill high">High</span> — can include any of the above</td>
+    </tr>
+    <tr>
+      <td>Order deliverables</td>
+      <td><code>Order</code> deliverable blobs</td>
+      <td><span class="pill medium">Medium</span> — customer's IT data</td>
+    </tr>
+    <tr>
+      <td>Tender / proposal attachments</td>
+      <td><code>TenderProposal.attachment_blob_paths[]</code></td>
+      <td><span class="pill medium">Medium</span></td>
+    </tr>
+    <tr>
+      <td>Generated PDFs (invoices, receipts, commission)</td>
+      <td>various <code>*_pdf_blob_path</code> columns</td>
+      <td><span class="pill medium">Medium</span> — billing records</td>
+    </tr>
+    <tr>
+      <td>Company / contractor logos</td>
+      <td><code>logo_blob_path</code> columns</td>
+      <td><span class="pill low">Low</span> — public-ish branding</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>What protects them today</h2>
+<p>In <a href="../apps/web/src/utils/blob-storage.ts"><code>apps/api/src/utils/blob-storage.ts</code></a>:</p>
+<ol>
+  <li><strong>Azure default SSE is on</strong> — every blob is AES-256 encrypted at rest with Microsoft-managed keys. Mandatory and free, but transparent to anyone with the storage account key.</li>
+  <li><strong>Account-key authentication</strong> — <code>AZURE_STORAGE_CONNECTION_STRING</code> env contains the <strong>root account key</strong>. Anyone with it can read every blob.</li>
+  <li><strong>Downloads stream through the API</strong> — SAS URLs are not exposed to the browser. <span class="yes">✓ Good.</span></li>
+  <li><strong>SAS URLs only used for uploads</strong> — short-expiry, write-only. <span class="yes">✓ Reasonable.</span></li>
+  <li><strong>One container for everything</strong>, paths name-spaced by entity (<code>compliance-docs/&lt;userId&gt;/...</code>, <code>insurance/&lt;userId&gt;/...</code>).</li>
+</ol>
+
+<h2>The threats encryption would (and wouldn't) close</h2>
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Threat</th>
+      <th>Default SSE</th>
+      <th>SSE-CMK (Key Vault)</th>
+      <th>App-level encryption</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Disk theft from datacentre</td>
+      <td><span class="yes">✓ closed</span></td>
+      <td><span class="yes">✓ closed</span></td>
+      <td><span class="yes">✓ closed</span></td>
+    </tr>
+    <tr>
+      <td>Microsoft insider with storage access</td>
+      <td><span class="no">✗ open</span></td>
+      <td><span class="yes">✓ closed</span></td>
+      <td><span class="yes">✓ closed</span></td>
+    </tr>
+    <tr>
+      <td>Connection-string leak (env, logs, container image)</td>
+      <td><span class="no">✗ <strong>fully open</strong></span></td>
+      <td><span class="no">✗ <strong>fully open</strong></span></td>
+      <td><span class="yes">✓ closed</span></td>
+    </tr>
+    <tr>
+      <td>API server compromise</td>
+      <td><span class="no">✗ open</span></td>
+      <td><span class="no">✗ open</span></td>
+      <td><span class="warn">✗ <strong>still open</strong> (the API has the keys)</span></td>
+    </tr>
+    <tr>
+      <td>Replicated geo-redundant copy exfiltrated</td>
+      <td><span class="yes">✓ closed</span></td>
+      <td><span class="yes">✓ closed</span></td>
+      <td><span class="yes">✓ closed</span></td>
+    </tr>
+    <tr>
+      <td>Operator with Azure tenant access</td>
+      <td><span class="no">✗ open</span></td>
+      <td><span class="yes">✓ closed (revoke key)</span></td>
+      <td><span class="yes">✓ closed</span></td>
+    </tr>
+    <tr>
+      <td>Audit / "who downloaded blob X" forensics</td>
+      <td><span class="no">✗ Azure logs only</span></td>
+      <td><span class="yes">✓ Key Vault audit</span></td>
+      <td><span class="yes">✓ Key Vault audit</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout danger">
+<strong>The biggest current risk</strong> is not the lack of encryption — it's the storage <strong>account key</strong> sitting in your connection string. If <code>AZURE_STORAGE_CONNECTION_STRING</code> ever leaks (CI logs, container image scan, errant <code>printenv</code> call, HAProxy logs, …), the attacker gets every blob in plaintext, <strong>regardless</strong> of which encryption layer is on.
+</div>
+
+<h2>Recommended approach — three layers, ordered by leverage</h2>
+
+<h3>Layer 1 — Replace the account key with Managed Identity <em>(highest leverage, smallest change)</em></h3>
+<p>Today: <code>AZURE_STORAGE_CONNECTION_STRING=...AccountKey=&lt;root-key&gt;...</code><br>
+Change to: <code>DefaultAzureCredential</code> from <code>@azure/identity</code> + a managed identity attached to the API container (Azure Container Apps / VM / AKS all support this).</p>
+<ul>
+  <li>No long-lived secret in env</li>
+  <li>RBAC scoped per-action ("Storage Blob Data Contributor" vs "Reader")</li>
+  <li>Compromised env file = no blob access</li>
+  <li><strong>Effort: ~1 day. No data migration.</strong></li>
+</ul>
+
+<h3>Layer 2 — SSE with Customer-Managed Keys (Key Vault) <em>(application-transparent)</em></h3>
+<p>Today: Azure encrypts with Microsoft-owned keys — invisible to you.<br>
+Change to: Azure encrypts using a key in <strong>your</strong> Key Vault. Revoke the key → every blob becomes unreadable instantly.</p>
+<ul>
+  <li>Key rotation, audit log of every encrypt/decrypt, RBAC on the key itself</li>
+  <li>Fully transparent to the application — <code>uploadToBlob</code> / <code>downloadBlobStream</code> unchanged</li>
+  <li>Doesn't protect against API compromise (the API still reads decrypted bytes)</li>
+  <li><strong>Effort: ~half day of Azure config. No code change. No data migration if applied to the existing container.</strong></li>
+</ul>
+
+<h3>Layer 3 — Application-level envelope encryption for the highest-sensitivity classes only</h3>
+<p>For KYC ID documents + video recordings + AML docs — encrypt <strong>before</strong> <code>uploadToBlob</code>, decrypt <strong>after</strong> <code>downloadBlobStream</code>.</p>
+<ul>
+  <li>Per-blob random 256-bit DEK (Data Encryption Key)</li>
+  <li>DEK wrapped with the platform's master key (Azure Key Vault, never in env)</li>
+  <li>Wrapped DEK + IV + auth tag stored alongside the blob (sidecar JSON or filename suffix)</li>
+  <li>For PDFs / images (small): straightforward — read into Buffer, AES-256-GCM, upload ciphertext</li>
+  <li>For video recordings (potentially GB): streaming AES-GCM with chunked tags</li>
+</ul>
+<p>The existing <code>secret-vault.ts</code> already implements AES-256-GCM for small payloads — same pattern, but the master key has to come from Key Vault rather than <code>MFA_ENCRYPTION_KEY</code> env.</p>
+<p><strong>Effort: 2–3 days, plus a one-time migration of existing blobs.</strong></p>
+
+<h3>What I would NOT recommend</h3>
+<div class="callout warn">
+  <strong>Application-level encryption on every single blob.</strong> The cost/benefit gets thin for invoices, deliverables, logos. You take all the operational risk (key loss, performance, broken AV scanning, broken preview, broken search) and save little marginal threat surface — those blobs are mostly already protected by Layer 1 + Layer 2. Reserve app-level encryption for the regulated PII tier.
+</div>
+
+<h2>Concrete risks of app-level encryption (the ones to plan for)</h2>
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Risk</th><th>Mitigation</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Key loss = total data loss.</strong> No recovery for an enterprise that loses its key.</td>
+      <td>Key Vault with soft-delete + purge protection + backup vault in a second region. Document the key-rotation runbook before shipping.</td>
+    </tr>
+    <tr>
+      <td><strong>Performance / memory.</strong> Buffering a 500 MB video into RAM to encrypt = OOM risk on the API container.</td>
+      <td>Use streaming AES-GCM (chunked) for anything over ~50 MB. The Node <code>crypto.createCipheriv('aes-256-gcm')</code> API supports stream piping.</td>
+    </tr>
+    <tr>
+      <td><strong>AV scanning impossible.</strong> Once ciphertext is in blob, no scanner can inspect it.</td>
+      <td>Scan <strong>before</strong> encrypting, reject if clean fails. Wire in clamav or Defender for Storage at the API ingress.</td>
+    </tr>
+    <tr>
+      <td><strong>In-browser preview breaks.</strong> Browser can't decrypt.</td>
+      <td>Already streaming through the API on download — just decrypt server-side mid-stream. No client change.</td>
+    </tr>
+    <tr>
+      <td><strong>Migration of existing plaintext blobs.</strong> ~hundreds–thousands of files already there.</td>
+      <td>Lazy migration: encrypt-on-next-overwrite. OR a one-time backfill script that reads → re-encrypts → re-uploads. Either way, audit-log every conversion.</td>
+    </tr>
+    <tr>
+      <td><strong>Key rotation.</strong> Re-wrapping every DEK on a new master = nontrivial.</td>
+      <td>Envelope encryption design naturally supports this — DEKs are unchanged on rotation, only the wrapping changes. Schedule yearly.</td>
+    </tr>
+    <tr>
+      <td><strong>Compliance perception.</strong> Auditors sometimes prefer "platform-level encryption" to SSE-CMK because they understand it.</td>
+      <td>Document the threat model and which layer covers which threat. Auditors generally accept SSE-CMK for ISO 27001 / SOC 2 if Key Vault audit logs are exported.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Specific code changes needed if you go with all three layers</h2>
+
+<h3>Layer 1 — Managed Identity</h3>
+<ul>
+  <li><code>apps/api/src/utils/blob-storage.ts</code> — replace <code>BlobServiceClient.fromConnectionString()</code> with <code>new BlobServiceClient(accountUrl, new DefaultAzureCredential())</code></li>
+  <li><code>apps/api/src/app.ts</code> — drop <code>AZURE_STORAGE_CONNECTION_STRING</code> from <code>validateEnv</code>'s required list, replace with <code>AZURE_STORAGE_ACCOUNT_URL</code></li>
+  <li>Container deployment — assign the API container's managed identity the <strong>Storage Blob Data Contributor</strong> role on the storage account</li>
+</ul>
+
+<h3>Layer 2 — SSE-CMK</h3>
+<ul>
+  <li>Pure Azure portal / Bicep / Terraform work. Zero code change.</li>
+  <li>Create a Key Vault, generate an RSA key, configure the storage account to use it, add the Key Vault access policy.</li>
+</ul>
+
+<h3>Layer 3 — App-level envelope encryption</h3>
+<ul>
+  <li>Extend <code>apps/api/src/utils/blob-storage.ts</code> with <code>uploadEncryptedBlob(path, buffer | stream)</code> and <code>downloadEncryptedBlobStream(path)</code></li>
+  <li>New <code>apps/api/src/utils/blob-encryption.ts</code> with <code>wrapDek(dek)</code>, <code>unwrapDek(wrapped)</code>, plus the streaming <code>encrypt(stream)</code> / <code>decrypt(stream)</code> helpers</li>
+  <li>New env: <code>AZURE_KEYVAULT_URL</code>, plus the key name. Master key never leaves Key Vault.</li>
+  <li>Storage layout per encrypted blob:
+<pre><code>blob path: same as before (e.g. compliance-docs/&lt;userId&gt;/.../doc.pdf)
+blob metadata: { x-talvex-enc: "v1", x-talvex-wrapped-dek: &lt;base64&gt;, x-talvex-iv: &lt;base64&gt;, x-talvex-tag: &lt;base64&gt; }</code></pre>
+  Storing crypto envelope in <strong>blob metadata</strong> rather than DB keeps blob and key co-located and atomic.</li>
+  <li>A small <code>BlobEncryptionPolicy</code> constant somewhere central, listing which <code>blob_path</code> prefixes get app-level encryption (<code>identity-documents/</code>, <code>kyc-recordings/</code>, <code>aml/</code>) and which only get Layer 2.</li>
+  <li>Migration: a one-time script under <code>apps/api/src/scripts/encrypt-existing-blobs.ts</code> that walks the listed prefixes, re-encrypts in place, marks <code>x-talvex-enc-migrated-at</code> metadata.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<ol>
+  <li><strong>Do Layer 1 first</strong> (managed identity) — it removes the root credential from your environment, which is the actual most-common cause of cloud-storage breaches in industry incident data.</li>
+  <li><strong>Do Layer 2 second</strong> (SSE-CMK) — half a day of Azure config, gives you key revocation + audit + rotation, no code risk.</li>
+  <li><strong>Decide on Layer 3 deliberately.</strong> Look at the threat model, regulatory regime (privacy-act KYC retention rules), and operational maturity. If you have a 24/7 ops team with key-recovery drills, it's worth it for KYC IDs and video recordings. If you don't yet, defer — the operational risk of losing a master key is real, and Layers 1+2 already give you a strong posture.</li>
+</ol>
+
+</div>
+</body>
+</html>

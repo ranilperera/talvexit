@@ -1,0 +1,256 @@
+
+
+stripe listen --forward-to localhost:3001/api/v1/webhooks/stripe
+https://github.com/ranilperera/onsys-online-v2.git
+
+ cd /opt/onsys/release-2026-03-30/apps/web
+pnpm install
+
+docker compose -f docker-compose.prod.yml  build --no-cache api
+docker compose -f docker-compose.prod.yml   build --no-cache workers
+docker compose -f docker-compose.prod.yml   build --no-cache web
+docker compose -f docker-compose.prod.yml  up -d --force-recreate api
+docker compose -f docker-compose.prod.yml  up -d --force-recreate workers
+docker compose -f docker-compose.prod.yml     up -d --force-recreate web
+
+mkdir /opt/onsys/apps/web/public
+
+cp /opt/onsys3/docker-compose.prod.yml /opt/onsys/
+cp /opt/onsys3/apps/web/next.config.mjs /opt/onsys/apps/web/
+cp /opt/onsys3/apps/web/Dockerfile /opt/onsys/apps/web/
+cp /opt/onsys3/apps/api/Dockerfile /opt/onsys/apps/api/
+cp /opt/onsys3/apps/api/.env.production /opt/onsys/apps/api/
+cp  /opt/onsys3/apps/workers/Dockerfile /opt/onsys/apps/workers/
+
+cp /opt/onsys3/apps/web/next.config.ts /opt/onsys/apps/web/
+SSH into VM and deploy:
+
+mv .[^.]* * ../
+-------------------------------------------------------------
+
+git log --oneline -3
+# 5712594 fix: add prisma generate to all Dockerfiles + add .dockerignore
+# 14a40fd chore: add web Dockerfile and rewrite docker-compose.prod.yml for VM deploy
+# ...
+
+grep "prisma generate" apps/api/Dockerfile apps/workers/Dockerfile apps/web/Dockerfile
+# Should show 3 lines
+On the VM, just run:
+
+
+cd /opt/onsys
+git pull
+docker system prune -af --volumes   # free space
+docker compose -f docker-compose.prod.yml build --no-cache 2>&1 | tee /tmp/build.log
+
+
+--------------------------------------------------------------------------------
+
+Pushed. Here are the commands to deploy on the Azure VM:
+
+
+# SSH into the VM
+ssh azureuser@portal1.onsys.com.au
+
+# Pull latest code
+cd /opt/onsys
+git fetch origin
+git reset --hard origin/release-2026-03-30
+
+# Create/update .env file (first deploy only — edit with your secrets)
+# nano .env
+
+# Build all images
+docker compose -f docker-compose.prod.yml build --no-cache
+
+# Run DB migrations
+docker compose -f docker-compose.prod.yml run --rm api npx prisma migrate deploy
+
+# Start everything
+docker compose -f docker-compose.prod.yml up -d
+
+# Verify
+docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml logs api --tail=50
+Minimal .env the VM needs (create at /opt/onsys/.env):
+
+
+# Database & cache
+DATABASE_URL=postgresql://...
+REDIS_URL=redis://onys_redis:6379
+
+# Auth
+JWT_SECRET=...
+JWT_REFRESH_SECRET=...
+
+# Stripe
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_CONNECT_WEBHOOK_SECRET=whsec_...
+
+# Azure
+AZURE_KEY_VAULT_URL=https://...vault.azure.net/
+AZURE_CLIENT_ID=...
+AZURE_CLIENT_SECRET=...
+AZURE_TENANT_ID=...
+AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;...
+AZURE_STORAGE_CONTAINER=onys-files
+
+# Email (Microsoft Graph)
+GRAPH_TENANT_ID=...
+GRAPH_CLIENT_ID=...
+GRAPH_CLIENT_SECRET=...
+GRAPH_FROM_EMAIL=noreply@onsys.com.au
+
+# URLs (build-time for web — also passed as compose args)
+NEXT_PUBLIC_API_URL=https://api.onsys.com.au
+NEXT_PUBLIC_APP_URL=https://app.onsys.com.au
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+FRONTEND_URL=https://app.onsys.com.au
+The web container build args in docker-compose.prod.yml read NEXT_PUBLIC_* from this .env file automatically via ${VAR} expansion.
+
+
+--------------------------------------------------------------------------------
+
+ssh azureuser@portal1.onsys.com.au
+cd /opt/onsys
+
+# Pull and deploy
+git fetch origin release-2026-03-30
+git reset --hard origin/release-2026-03-30
+
+# Verify new files landed
+test -f apps/web/src/app/admin/\(admin\)/payment-methods/page.tsx \
+  && echo "✓ payment-methods page" || echo "✗ MISSING"
+test -f deploy.sh && echo "✓ deploy.sh" || echo "✗ MISSING"
+git log --oneline -3
+
+# Run DB migrations (adds approved_ip, approved_at to PurchaseOrder if not present)
+docker compose -f docker-compose.prod.yml \
+  run --rm --no-deps api sh -c \
+  "npx prisma generate && npx prisma db push --skip-generate"
+
+# Rebuild and restart
+docker compose -f docker-compose.prod.yml build --no-cache api web
+docker compose -f docker-compose.prod.yml up -d --force-recreate
+
+# Wait and check
+sleep 30
+curl -sf http://localhost:3001/api/v1/health && echo "✓ API healthy" || echo "✗ API FAILED"
+curl -sf -o /dev/null -w "%{http_code}" http://localhost:3000
+Then seed PlatformConfig (if not already done from last session):
+
+
+docker compose -f docker-compose.prod.yml \
+  run --rm --no-deps api sh -c \
+  "cd /app && npx tsx src/scripts/seed-platform-config.ts"
+Future deploys — one command from now on:
+
+
+cd /opt/onsys && ./deploy.sh
+What's in GitHub now (3 commits since last push):
+
+Commit	What
+cd9dd66	Everything up to admin payment-methods review feature
+95ab049	Admin login loop fix (middleware, login pages, api.ts)
+7ad9a79	deploy.sh
+What the deploy fixes on production:
+
+Admin navigating to onsys.online/admin → /login?redirect=/admin → one login → /admin ✓
+No more separate blue login form / second login prompt ✓
+admin_token set automatically by main login for admin roles ✓
+401 expired session → /login?redirect=/admin, not /admin/login ✓
+
+
+
+
+==================================================
+
+Zero errors. Here's what was fixed:
+
+File	Before	After
+app/page.tsx	Inline SVG mark + hardcoded "tal**vex**" text	<Logo> component
+tasks/page.tsx	Inline SVG mark + hardcoded "tal**vex**" text	<Logo> component
+tasks/[id]/page.tsx	Hardcoded "onys.online" string	<Logo> component
+Now to change the logo everywhere, you only edit two files:
+
+Text/wordmark → lib/brand.ts — change name: 'Talvex'
+Icon mark (SVG, colours, shape) → components/shared/Logo.tsx — update the <svg> block
+
+-----------------------------
+
+SSH into your Azure VM and run:
+
+
+cd /path/to/onsys-online
+git pull origin main
+If you need to restart the services after pulling:
+
+
+# Rebuild and restart (adjust to however you run it — pm2, docker, etc.)
+pnpm install          # if new deps were added
+pnpm build            # if you run compiled output
+pm2 restart all       # or: systemctl restart your-service-name
+
+============================================================
+
+Which one do you actually want to change?
+
+If the complaint is "I get logged out after 7 days" → change line 28 of auth.service.ts (refresh token TTL)
+If the complaint is "API calls fail every 30 minutes and I have to refresh" → change line 15 of tokens.ts (access token expiry)
+For a true "12-hour session" where users are logged out after 12h of inactivity or 12h absolute → change both, setting access token to '12h' and refresh token TTL to 12 * 60 * 60 * 1000
+
+-- Password: ChangeMe1!
+-- Bcrypt cost-12 hash; replace email/name as needed.
+INSERT INTO "User" (
+  id, email, password_hash, account_type, full_name,
+  email_verified, email_verified_at, must_change_password,
+  failed_login_count, created_at, updated_at
+) VALUES (
+  'cltest' || substr(md5(random()::text), 1, 18),
+  'admin@onys.local',
+  '$2b$12$m6rNQ3jK2O8xI/rJEEcVx.OERGCxAMP4FXcYIhcQ5bUOdHHYg8aLG',
+  'PLATFORM_ADMIN',
+  'Platform Admin',
+  true,
+  now(),
+  true,
+  0,
+  now(),
+  now()
+);
+
+
+
+As individua consultant http://localhost:3000/contractor/ , there is a order from the customer but contractor does not know as when he check the dashboard there is no way to know, there is no email alert, there is no way to see it in highlighted menu item and also it's not in dashboard, now analyse all links in the left menu items and dashboard. implement required notifications, update dashbaord, send  email notifications for order process, and refresh botton for the workflow and other listing pages as required. now read the codebase and implement alerts and notificaiton, it must be easy to maintain.
+
+
+On the API VM (Linux):
+
+
+openssl rand -base64 48
+# example: w8K2mP9nF3qY7vX1jL5tR0aZ4bU6cE8dN2sV7hG3iH9kJ5oP1mQ4rT8yU2wB6xC4
+On Windows (PowerShell):
+
+
+[Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 } | ForEach-Object { [byte]$_ }))
+Or the cleaner version using .NET's RNG:
+
+
+$bytes = New-Object byte[] 48
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+Anywhere with Node:
+
+
+node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"
+Generate three separate values — one each for JWT_ACCESS_SECRET, JWT_MFA_SECRET, and MFA_ENCRYPTION_KEY. Don't reuse the same value. The MFA_ENCRYPTION_KEY specifically must decode to exactly 32 bytes — openssl rand -base64 32 gives you that (44 base64 chars).
+
+Add them to /opt/talvex/app/.env.prod:
+
+
+JWT_ACCESS_SECRET=<paste output 1>
+JWT_MFA_SECRET=<paste output 2>
+MFA_ENCRYPTION_KEY=<paste output 3>
+Important: once these go into prod, save them in your password manager / Key Vault. If MFA_ENCRYPTION_KEY is ever lost, every encrypted MFA secret becomes unrecoverable and those users will need to re-enrol MFA.
+

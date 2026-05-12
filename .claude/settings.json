@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"netstat -ano\")",
+      "Bash(pnpm prisma migrate dev --name m08_pending_scopes)",
+      "Bash(pnpm prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema.prisma --shadow-database-url \"postgresql://postgres:Me1b0urne@localhost:5432/onys_shadow\" --script)",
+      "Bash(psql \"postgresql://postgres:Me1b0urne@localhost:5432/onys_dev\" -f \"prisma/migrations/20260310130000_m08_pending_scopes/migration.sql\")",
+      "Bash(node -e \":*)",
+      "Bash(pnpm prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script)",
+      "Bash(python3:*)",
+      "Bash(pnpm --filter web typecheck)",
+      "Read(//c/DEV2026/onsys-online/apps/web/**)",
+      "Bash(head -200 \"apps/web/src/app/\\(contractor\\)/contractor/orders/[id]/page.tsx\")",
+      "Bash(curl -s -X POST http://localhost:3001/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"\"\"\"email\"\"\"\":\"\"\"\"admin@onys.local\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"Admin@123456\"\"\"\"}')",
+      "Bash(Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty OwningProcess)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(mkdir -p /c/DEV2026/onsys-online/apps/web/public)",
+      "Bash(touch /c/DEV2026/onsys-online/apps/web/public/.gitkeep)",
+      "Bash(rm /c/DEV2026/onsys-online/apps/web/next.config.ts)",
+      "Bash(supported\" at build time. Converted to .mjs \\(JSDoc types, same config\\).:*)",
+      "Bash(ls /c/DEV2026/onsys-online/apps/api/src/*.ts)"
+    ],
+    "additionalDirectories": [
+      "C:\\DEV2026\\onsys-online\\apps\\api\\prisma\\migrations",
+      "C:\\DEV2026\\onsys-online\\apps\\api\\prisma\\migrations\\20260314130000_m13_consulting_company",
+      "C:\\DEV2026\\onsys-online\\apps\\workers\\src\\services",
+      "C:\\DEV2026\\onsys-online\\apps\\web"
+    ]
+  }
+}

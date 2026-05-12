@@ -1,0 +1,473 @@
+{
+  "summary": {
+    "total": 458,
+    "pass": 414,
+    "fail": 44,
+    "files": 28,
+    "startTime": 1778228191392
+  },
+  "files": [
+    {
+      "path": "admin-guards.test.ts",
+      "total": 18,
+      "pass": 18,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "commission.test.ts",
+      "total": 16,
+      "pass": 4,
+      "fail": 12,
+      "status": "FAIL"
+    },
+    {
+      "path": "currency.test.ts",
+      "total": 5,
+      "pass": 5,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "rating-calculator.test.ts",
+      "total": 15,
+      "pass": 15,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "scoping-prompt.test.ts",
+      "total": 8,
+      "pass": 8,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "admin-contractor.service.test.ts",
+      "total": 16,
+      "pass": 16,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "aml.service.test.ts",
+      "total": 7,
+      "pass": 7,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "auth.service.test.ts",
+      "total": 14,
+      "pass": 12,
+      "fail": 2,
+      "status": "FAIL"
+    },
+    {
+      "path": "chat.service.test.ts",
+      "total": 13,
+      "pass": 13,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "claude-api.service.test.ts",
+      "total": 10,
+      "pass": 10,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "company-payout.service.test.ts",
+      "total": 13,
+      "pass": 10,
+      "fail": 3,
+      "status": "FAIL"
+    },
+    {
+      "path": "company.service.test.ts",
+      "total": 24,
+      "pass": 22,
+      "fail": 2,
+      "status": "FAIL"
+    },
+    {
+      "path": "contractor.service.test.ts",
+      "total": 15,
+      "pass": 13,
+      "fail": 2,
+      "status": "FAIL"
+    },
+    {
+      "path": "dispute.service.test.ts",
+      "total": 17,
+      "pass": 10,
+      "fail": 7,
+      "status": "FAIL"
+    },
+    {
+      "path": "insurance.service.test.ts",
+      "total": 23,
+      "pass": 23,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "invoice.service.test.ts",
+      "total": 10,
+      "pass": 7,
+      "fail": 3,
+      "status": "FAIL"
+    },
+    {
+      "path": "order-state-machine.test.ts",
+      "total": 16,
+      "pass": 16,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "order.service.test.ts",
+      "total": 21,
+      "pass": 19,
+      "fail": 2,
+      "status": "FAIL"
+    },
+    {
+      "path": "organisation.service.test.ts",
+      "total": 28,
+      "pass": 28,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "proposal.service.test.ts",
+      "total": 13,
+      "pass": 11,
+      "fail": 2,
+      "status": "FAIL"
+    },
+    {
+      "path": "rating.service.test.ts",
+      "total": 14,
+      "pass": 14,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "scope-modification.service.test.ts",
+      "total": 15,
+      "pass": 15,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "scoping.service.test.ts",
+      "total": 15,
+      "pass": 15,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "stripe-webhook.service.test.ts",
+      "total": 15,
+      "pass": 6,
+      "fail": 9,
+      "status": "FAIL"
+    },
+    {
+      "path": "task.service.test.ts",
+      "total": 17,
+      "pass": 17,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "tax-decision.test.ts",
+      "total": 10,
+      "pass": 10,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "tax-scenarios.test.ts",
+      "total": 53,
+      "pass": 53,
+      "fail": 0,
+      "status": "PASS"
+    },
+    {
+      "path": "tender-matching.service.test.ts",
+      "total": 17,
+      "pass": 17,
+      "fail": 0,
+      "status": "PASS"
+    }
+  ],
+  "failures": [
+    {
+      "file": "commission.test.ts",
+      "name": "CM-01: 0 orders -> 0.20, TIER_1_NEW",
+      "fullName": "getCommissionRate() CM-01: 0 orders -> 0.20, TIER_1_NEW",
+      "msg": "AssertionError: expected { rate: +0, …(2) } to match object { rate: 0.2, tier: 'TIER_1_NEW' } — (1 matching property omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-02: 1 order -> 0.20",
+      "fullName": "getCommissionRate() CM-02: 1 order -> 0.20",
+      "msg": "AssertionError: expected +0 to be 0.2 // Object.is equality —     at C:\\DEV2026\\talvex-v1\\apps\\api\\src\\utils\\__tests__\\commission.test.ts:10:39"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-03: 9 orders -> 0.20 boundary still tier 1",
+      "fullName": "getCommissionRate() CM-03: 9 orders -> 0.20 boundary still tier 1",
+      "msg": "AssertionError: expected { rate: +0, …(2) } to match object { rate: 0.2, tier: 'TIER_1_NEW' } — (1 matching property omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-04: 10 orders -> 0.17, TIER_2_ESTABLISHED",
+      "fullName": "getCommissionRate() CM-04: 10 orders -> 0.17, TIER_2_ESTABLISHED",
+      "msg": "AssertionError: expected { rate: +0, …(2) } to match object { rate: 0.17, …(1) } — (1 matching property omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-05: 49 orders -> 0.17 boundary still tier 2",
+      "fullName": "getCommissionRate() CM-05: 49 orders -> 0.17 boundary still tier 2",
+      "msg": "AssertionError: expected { rate: +0, …(2) } to match object { rate: 0.17, …(1) } — (1 matching property omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-06: 50 orders -> 0.15, TIER_3_SENIOR",
+      "fullName": "getCommissionRate() CM-06: 50 orders -> 0.15, TIER_3_SENIOR",
+      "msg": "AssertionError: expected { rate: +0, …(2) } to match object { rate: 0.15, tier: 'TIER_3_SENIOR' } — (1 matching property omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-07: 200 orders -> 0.15",
+      "fullName": "getCommissionRate() CM-07: 200 orders -> 0.15",
+      "msg": "AssertionError: expected +0 to be 0.15 // Object.is equality —     at C:\\DEV2026\\talvex-v1\\apps\\api\\src\\utils\\__tests__\\commission.test.ts:30:41"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-08: 1000 @ 0 orders -> commission 200, net 800",
+      "fullName": "calculatePayout() CM-08: 1000 @ 0 orders -> commission 200, net 800",
+      "msg": "AssertionError: expected { gross_amount_aud: 1000, …(6) } to match object { commission_amount_aud: 200, …(1) } — (5 matching properties omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-09: 1000 @ 10 orders -> commission 170, net 830",
+      "fullName": "calculatePayout() CM-09: 1000 @ 10 orders -> commission 170, net 830",
+      "msg": "AssertionError: expected { gross_amount_aud: 1000, …(6) } to match object { commission_amount_aud: 170, …(1) } — (5 matching properties omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-10: 1000 @ 50 orders -> commission 150, net 850",
+      "fullName": "calculatePayout() CM-10: 1000 @ 50 orders -> commission 150, net 850",
+      "msg": "AssertionError: expected { gross_amount_aud: 1000, …(6) } to match object { commission_amount_aud: 150, …(1) } — (5 matching properties omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-11: 950 @ 0 orders -> commission 190, net 760",
+      "fullName": "calculatePayout() CM-11: 950 @ 0 orders -> commission 190, net 760",
+      "msg": "AssertionError: expected { gross_amount_aud: 950, …(6) } to match object { commission_amount_aud: 190, …(1) } — (5 matching properties omitted from actual)"
+    },
+    {
+      "file": "commission.test.ts",
+      "name": "CM-13: 1234.56 @ 10 orders rounding is 209.88 commission, 1024.68 net",
+      "fullName": "calculatePayout() CM-13: 1234.56 @ 10 orders rounding is 209.88 commission, 1024.68 net",
+      "msg": "AssertionError: expected { gross_amount_aud: 1234.56, …(6) } to match object { commission_amount_aud: 209.88, …(1) } — (5 matching properties omitted from actual)"
+    },
+    {
+      "file": "auth.service.test.ts",
+      "name": "returns mfa_required + mfa_token when MFA is enabled",
+      "fullName": "A-05: login — MFA gate returns mfa_required + mfa_token when MFA is enabled",
+      "msg": "TypeError: Cannot read properties of undefined (reading 'count') —     at Module.createOtpChallenge (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\email-otp.service.ts:26:54)"
+    },
+    {
+      "file": "auth.service.test.ts",
+      "name": "marks email_verified and clears token fields",
+      "fullName": "A-10: verifyEmail marks email_verified and clears token fields",
+      "msg": "AppError: EXPIRED_TOKEN —     at AuthService.verifyEmail (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\auth.service.ts:554:13)"
+    },
+    {
+      "file": "company-payout.service.test.ts",
+      "name": "PAY-06: 5 completed orders (tier 1, 20%) -> commission 400, net 1600 on gross 2000",
+      "fullName": "calculatePayout() — commission tier verification PAY-06: 5 completed orders (tier 1, 20%) -> commission 400, net 1600 on gross 2000",
+      "msg": "AssertionError: expected { gross_amount_aud: 2000, …(6) } to match object { commission_amount_aud: 400, …(3) } — (3 matching properties omitted from actual)"
+    },
+    {
+      "file": "company-payout.service.test.ts",
+      "name": "PAY-07: 15 completed orders (tier 2, 17%) -> commission 340, net 1660 on gross 2000",
+      "fullName": "calculatePayout() — commission tier verification PAY-07: 15 completed orders (tier 2, 17%) -> commission 340, net 1660 on gross 2000",
+      "msg": "AssertionError: expected { gross_amount_aud: 2000, …(6) } to match object { commission_amount_aud: 340, …(3) } — (3 matching properties omitted from actual)"
+    },
+    {
+      "file": "company-payout.service.test.ts",
+      "name": "PAY-07b: 50+ completed orders (tier 3, 15%) -> commission 300, net 1700 on gross 2000",
+      "fullName": "calculatePayout() — commission tier verification PAY-07b: 50+ completed orders (tier 3, 15%) -> commission 300, net 1700 on gross 2000",
+      "msg": "AssertionError: expected { gross_amount_aud: 2000, …(6) } to match object { commission_amount_aud: 300, …(3) } — (3 matching properties omitted from actual)"
+    },
+    {
+      "file": "company.service.test.ts",
+      "name": "CO-01: valid registration creates User, ConsultingCompany, CompanyMember and queues 1 email",
+      "fullName": "CompanyService.registerCompany() CO-01: valid registration creates User, ConsultingCompany, CompanyMember and queues 1 email",
+      "msg": "TypeError: Cannot read properties of undefined (reading 'findUnique') —     at C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\company.service.ts:97:10"
+    },
+    {
+      "file": "company.service.test.ts",
+      "name": "CO-20: admin assigns ACTIVE member to PAYMENT_HELD order → executing_member_id set, member notified",
+      "fullName": "CompanyService.assignMemberToOrder() CO-20: admin assigns ACTIVE member to PAYMENT_HELD order → executing_member_id set, member notified",
+      "msg": "AppError: Order does not have a company workflow status. —     at CompanyService.assignMemberToOrder (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\company.service.ts:592:13)"
+    },
+    {
+      "file": "contractor.service.test.ts",
+      "name": "CB-03: INCOMPLETE → PENDING blocked when employment_type is missing",
+      "fullName": "ContractorStateMachine.canTransition() CB-03: INCOMPLETE → PENDING blocked when employment_type is missing",
+      "msg": "AssertionError: expected true to be false // Object.is equality —     at C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\__tests__\\contractor.service.test.ts:101:28"
+    },
+    {
+      "file": "contractor.service.test.ts",
+      "name": "CB-09: step 6 (Insurance) is always incomplete (M03 placeholder)",
+      "fullName": "ContractorStateMachine.getOnboardingStatus() CB-09: step 6 (Insurance) is always incomplete (M03 placeholder)",
+      "msg": "AssertionError: expected undefined to be false // Object.is equality —     at C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\__tests__\\contractor.service.test.ts:144:29"
+    },
+    {
+      "file": "dispute.service.test.ts",
+      "name": "DS-01: customer files from IN_PROGRESS -> order DISPUTED, dispute created, 72h window, priority emails",
+      "fullName": "DisputeService.fileDispute() DS-01: customer files from IN_PROGRESS -> order DISPUTED, dispute created, 72h window, priority emails",
+      "msg": "TypeError: this.prisma.user.findMany is not a function —     at DisputeService.fileDispute (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\dispute.service.ts:107:51)"
+    },
+    {
+      "file": "dispute.service.test.ts",
+      "name": "DS-02: contractor files from PENDING_REVIEW -> role identified and allowed",
+      "fullName": "DisputeService.fileDispute() DS-02: contractor files from PENDING_REVIEW -> role identified and allowed",
+      "msg": "TypeError: this.prisma.user.findMany is not a function —     at DisputeService.fileDispute (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\dispute.service.ts:107:51)"
+    },
+    {
+      "file": "dispute.service.test.ts",
+      "name": "DS-12: FULL_PAYMENT -> transfer created, order completed, dispute closed, both emails queued",
+      "fullName": "DisputeService.issueDetermination() DS-12: FULL_PAYMENT -> transfer created, order completed, dispute closed, both emails queued",
+      "msg": "AppError: Determination requires a recommendation of at least 50 characters describing the suggested action and why. —     at DisputeService.issueDetermination (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\dispute.service.ts:489:13)"
+    },
+    {
+      "file": "dispute.service.test.ts",
+      "name": "DS-13: FULL_REFUND -> refund called, order completed, dispute closed",
+      "fullName": "DisputeService.issueDetermination() DS-13: FULL_REFUND -> refund called, order completed, dispute closed",
+      "msg": "AppError: Determination requires a recommendation of at least 50 characters describing the suggested action and why. —     at DisputeService.issueDetermination (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\dispute.service.ts:489:13)"
+    },
+    {
+      "file": "dispute.service.test.ts",
+      "name": "DS-14: PARTIAL_PAYMENT -> transfer + refund and payment_result contains both IDs",
+      "fullName": "DisputeService.issueDetermination() DS-14: PARTIAL_PAYMENT -> transfer + refund and payment_result contains both IDs",
+      "msg": "AppError: Determination requires a recommendation of at least 50 characters describing the suggested action and why. —     at DisputeService.issueDetermination (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\dispute.service.ts:489:13)"
+    },
+    {
+      "file": "dispute.service.test.ts",
+      "name": "DS-15: REMEDY_REQUIRED -> no stripe action, order remains disputed, status DETERMINED",
+      "fullName": "DisputeService.issueDetermination() DS-15: REMEDY_REQUIRED -> no stripe action, order remains disputed, status DETERMINED",
+      "msg": "AppError: Determination requires a recommendation of at least 50 characters describing the suggested action and why. —     at DisputeService.issueDetermination (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\dispute.service.ts:489:13)"
+    },
+    {
+      "file": "dispute.service.test.ts",
+      "name": "DS-16: partial exceeds order amount -> AMOUNT_EXCEEDS_ORDER 422",
+      "fullName": "DisputeService.issueDetermination() DS-16: partial exceeds order amount -> AMOUNT_EXCEEDS_ORDER 422",
+      "msg": "AssertionError: expected AppError: Determination requires a recomm… { …(2) } to match object { code: 'AMOUNT_EXCEEDS_ORDER', …(1) } — (1 matching property omitted from actual)"
+    },
+    {
+      "file": "invoice.service.test.ts",
+      "name": "INV-05: payment success -> invoice marked paid, order PAYMENT_RECEIVED, payout record created with correct commission",
+      "fullName": "InvoiceService.handleInvoicePaymentSuccess() INV-05: payment success -> invoice marked paid, order PAYMENT_RECEIVED, payout record created with correct commission",
+      "msg": "AssertionError: expected \"spy\" to be called with arguments: [ ObjectContaining{…} ] — "
+    },
+    {
+      "file": "invoice.service.test.ts",
+      "name": "INV-05b: idempotency — already paid invoice -> skips all updates",
+      "fullName": "InvoiceService.handleInvoicePaymentSuccess() INV-05b: idempotency — already paid invoice -> skips all updates",
+      "msg": "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times — "
+    },
+    {
+      "file": "invoice.service.test.ts",
+      "name": "INV-05c: no company invoice found -> returns silently without error",
+      "fullName": "InvoiceService.handleInvoicePaymentSuccess() INV-05c: no company invoice found -> returns silently without error",
+      "msg": "Error: promise rejected \"TypeError: this.prisma.companyInvoice.fin…\" instead of resolving —     at _Assertion.__VITEST_RESOLVES__ (file:///C:/DEV2026/talvex-v1/node_modules/.pnpm/@vitest+expect@2.1.9/node_modules/@vitest/expect/dist/index.j"
+    },
+    {
+      "file": "order.service.test.ts",
+      "name": "OR-09: IN_PROGRESS with deliverables -> PENDING_REVIEW, review_deadline_at +72h, email queued",
+      "fullName": "OrderService.submitDeliverables() OR-09: IN_PROGRESS with deliverables -> PENDING_REVIEW, review_deadline_at +72h, email queued",
+      "msg": "AppError: INVALID_STATUS_FOR_SUBMISSION —     at OrderService.submitDeliverables (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\order.service.ts:688:13)"
+    },
+    {
+      "file": "order.service.test.ts",
+      "name": "OR-11: PENDING_REVIEW -> COMPLETED by customer -> completed_at set, payout job queued, contractor count incremented",
+      "fullName": "OrderService.approveDeliverables() OR-11: PENDING_REVIEW -> COMPLETED by customer -> completed_at set, payout job queued, contractor count incremented",
+      "msg": "AppError: Order must be PENDING_REVIEW to approve (current: undefined) —     at OrderService.approveDeliverables (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\order.service.ts:741:13)"
+    },
+    {
+      "file": "proposal.service.test.ts",
+      "name": "PRP-08: APPROVE -> PO created, proposal APPROVED, order PO_GENERATED, email sent to company admin",
+      "fullName": "ProposalService.customerRespondToProposal() PRP-08: APPROVE -> PO created, proposal APPROVED, order PO_GENERATED, email sent to company admin",
+      "msg": "TypeError: prisma.purchaseOrder.findUniqueOrThrow is not a function —     at generatePurchaseOrderPdf (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\po-pdf.service.ts:13:41)"
+    },
+    {
+      "file": "proposal.service.test.ts",
+      "name": "PRP-09: PO number format is PO-YYYY-NNNNNN",
+      "fullName": "ProposalService.customerRespondToProposal() PRP-09: PO number format is PO-YYYY-NNNNNN",
+      "msg": "TypeError: prisma.purchaseOrder.findUniqueOrThrow is not a function —     at generatePurchaseOrderPdf (C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\po-pdf.service.ts:13:41)"
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-04: stored but not processed runs handler then marks processed",
+      "fullName": "handleStripeWebhook() - idempotency WH-04: stored but not processed runs handler then marks processed",
+      "msg": "AssertionError: expected \"spy\" to be called at least once —     at Proxy.<anonymous> (file:///C:/DEV2026/talvex-v1/node_modules/.pnpm/@vitest+expect@2.1.9/node_modules/@vitest/expect/dist/index.js:1448:13)"
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-05: valid PI metadata order_id transitions to PAYMENT_HELD and writes audit",
+      "fullName": "handleStripeWebhook() - payment_intent.succeeded WH-05: valid PI metadata order_id transitions to PAYMENT_HELD and writes audit",
+      "msg": "AssertionError: expected \"spy\" to be called with arguments: [ { …(6) }, 'order_1', …(3) ] — "
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-08: valid PI failure writes audit and queues customer email",
+      "fullName": "handleStripeWebhook() - payment_intent.payment_failed WH-08: valid PI failure writes audit and queues customer email",
+      "msg": "AssertionError: expected \"spy\" to be called once, but got 0 times —     at C:\\DEV2026\\talvex-v1\\apps\\api\\src\\services\\__tests__\\stripe-webhook.service.test.ts:234:36"
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-10: payout record found updates payout/order and queues contractor email",
+      "fullName": "handleStripeWebhook() - transfer.paid WH-10: payout record found updates payout/order and queues contractor email",
+      "msg": "AssertionError: expected \"spy\" to be called with arguments: [ ObjectContaining{…} ] — "
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-11: milestone transfer updates milestone release status TRANSFERRED",
+      "fullName": "handleStripeWebhook() - transfer.paid WH-11: milestone transfer updates milestone release status TRANSFERRED",
+      "msg": "AssertionError: expected \"spy\" to be called with arguments: [ { where: { id: 'mr_1' }, …(1) } ] — "
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-12: transfer id not found in any record logs warning and no throw",
+      "fullName": "handleStripeWebhook() - transfer.paid WH-12: transfer id not found in any record logs warning and no throw",
+      "msg": "AssertionError: expected \"warn\" to be called at least once —     at Proxy.<anonymous> (file:///C:/DEV2026/talvex-v1/node_modules/.pnpm/@vitest+expect@2.1.9/node_modules/@vitest/expect/dist/index.js:1448:13)"
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-13: charges+payouts enabled updates status ENABLED",
+      "fullName": "handleStripeWebhook() - account.updated WH-13: charges+payouts enabled updates status ENABLED",
+      "msg": "AssertionError: expected \"spy\" to be called with arguments: [ ObjectContaining{…} ] — "
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-14: details submitted but payouts disabled -> RESTRICTED with requirements_due",
+      "fullName": "handleStripeWebhook() - account.updated WH-14: details submitted but payouts disabled -> RESTRICTED with requirements_due",
+      "msg": "AssertionError: expected \"spy\" to be called with arguments: [ ObjectContaining{…} ] — "
+    },
+    {
+      "file": "stripe-webhook.service.test.ts",
+      "name": "WH-15: account not in DB warns and no error",
+      "fullName": "handleStripeWebhook() - account.updated WH-15: account not in DB warns and no error",
+      "msg": "AssertionError: expected \"warn\" to be called at least once —     at Proxy.<anonymous> (file:///C:/DEV2026/talvex-v1/node_modules/.pnpm/@vitest+expect@2.1.9/node_modules/@vitest/expect/dist/index.js:1448:13)"
+    }
+  ]
+}

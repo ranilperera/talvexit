@@ -1,0 +1,2937 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                             String                       @id @default(cuid())
+  email                          String                       @unique
+  password_hash                  String
+  account_type                   AccountType
+  full_name                      String
+  email_verified                 Boolean                      @default(false)
+  email_verified_at              DateTime?
+  mfa_enabled                    Boolean                      @default(false)
+  mfa_secret                     String?
+  account_locked                 Boolean                      @default(false)
+  locked_until                   DateTime?
+  failed_login_count             Int                          @default(0)
+  last_login_at                  DateTime?
+  created_at                     DateTime                     @default(now())
+  updated_at                     DateTime                     @updatedAt
+  deleted_at                     DateTime?
+  email_verification_expires     DateTime?
+  email_verification_token       String?
+  password_reset_expires         DateTime?
+  password_reset_token           String?
+  mfa_backup_codes               Json                         @default("[]")
+  must_change_password           Boolean                      @default(false)
+  theme_preference               String                       @default("system")
+  notification_preferences       Json                         @default("{}")
+  notifications                  Notification[]
+  abn                            String?
+  abn_verified                   Boolean                      @default(false)
+  abn_verified_at                DateTime?
+  acn                            String?
+  business_type                  String?
+  customer_terms_signed          Boolean                      @default(false)
+  customer_terms_signed_at       DateTime?
+  customer_terms_version         String?
+  foreign_bank_country           String?
+  gst_registered                 Boolean                      @default(false)
+  gst_registered_verified        Boolean                      @default(false)
+  is_foreign_entity              Boolean                      @default(false)
+  legal_name                     String?
+  professional_indemnity_insured Boolean                      @default(false)
+  provider_agreement_signed      Boolean                      @default(false)
+  provider_agreement_signed_at   DateTime?
+  provider_agreement_version     String?
+  public_liability_insured       Boolean                      @default(false)
+  sanctions_screened             Boolean                      @default(false)
+  sanctions_screened_at          DateTime?
+  super_liability_flag           Boolean                      @default(false)
+  tax_form_provided              Boolean                      @default(false)
+  tax_form_provided_at           DateTime?
+  tax_form_type                  String?
+  tax_residency_country          String?                      @default("AU")
+  withholding_required           Boolean                      @default(false)
+  abn_verified_name              String?
+  anzsic_code                    String?
+  billing_address_1              String?
+  billing_address_2              String?
+  billing_city                   String?
+  billing_country                String?                      @default("AU")
+  billing_email                  String?
+  billing_phone                  String?
+  billing_postcode               String?
+  billing_state                  String?
+  business_registrations         Json?                        @default("[]")
+  compliance_documents           Json?                        @default("[]")
+  entity_type                    String?
+  legal_entity_name              String?
+  trading_name                   String?
+  vat_number                     String?
+  website                        String?
+  aml_checks_reviewed            AmlCheck[]                   @relation("AmlReviewer")
+  aml_checks_triggered           AmlCheck[]                   @relation("AmlTrigger")
+  aml_checks_received            AmlCheck[]                   @relation("AmlSubject")
+  audit_logs                     AuditLog[]
+  change_requests_decided        ChangeRequest[]              @relation("ChangeRequestDecider")
+  change_requests_raised         ChangeRequest[]              @relation("ChangeRequestRaiser")
+  sent_company_invitations       CompanyInvitation[]          @relation("InvitationSender")
+  invoices_created               CompanyInvoice[]             @relation("InvoiceCreator")
+  bank_transfer_confirmations    BankTransferPayment[]        @relation("BankTransferConfirmer")
+  member_inviter_records         CompanyMember[]              @relation("MemberInviter")
+  company_memberships            CompanyMember[]              @relation("CompanyMemberships")
+  proposals_created              CompanyOrderProposal[]       @relation("ProposalCreator")
+  payouts_processed              CompanyPayoutRecord[]        @relation("PayoutProcessor")
+  primary_admin_of               ConsultingCompany?           @relation("CompanyPrimaryAdmin")
+  contractor_profile             ContractorProfile?
+  customer_profile               CustomerProfile?
+  administered_disputes          Dispute[]                    @relation("DisputeAdmin")
+  determined_disputes            Dispute[]                    @relation("DisputeDeterminer")
+  disputes_raised                Dispute[]                    @relation("DisputeRaiser")
+  dispute_submissions            DisputeSubmission[]
+  email_otp_challenges           EmailOtpChallenge[]
+  legal_acceptances              LegalDocAcceptance[]
+  orders_as_contractor           Order[]                      @relation("OrderContractor")
+  orders_as_customer             Order[]                      @relation("OrderCustomer")
+  order_executions               Order[]                      @relation("OrderExecutingMember")
+  credentials_stored             OrderAccessCredential[]      @relation("CredentialStorer")
+  order_chat_messages            OrderChatMessage[]           @relation("OrderChatSender")
+  deliverables_uploaded          OrderDeliverable[]
+  sent_messages                  OrderMessage[]               @relation("SentMessages")
+  org_memberships                OrgMember[]
+  created_organisations          Organisation[]               @relation("OrgCreator")
+  pending_scopes                 PendingScope[]
+  tax_declarations               ProviderTaxDeclaration[]     @relation("UserTaxDeclarations")
+  ratings_submitted              Rating[]                     @relation("RatingSubmitter")
+  refresh_tokens                 RefreshToken[]
+  smr_requests                   ScopeModificationRequest[]   @relation("SmrRequester")
+  smr_responses                  ScopeModificationRequest[]   @relation("SmrResponder")
+  supplier_statements            SupplierStatement[]          @relation("UserSupplierStatements")
+  company_task_assignments       Task[]                       @relation("TaskAssignedMember")
+  tasks                          Task[]
+  sent_task_messages             TaskMessage[]                @relation("SentTaskMessages")
+  customer_threads               TaskThread[]                 @relation("CustomerThreads")
+  sessions_as_host               VideoSession[]               @relation("SessionHost")
+  sessions_as_participant        VideoSession[]               @relation("SessionParticipant")
+  work_logs                      WorkLog[]
+  tender_requests                TenderRequest[]              @relation("CustomerTenders")
+  tender_invitations_received    TenderInvitation[]           @relation("TenderInvitationsReceived")
+  tender_proposals_submitted     TenderProposal[]             @relation("TenderProposalsSubmitted")
+  customer_contracts             TenderContract[]             @relation("CustomerContracts")
+  contractor_contracts           TenderContract[]             @relation("ContractorContracts")
+  tc_invoices_created            TenderContractInvoice[]      @relation("TCInvoiceCreatedBy")
+  tc_bank_transfers_confirmed    TenderContractBankTransfer[] @relation("TCBankTransferConfirmedBy")
+  tc_payouts_processed           TenderContractPayoutRecord[] @relation("TCPayoutProcessedBy")
+  admin_document_requests        AdminDocumentRequest[]       @relation("DocRequestedBy")
+  reviewed_legal_name_requests   LegalNameChangeRequest[]     @relation("LegalNameReviewer")
+
+  // ── Subscription module ──────────────────────────────────────────────────────
+  stripe_customer_id         String?           @unique
+  subscription               Subscription?
+  subscription_invoices      Invoice[]         @relation("InvoiceBilledToUser")
+  service_invoices_sent      ServiceInvoice[]  @relation("ServiceInvoiceFrom")
+  service_invoices_received  ServiceInvoice[]  @relation("ServiceInvoiceTo")
+  payment_evidence_submitted PaymentEvidence[] @relation("PaymentEvidenceSubmitter")
+  payment_evidence_reviewed  PaymentEvidence[] @relation("PaymentEvidenceReviewer")
+
+  // ── B2B service-invoice payment instructions (Phase 5) ──────────────────
+  // JSON shape: { stripe?: {...}, bank_au?: {...}, bank_swift?: {...},
+  //               paypal?: {...}, wise?: {...}, other?: {...} }
+  payment_methods            Json              @default("{}")
+
+  // ── Admin sanctions (Phase 3: subscription-only marketplace) ─────────────
+  // Suspend = reversible; Ban = permanent (still reversible by admin, but UX
+  // treats it as terminal). Either applies independently of dispute outcomes —
+  // admins decide based on dispute determinations or other evidence. Both
+  // states block sign-in via authenticate middleware + login service.
+  suspended_at          DateTime?
+  suspended_reason      String?
+  suspended_by_admin_id String?
+  suspended_by          User?     @relation("UserSuspendedBy", fields: [suspended_by_admin_id], references: [id], onDelete: SetNull)
+  suspended_users       User[]    @relation("UserSuspendedBy")
+  banned_at             DateTime?
+  banned_reason         String?
+  banned_by_admin_id    String?
+  banned_by             User?     @relation("UserBannedBy", fields: [banned_by_admin_id], references: [id], onDelete: SetNull)
+  banned_users          User[]    @relation("UserBannedBy")
+
+  @@index([email])
+  @@index([account_type])
+  @@index([email_verification_token])
+  @@index([password_reset_token])
+  @@index([suspended_at])
+  @@index([banned_at])
+}
+
+model EmailOtpChallenge {
+  id                   String    @id @default(cuid())
+  user_id              String
+  challenge_token_hash String    @unique
+  otp_hash             String
+  status               String    @default("PENDING")
+  attempts             Int       @default(0)
+  max_attempts         Int       @default(5)
+  expires_at           DateTime
+  ip_address           String?
+  user_agent           String?
+  created_at           DateTime  @default(now())
+  verified_at          DateTime?
+  user                 User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, status])
+  @@index([expires_at])
+}
+
+model ContractorProfile {
+  id                          String                   @id @default(cuid())
+  user_id                     String                   @unique
+  status                      ContractorStatus         @default(INCOMPLETE)
+  domains                     Domain[]
+  skills                      String[]
+  bio                         String?
+  linkedin_url                String?
+  hourly_rate_aud             Decimal?                 @db.Decimal(10, 2)
+  timezone                    String?
+  stripe_account_id           String?
+  stripe_account_enabled      Boolean                  @default(false)
+  completed_orders_count      Int                      @default(0)
+  identity_status             IdentityStatus           @default(NOT_STARTED)
+  kyc_status                  KycStatus                @default(NOT_STARTED)
+  employment_type             EmploymentType?
+  has_employer_consent        Boolean?
+  employment_declared_at      DateTime?
+  onboarding_step             Int                      @default(1)
+  activated_at                DateTime?
+  suspended_at                DateTime?
+  suspension_reason           String?
+  banned_at                   DateTime?
+  ban_reason                  String?
+  created_at                  DateTime                 @default(now())
+  updated_at                  DateTime                 @updatedAt
+  agreement_accepted_at       DateTime?
+  agreement_version           String?
+  availability_hours_per_week Int?
+  available_from              DateTime?
+  employer_name               String?
+  identity_document_blob_path String?
+  identity_document_type      String?
+  phone                       String?
+  insurance_tier_met          Boolean                  @default(false)
+  overall_rating              Decimal?                 @db.Decimal(3, 1)
+  rating_count                Int                      @default(0)
+  legal_name                  String?
+  legal_name_verified         Boolean                  @default(false)
+  legal_name_requests         LegalNameChangeRequest[]
+  invoices                    CompanyInvoice[]         @relation("ContractorInvoices")
+  proposals                   CompanyOrderProposal[]   @relation("ContractorProposals")
+  company_payout_records      CompanyPayoutRecord[]    @relation("ContractorPayoutRecords")
+  tender_proposals            TenderProposal[]         @relation("ContractorTenderProposals")
+  agreements                  ContractorAgreement[]
+  payout_methods              ContractorPayoutMethod[]
+  user                        User                     @relation(fields: [user_id], references: [id])
+  arbitrator_disputes         Dispute[]                @relation("DisputeArbitrator")
+  insurance_certificates      InsuranceCertificate[]
+  orders                      Order[]
+  payout_records              PayoutRecord[]
+  ratings                     Rating[]
+  stripe_connect_account      StripeConnectAccount?
+  tasks                       Task[]
+  video_sessions              VideoSession[]
+
+  @@index([status])
+  @@index([domains])
+}
+
+model ContractorPayoutMethod {
+  id                     String            @id @default(cuid())
+  contractor_profile_id  String
+  method_type            String
+  nickname               String?
+  bank_name              String?
+  account_holder_name    String?
+  bsb                    String?
+  account_number         String?
+  account_number_last4   String?
+  paypal_email           String?
+  payid_email            String?
+  payid_name             String?
+  stripe_account_id      String?
+  stripe_account_status  String?
+  stripe_payouts_enabled Boolean           @default(false)
+  swift_bic              String?
+  iban                   String?
+  iban_last4             String?
+  bank_address           String?
+  bank_country           String?
+  correspondent_bank     String?
+  wise_account_id        String?
+  wise_email             String?
+  payoneer_email         String?
+  other_platform_name    String?
+  other_account_id       String?
+  other_instructions     String?
+  currency               String            @default("AUD")
+  aml_documents          Json              @default("[]")
+  is_primary             Boolean           @default(false)
+  verification_status    String            @default("PENDING")
+  verified_at            DateTime?
+  verified_by_id         String?
+  rejection_reason       String?
+  created_at             DateTime          @default(now())
+  updated_at             DateTime          @updatedAt
+  contractor_profile     ContractorProfile @relation(fields: [contractor_profile_id], references: [id], onDelete: Cascade)
+
+  @@index([contractor_profile_id])
+  @@index([method_type])
+}
+
+model InsuranceCertificate {
+  id                    String             @id @default(cuid())
+  contractor_id         String?
+  insurer_name          String
+  policy_number         String
+  insurance_type        InsuranceType
+  coverage_amount_aud   Decimal            @db.Decimal(12, 2)
+  policy_start_date     DateTime
+  policy_expiry_date    DateTime
+  worldwide_coverage    Boolean            @default(false)
+  tier                  InsuranceTier
+  certificate_blob_path String
+  status                InsuranceStatus    @default(PENDING_REVIEW)
+  reviewed_by           String?
+  reviewed_at           DateTime?
+  rejection_reason      String?
+  admin_notes           String?
+  verified_at           DateTime?
+  expired_at            DateTime?
+  superseded_at         DateTime?
+  expiry_reminder_sent  Int                @default(0)
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @updatedAt
+  company_id            String?
+  company               ConsultingCompany? @relation("CompanyInsurance", fields: [company_id], references: [id])
+  contractor            ContractorProfile? @relation(fields: [contractor_id], references: [id])
+
+  @@index([contractor_id])
+  @@index([company_id])
+  @@index([status])
+  @@index([policy_expiry_date])
+}
+
+model ContractorAgreement {
+  id            String            @id @default(cuid())
+  contractor_id String
+  document_type String
+  version       String
+  accepted_at   DateTime          @default(now())
+  ip_address    String?
+  user_agent    String?
+  blob_path     String?
+  contractor    ContractorProfile @relation(fields: [contractor_id], references: [id])
+
+  @@index([contractor_id])
+}
+
+model CustomerProfile {
+  id           String   @id @default(cuid())
+  user_id      String   @unique
+  company_name String?
+  country      String   @default("AU")
+  phone        String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  user         User     @relation(fields: [user_id], references: [id])
+}
+
+model RefreshToken {
+  id         String    @id @default(cuid())
+  user_id    String
+  token_hash String    @unique
+  expires_at DateTime
+  used_at    DateTime?
+  revoked_at DateTime?
+  ip_address String?
+  user_agent String?
+  created_at DateTime  @default(now())
+  user       User      @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([token_hash])
+}
+
+model LegalDocAcceptance {
+  id            String   @id @default(cuid())
+  user_id       String
+  document_type String
+  version       String
+  accepted_at   DateTime @default(now())
+  ip_address    String
+  user_agent    String?
+  user          User     @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, document_type, version])
+}
+
+/// APPEND ONLY — a DB trigger (migration 20260504120000_audit_log_append_only)
+/// raises an exception on UPDATE or DELETE. Do not call auditLog.update,
+/// .delete, .upsert, .updateMany, or .deleteMany — they will fail at runtime.
+model AuditLog {
+  id                 String    @id @default(cuid())
+  timestamp          DateTime  @default(now())
+  actor_id           String?
+  action_type        String
+  entity_type        String
+  entity_id          String
+  ip_address         String?
+  user_agent         String?
+  metadata           Json
+  blob_replicated_at DateTime?
+  actor              User?     @relation(fields: [actor_id], references: [id])
+
+  @@index([entity_type, entity_id])
+  @@index([actor_id])
+  @@index([timestamp])
+  @@index([action_type])
+}
+
+model Order {
+  id                               String                     @id @default(cuid())
+  customer_id                      String
+  status                           OrderStatus                @default(PENDING_APPROVAL)
+  created_at                       DateTime                   @default(now())
+  updated_at                       DateTime                   @updatedAt
+  task_id                          String?
+  accept_deadline_at               DateTime?
+  accepted_at                      DateTime?
+  assigned_member_id               String?
+  cancellation_reason              String?
+  cancelled_at                     DateTime?
+  completed_at                     DateTime?
+  contractor_profile_id            String?
+  contractor_user_id               String?
+  currency                         CurrencyCode               @default(AUD)
+  disputed_at                      DateTime?
+  environment_details              Json?
+  invoice_blob_path                String?
+  net_payout_aud                   Decimal?                   @db.Decimal(10, 2)
+  origin                           OrderOrigin
+  payment_held_at                  DateTime?
+  payout_status                    String?
+  price                            Decimal                    @db.Decimal(10, 2)
+  price_aud                        Decimal                    @db.Decimal(10, 2)
+  review_deadline_at               DateTime?
+  scope_snapshot                   Json
+  scope_version                    Int                        @default(1)
+  scoped_at                        DateTime?
+  scoping_job_id                   String?
+  status_history                   Json                       @default("[]")
+  stripe_payment_intent_id         String?
+  stripe_transfer_id               String?
+  submitted_at                     DateTime?
+  tax_amount_aud                   Decimal                    @default(0) @db.Decimal(10, 2)
+  total_amount_aud                 Decimal                    @db.Decimal(10, 2)
+  work_started_at                  DateTime?
+  credential_purge_scheduled_at    DateTime?
+  credentials_revoked_confirmed_at DateTime?
+  company_id                       String?
+  executing_member_id              String?
+  company_order_status             CompanyOrderStatus?
+  change_requests                  ChangeRequest[]
+  company_invoice                  CompanyInvoice?
+  proposals                        CompanyOrderProposal[]
+  company_payout_record            CompanyPayoutRecord?
+  dispute                          Dispute?
+  milestone_releases               MilestoneRelease[]
+  assigned_member                  OrgMember?                 @relation(fields: [assigned_member_id], references: [id])
+  company                          ConsultingCompany?         @relation("CompanyOrders", fields: [company_id], references: [id])
+  contractor_profile               ContractorProfile?         @relation(fields: [contractor_profile_id], references: [id])
+  contractor_user                  User?                      @relation("OrderContractor", fields: [contractor_user_id], references: [id])
+  customer                         User                       @relation("OrderCustomer", fields: [customer_id], references: [id])
+  executing_member                 User?                      @relation("OrderExecutingMember", fields: [executing_member_id], references: [id])
+  task                             Task?                      @relation(fields: [task_id], references: [id])
+  credentials                      OrderAccessCredential[]
+  chat_messages                    OrderChatMessage[]
+  deliverables                     OrderDeliverable[]
+  messages                         OrderMessage[]
+  payout_record                    PayoutRecord?
+  purchase_order                   PurchaseOrder?
+  rating                           Rating?
+  scope_modification_requests      ScopeModificationRequest[]
+  work_logs                        WorkLog[]
+  bank_transfer_payment            BankTransferPayment?
+  service_invoices                 ServiceInvoice[]           @relation("ServiceInvoiceOrder")
+
+  // ── Direct-payment fields (Phase 2: subscription-only marketplace) ─────────
+  // Populated when the customer reports an out-of-band payment and the
+  // supplier confirms receipt. Only used for orders created on/after the
+  // direct-payment cutover; pre-cutover orders continue to use the legacy
+  // escrow path (stripe_payment_intent_id / payout_record / etc.).
+  payment_method               PaymentMethod?
+  payment_reference            String?
+  payment_amount_reported_aud  Decimal?  @db.Decimal(10, 2)
+  customer_reported_paid_at    DateTime?
+  supplier_confirmed_paid_at   DateTime?
+  payment_evidence_blob_path   String?
+  payment_evidence_file_name   String?
+  payment_dispute_reason       String?
+  payment_dispute_raised_at    DateTime?
+  // Append-only log of every evidence the customer has reported. Each entry
+  // is an OrderPaymentEvidenceEntry (see packages/shared) with id, blob_path,
+  // file_name, uploaded_at, payment_method/reference/amount, status, and
+  // (when REJECTED) the supplier's dispute_reason. The legacy
+  // payment_evidence_blob_path/file_name fields above always point at the
+  // most recent entry for back-compat.
+  payment_evidence_history     Json      @default("[]")
+
+  @@index([customer_id])
+  @@index([contractor_user_id])
+  @@index([contractor_profile_id])
+  @@index([task_id])
+  @@index([status])
+  @@index([assigned_member_id])
+  @@index([company_id])
+  @@index([executing_member_id])
+}
+
+model Organisation {
+  id                     String                    @id @default(cuid())
+  entity_name            String
+  registration_number    String?
+  country                String                    @default("AU")
+  abn                    String?
+  address                String?
+  contact_email          String
+  logo_blob_path         String?
+  verification_status    OrgVerificationStatus     @default(INCOMPLETE)
+  verified_at            DateTime?
+  verified_by            String?
+  rejection_reason       String?
+  stripe_account_id      String?
+  stripe_account_enabled Boolean                   @default(false)
+  insurance_tier_met     Boolean                   @default(false)
+  agreement_accepted_at  DateTime?
+  agreement_version      String?
+  agreement_ip_address   String?
+  agreement_user_agent   String?
+  suspended_at           DateTime?
+  suspension_reason      String?
+  created_at             DateTime                  @default(now())
+  updated_at             DateTime                  @updatedAt
+  admin_user_id          String
+  documents              OrgDocument[]
+  insurance_certificates OrgInsuranceCertificate[]
+  legal_acceptances      OrgLegalAcceptance[]
+  members                OrgMember[]
+  admin_user             User                      @relation("OrgCreator", fields: [admin_user_id], references: [id])
+  tasks                  Task[]
+
+  @@index([admin_user_id])
+  @@index([verification_status])
+  @@index([abn])
+}
+
+model OrgMember {
+  id                     String          @id @default(cuid())
+  org_id                 String
+  user_id                String?
+  role                   OrgMemberRole   @default(ORG_MEMBER)
+  status                 OrgMemberStatus @default(INVITED)
+  invited_email          String
+  invitation_token_hash  String?
+  invitation_expires_at  DateTime?
+  invitation_accepted_at DateTime?
+  invited_by_user_id     String?
+  identity_status        String          @default("NOT_STARTED")
+  kyc_status             String          @default("NOT_STARTED")
+  active_order_count     Int             @default(0)
+  joined_at              DateTime?
+  removed_at             DateTime?
+  removal_reason         String?
+  created_at             DateTime        @default(now())
+  updated_at             DateTime        @updatedAt
+  assigned_orders        Order[]
+  organisation           Organisation    @relation(fields: [org_id], references: [id])
+  user                   User?           @relation(fields: [user_id], references: [id])
+
+  @@unique([org_id, invited_email])
+  @@unique([org_id, user_id])
+  @@index([org_id])
+  @@index([user_id])
+  @@index([invitation_token_hash])
+  @@index([status])
+}
+
+model OrgDocument {
+  id                  String       @id @default(cuid())
+  org_id              String
+  doc_type            String
+  blob_path           String
+  file_name           String
+  uploaded_by_user_id String
+  reviewed_at         DateTime?
+  reviewed_by         String?
+  review_notes        String?
+  created_at          DateTime     @default(now())
+  organisation        Organisation @relation(fields: [org_id], references: [id])
+
+  @@index([org_id])
+}
+
+model OrgLegalAcceptance {
+  id            String       @id @default(cuid())
+  org_id        String
+  accepted_by   String
+  document_type String
+  version       String
+  accepted_at   DateTime     @default(now())
+  ip_address    String?
+  user_agent    String?
+  organisation  Organisation @relation(fields: [org_id], references: [id])
+
+  @@unique([org_id, document_type, version])
+  @@index([org_id])
+}
+
+model OrgInsuranceCertificate {
+  id                    String          @id @default(cuid())
+  org_id                String
+  insurer_name          String
+  policy_number         String
+  insurance_type        InsuranceType
+  coverage_amount_aud   Decimal         @db.Decimal(12, 2)
+  policy_start_date     DateTime
+  policy_expiry_date    DateTime
+  worldwide_coverage    Boolean         @default(false)
+  tier                  InsuranceTier
+  certificate_blob_path String
+  status                InsuranceStatus @default(PENDING_REVIEW)
+  reviewed_by           String?
+  reviewed_at           DateTime?
+  rejection_reason      String?
+  verified_at           DateTime?
+  expired_at            DateTime?
+  expiry_reminder_sent  Int             @default(0)
+  created_at            DateTime        @default(now())
+  updated_at            DateTime        @updatedAt
+  organisation          Organisation    @relation(fields: [org_id], references: [id])
+
+  @@index([org_id])
+  @@index([status])
+  @@index([policy_expiry_date])
+}
+
+model VideoSession {
+  id                     String             @id @default(cuid())
+  session_type           SessionType
+  room_name              String             @unique
+  host_user_id           String
+  participant_user_id    String
+  contractor_profile_id  String?
+  order_id               String?
+  host_consent_at        DateTime?
+  participant_consent_at DateTime?
+  livekit_room_name      String?
+  egress_id              String?
+  recording_blob_path    String?
+  recording_duration_s   Int?
+  status                 SessionStatus      @default(SCHEDULED)
+  scheduled_at           DateTime
+  started_at             DateTime?
+  recording_started_at   DateTime?
+  ended_at               DateTime?
+  cancellation_reason    String?
+  kyc_outcome            KycOutcome?
+  kyc_outcome_notes      String?
+  kyc_reviewed_by        String?
+  kyc_reviewed_at        DateTime?
+  // Reschedule-request flow (contractor proposes a different time;
+  // admin approves or rejects). Only meaningful while status=SCHEDULED.
+  // reschedule_request_status NULL  = no active request
+  //                           PENDING_REVIEW = contractor proposed, awaiting admin
+  //                           APPROVED       = admin accepted (scheduled_at moved)
+  //                           REJECTED       = admin declined (scheduled_at unchanged)
+  reschedule_request_status   RescheduleRequestStatus?
+  reschedule_proposed_at      DateTime?
+  reschedule_comment          String?
+  reschedule_requested_by_id  String?
+  reschedule_requested_at     DateTime?
+  reschedule_decided_by_id    String?
+  reschedule_decided_at       DateTime?
+  reschedule_admin_notes      String?
+  created_at             DateTime           @default(now())
+  updated_at             DateTime           @updatedAt
+  contractor_profile     ContractorProfile? @relation(fields: [contractor_profile_id], references: [id])
+  host_user              User               @relation("SessionHost", fields: [host_user_id], references: [id])
+  participant_user       User               @relation("SessionParticipant", fields: [participant_user_id], references: [id])
+
+  @@index([contractor_profile_id])
+  @@index([host_user_id])
+  @@index([participant_user_id])
+  @@index([status])
+  @@index([scheduled_at])
+}
+
+model Task {
+  id                    String                   @id @default(cuid())
+  contractor_profile_id String?
+  org_id                String?
+  created_by_user_id    String
+  title                 String
+  domain                Domain
+  objective             String
+  in_scope              String[]
+  out_of_scope          String[]
+  assumptions           String[]
+  prerequisites         String[]
+  deliverables          String[]
+  currency              CurrencyCode             @default(AUD)
+  price                 Decimal                  @db.Decimal(10, 2)
+  price_aud             Decimal                  @db.Decimal(10, 2)
+  hours_min             Int
+  hours_max             Int
+  milestone_count       Int                      @default(1)
+  status                TaskStatus               @default(DRAFT)
+  published_at          DateTime?
+  archived_at           DateTime?
+  archive_reason        String?
+  version               Int                      @default(1)
+  search_vector         Unsupported("tsvector")?
+  view_count            Int                      @default(0)
+  order_count           Int                      @default(0)
+  active_order_count    Int                      @default(0)
+  created_at            DateTime                 @default(now())
+  updated_at            DateTime                 @updatedAt
+  assigned_member_id    String?
+  company_id            String?
+  orders                Order[]
+  pending_scope         PendingScope?
+  assigned_member       User?                    @relation("TaskAssignedMember", fields: [assigned_member_id], references: [id])
+  company               ConsultingCompany?       @relation("CompanyTasks", fields: [company_id], references: [id])
+  contractor_profile    ContractorProfile?       @relation(fields: [contractor_profile_id], references: [id])
+  created_by_user       User                     @relation(fields: [created_by_user_id], references: [id])
+  organisation          Organisation?            @relation(fields: [org_id], references: [id])
+  milestones            TaskMilestone[]
+  threads               TaskThread[]
+  service_invoices      ServiceInvoice[]         @relation("ServiceInvoiceTask")
+
+  @@index([status])
+  @@index([domain])
+  @@index([contractor_profile_id])
+  @@index([org_id])
+  @@index([company_id])
+  @@index([price_aud])
+  @@index([created_by_user_id])
+}
+
+model TaskThread {
+  id          String        @id @default(cuid())
+  task_id     String
+  customer_id String
+  type        String
+  subject     String
+  status      String        @default("OPEN")
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  messages    TaskMessage[]
+  customer    User          @relation("CustomerThreads", fields: [customer_id], references: [id])
+  task        Task          @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  @@index([task_id])
+  @@index([customer_id])
+}
+
+model TaskMessage {
+  id         String     @id @default(cuid())
+  thread_id  String
+  sender_id  String
+  body       String
+  created_at DateTime   @default(now())
+  sender     User       @relation("SentTaskMessages", fields: [sender_id], references: [id])
+  thread     TaskThread @relation(fields: [thread_id], references: [id], onDelete: Cascade)
+
+  @@index([thread_id, created_at])
+}
+
+model TaskMilestone {
+  id                  String @id @default(cuid())
+  task_id             String
+  sequence            Int
+  name                String
+  description         String
+  percentage_of_total Int
+  task                Task   @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  @@unique([task_id, sequence])
+  @@index([task_id])
+}
+
+model ScopeModificationRequest {
+  id                   String           @id @default(cuid())
+  order_id             String
+  round_number         Int
+  requested_by_user_id String
+  element_type         ScopeElementType
+  original_value       Json
+  requested_value      Json
+  reason               String
+  status               SmrStatus        @default(PENDING)
+  responded_by_user_id String?
+  response             SmrResponse?
+  response_notes       String?
+  revised_scope        Json?
+  revised_price        Decimal?         @db.Decimal(10, 2)
+  revised_price_aud    Decimal?         @db.Decimal(10, 2)
+  responded_at         DateTime?
+  expires_at           DateTime?
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+  order                Order            @relation(fields: [order_id], references: [id])
+  requested_by_user    User             @relation("SmrRequester", fields: [requested_by_user_id], references: [id])
+  responded_by_user    User?            @relation("SmrResponder", fields: [responded_by_user_id], references: [id])
+
+  @@index([order_id])
+  @@index([status])
+  @@index([requested_by_user_id])
+}
+
+model WorkLog {
+  id           String   @id @default(cuid())
+  order_id     String
+  logged_by    String
+  hours_worked Decimal  @db.Decimal(4, 2)
+  description  String
+  started_at   DateTime
+  created_at   DateTime @default(now())
+  user         User     @relation(fields: [logged_by], references: [id])
+  order        Order    @relation(fields: [order_id], references: [id])
+
+  @@index([order_id])
+}
+
+model OrderDeliverable {
+  id              String            @id @default(cuid())
+  order_id        String
+  uploaded_by     String
+  file_name       String?
+  blob_path       String?
+  file_size_bytes Int?
+  mime_type       String?
+  status          DeliverableStatus @default(UPLOADED)
+  description     String
+  created_at      DateTime          @default(now())
+  order           Order             @relation(fields: [order_id], references: [id])
+  user            User              @relation(fields: [uploaded_by], references: [id])
+
+  @@index([order_id])
+}
+
+model OrderMessage {
+  id         String   @id @default(cuid())
+  order_id   String
+  sender_id  String
+  body       String
+  created_at DateTime @default(now())
+  order      Order    @relation(fields: [order_id], references: [id])
+  sender     User     @relation("SentMessages", fields: [sender_id], references: [id])
+
+  @@index([order_id, created_at])
+}
+
+model ChangeRequest {
+  id                  String              @id @default(cuid())
+  order_id            String
+  raised_by_user_id   String
+  description         String
+  unforeseen_finding  String
+  additional_hours    Int
+  additional_cost     Decimal             @db.Decimal(10, 2)
+  additional_cost_aud Decimal             @db.Decimal(10, 2)
+  status              ChangeRequestStatus @default(PENDING)
+  decided_by_user_id  String?
+  decision_notes      String?
+  decided_at          DateTime?
+  expires_at          DateTime
+  created_at          DateTime            @default(now())
+  updated_at          DateTime            @updatedAt
+  decided_by_user     User?               @relation("ChangeRequestDecider", fields: [decided_by_user_id], references: [id])
+  order               Order               @relation(fields: [order_id], references: [id])
+  raised_by_user      User                @relation("ChangeRequestRaiser", fields: [raised_by_user_id], references: [id])
+
+  @@index([order_id])
+  @@index([status])
+}
+
+model Dispute {
+  id                        String              @id @default(cuid())
+  order_id                  String              @unique
+  raised_by_user_id         String
+  grounds                   DisputeGrounds
+  description               String
+  evidence_blob_paths       String[]            @default([])
+  assigned_at               DateTime?
+  arbitrator_notes          String?
+  outcome                   DisputeOutcome?
+  determined_at             DateTime?
+  created_at                DateTime            @default(now())
+  updated_at                DateTime            @updatedAt
+  arbitrator_notes_at       DateTime?
+  arbitrator_profile_id     String?
+  arbitrator_recommendation String?
+  arbitrator_recommended_at DateTime?
+  assigned_admin_id         String?
+  determined_by_id          String?
+  payment_action_status     String?
+  payment_amount_aud        Decimal?            @db.Decimal(10, 2)
+  status                    DisputeStatus       @default(OPEN)
+  submission_window_ends_at DateTime?
+  written_reasons           String?
+
+  // ── Advisory determination (Phase 3: subscription-only marketplace) ─────
+  // Post-cutover disputes use these instead of executing payment actions.
+  // Recommendation is informational; admin must take a separate sanction
+  // action (POST /admin/users/:id/suspend or /ban) to actually penalise
+  // either party.
+  recommended_action            String?
+  recommended_supplier_action   RecommendedAction? @default(NONE)
+  recommended_customer_action   RecommendedAction? @default(NONE)
+  recommended_refund_amount_aud Decimal?           @db.Decimal(10, 2)
+  arbitrator_profile        ContractorProfile?  @relation("DisputeArbitrator", fields: [arbitrator_profile_id], references: [id])
+  assigned_admin            User?               @relation("DisputeAdmin", fields: [assigned_admin_id], references: [id])
+  determined_by             User?               @relation("DisputeDeterminer", fields: [determined_by_id], references: [id])
+  order                     Order               @relation(fields: [order_id], references: [id])
+  raised_by_user            User                @relation("DisputeRaiser", fields: [raised_by_user_id], references: [id])
+  submissions               DisputeSubmission[]
+
+  @@index([status])
+  @@index([assigned_admin_id])
+  @@index([grounds])
+}
+
+model DisputeSubmission {
+  id                   String   @id @default(cuid())
+  dispute_id           String
+  submitted_by_user_id String
+  description          String
+  file_blob_paths      String[] @default([])
+  created_at           DateTime @default(now())
+  dispute              Dispute  @relation(fields: [dispute_id], references: [id])
+  submitted_by_user    User     @relation(fields: [submitted_by_user_id], references: [id])
+
+  @@index([dispute_id])
+}
+
+model Rating {
+  id                    String            @id @default(cuid())
+  order_id              String            @unique
+  submitted_by_user_id  String
+  rated_contractor_id   String
+  technical_quality     Int
+  communication         Int
+  timeliness            Int
+  documentation_quality Int
+  professionalism       Int
+  overall_score         Decimal           @db.Decimal(3, 1)
+  review_text           String?
+  tags                  String[]
+  response_text         String?
+  responded_at          DateTime?
+  response_deadline_at  DateTime
+  is_visible            Boolean           @default(true)
+  hidden_reason         String?
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @updatedAt
+  order                 Order             @relation(fields: [order_id], references: [id])
+  rated_contractor      ContractorProfile @relation(fields: [rated_contractor_id], references: [id])
+  submitted_by_user     User              @relation("RatingSubmitter", fields: [submitted_by_user_id], references: [id])
+
+  @@index([rated_contractor_id])
+  @@index([is_visible])
+  @@index([created_at])
+}
+
+model PendingScope {
+  id                 String           @id @default(cuid())
+  customer_id        String
+  requirement_text   String
+  context            Json?
+  domain_hint        String?
+  status             ScopingJobStatus @default(PENDING)
+  bullmq_job_id      String?
+  attempts           Int              @default(0)
+  last_error         String?
+  ai_scope_raw       String?
+  ai_scope           Json?
+  accepted_scope     Json?
+  has_customer_edits Boolean          @default(false)
+  edited_fields      String[]         @default([])
+  regen_log          Json             @default("[]")
+  accepted_at        DateTime?
+  task_id            String?          @unique
+  created_at         DateTime         @default(now())
+  updated_at         DateTime         @updatedAt
+  customer           User             @relation(fields: [customer_id], references: [id])
+  task               Task?            @relation(fields: [task_id], references: [id])
+  tender_request     TenderRequest?
+
+  @@index([customer_id])
+  @@index([status])
+  @@index([bullmq_job_id])
+}
+
+model StripeConnectAccount {
+  id                        String              @id @default(cuid())
+  contractor_profile_id     String?             @unique
+  stripe_account_id         String              @unique
+  status                    StripeConnectStatus @default(PENDING)
+  charges_enabled           Boolean             @default(false)
+  payouts_enabled           Boolean             @default(false)
+  details_submitted         Boolean             @default(false)
+  onboarding_url            String?
+  onboarding_url_expires_at DateTime?
+  requirements_due          String[]            @default([])
+  country                   String              @default("AU")
+  default_currency          String              @default("aud")
+  account_updated_at        DateTime?
+  created_at                DateTime            @default(now())
+  updated_at                DateTime            @updatedAt
+  company_id                String?             @unique
+  company                   ConsultingCompany?  @relation("CompanyStripe", fields: [company_id], references: [id])
+  contractor_profile        ContractorProfile?  @relation(fields: [contractor_profile_id], references: [id])
+
+  @@index([stripe_account_id])
+  @@index([status])
+}
+
+model PayoutRecord {
+  id                       String             @id @default(cuid())
+  order_id                 String             @unique
+  contractor_profile_id    String?
+  gross_amount_aud         Decimal            @db.Decimal(10, 2)
+  commission_rate          Decimal            @db.Decimal(4, 3)
+  commission_amount_aud    Decimal            @db.Decimal(10, 2)
+  net_amount_aud           Decimal            @db.Decimal(10, 2)
+  completed_orders_at_time Int
+  stripe_transfer_id       String?            @unique
+  stripe_transfer_status   String?
+  stripe_payout_id         String?
+  estimated_arrival        DateTime?
+  status                   PayoutStatus       @default(PENDING)
+  initiated_at             DateTime?
+  completed_at             DateTime?
+  failed_at                DateTime?
+  failure_reason           String?
+  invoice_blob_path        String?
+  invoice_generated_at     DateTime?
+  created_at               DateTime           @default(now())
+  updated_at               DateTime           @updatedAt
+  company_id               String?
+  company                  ConsultingCompany? @relation("CompanyPayouts", fields: [company_id], references: [id])
+  contractor_profile       ContractorProfile? @relation(fields: [contractor_profile_id], references: [id])
+  order                    Order              @relation(fields: [order_id], references: [id])
+
+  @@index([contractor_profile_id])
+  @@index([company_id])
+  @@index([status])
+}
+
+model MilestoneRelease {
+  id                    String                 @id @default(cuid())
+  order_id              String
+  milestone_sequence    Int
+  milestone_name        String
+  percentage_of_total   Int
+  gross_amount_aud      Decimal                @db.Decimal(10, 2)
+  net_amount_aud        Decimal                @db.Decimal(10, 2)
+  commission_amount_aud Decimal                @db.Decimal(10, 2)
+  stripe_transfer_id    String?                @unique
+  status                MilestoneReleaseStatus @default(PENDING)
+  approved_by_user_id   String?
+  approved_at           DateTime?
+  transferred_at        DateTime?
+  created_at            DateTime               @default(now())
+  updated_at            DateTime               @updatedAt
+  order                 Order                  @relation(fields: [order_id], references: [id])
+
+  @@unique([order_id, milestone_sequence])
+  @@index([order_id])
+}
+
+model StripeWebhookEvent {
+  id               String    @id @default(cuid())
+  stripe_event_id  String    @unique
+  event_type       String
+  processed        Boolean   @default(false)
+  processing_error String?
+  raw_payload      Json
+  received_at      DateTime  @default(now())
+  processed_at     DateTime?
+
+  @@index([stripe_event_id])
+  @@index([event_type])
+  @@index([processed])
+}
+
+model OrderAccessCredential {
+  id                      String                @id @default(cuid())
+  order_id                String
+  stored_by_user_id       String
+  label                   String
+  keyvault_secret_name    String
+  rotated_at              DateTime?
+  rotation_note           String?
+  created_at              DateTime              @default(now())
+  updated_at              DateTime              @updatedAt
+  access_count            Int                   @default(0)
+  credential_type         CredentialType
+  deleted_at              DateTime?
+  deleted_by_user_id      String?
+  is_active               Boolean               @default(true)
+  keyvault_secret_version String?
+  last_accessed_at        DateTime?
+  last_accessed_by_id     String?
+  last_accessed_ip        String?
+  purged_at               DateTime?
+  access_logs             CredentialAccessLog[]
+  order                   Order                 @relation(fields: [order_id], references: [id])
+  stored_by_user          User                  @relation("CredentialStorer", fields: [stored_by_user_id], references: [id])
+
+  @@index([order_id])
+  @@index([stored_by_user_id])
+  @@index([credential_type])
+  @@index([is_active])
+}
+
+model CredentialAccessLog {
+  id                  String                @id @default(cuid())
+  credential_id       String
+  note                String?
+  created_at          DateTime              @default(now())
+  actor_ip            String?
+  actor_user_agent    String?
+  actor_user_id       String?
+  event_type          String
+  order_id            String
+  purge_result        String?
+  secret_version_read String?
+  credential          OrderAccessCredential @relation(fields: [credential_id], references: [id])
+
+  @@index([credential_id])
+  @@index([order_id])
+  @@index([actor_user_id])
+  @@index([event_type])
+}
+
+model AmlCheck {
+  id                  String    @id @default(cuid())
+  user_id             String
+  triggered_by_id     String
+  full_name_screened  String
+  dob_screened        DateTime?
+  country_screened    String?
+  provider            String    @default("MANUAL")
+  provider_reference  String?
+  raw_response        Json?
+  pep_match           Boolean   @default(false)
+  sanctions_match     Boolean   @default(false)
+  adverse_media_match Boolean   @default(false)
+  overall_result      String
+  reviewed_by_id      String?
+  review_notes        String?
+  reviewed_at         DateTime?
+  final_determination String?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+  reviewed_by         User?     @relation("AmlReviewer", fields: [reviewed_by_id], references: [id])
+  triggered_by        User      @relation("AmlTrigger", fields: [triggered_by_id], references: [id])
+  user                User      @relation("AmlSubject", fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([overall_result])
+  @@index([pep_match])
+  @@index([sanctions_match])
+}
+
+model PlatformConfig {
+  key           String   @id
+  value         Json
+  description   String?
+  updated_by_id String?
+  updated_at    DateTime @updatedAt
+  created_at    DateTime @default(now())
+}
+
+model ConsultingCompany {
+  id                           String                   @id @default(cuid())
+  company_name                 String
+  abn                          String?                  @unique
+  acn                          String?                  @unique
+  website_url                  String?
+  logo_blob_path               String?
+  description                  String?
+  business_address             String?
+  state                        String?
+  postcode                     String?
+  phone                        String?
+  primary_admin_id             String                   @unique
+  authorization_type           String?
+  authorization_doc_blob_path  String?
+  authorization_verified_at    DateTime?
+  authorization_verified_by    String?
+  domains                      Domain[]                 @default([])
+  status                       CompanyStatus            @default(DRAFT)
+  suspension_reason            String?
+  kyc_status                   String                   @default("PENDING")
+  insurance_tier_met           Boolean                  @default(false)
+  overall_rating               Decimal?                 @db.Decimal(3, 1)
+  rating_count                 Int                      @default(0)
+  completed_orders_count       Int                      @default(0)
+  created_at                   DateTime                 @default(now())
+  updated_at                   DateTime                 @updatedAt
+  abn_verified                 Boolean                  @default(false)
+  abn_verified_name            String?
+  abn_verified_at              DateTime?
+  gst_registered               Boolean                  @default(false)
+  gst_registered_confirmed_at  DateTime?
+  is_foreign_entity            Boolean                  @default(false)
+  legal_company_name           String?
+  trading_name                 String?
+  entity_type                  String?
+  acn_verified                 Boolean                  @default(false)
+  anzsic_code                  String?
+  vat_number                   String?
+  tax_residency_country        String?                  @default("AU")
+  withholding_required         Boolean                  @default(false)
+  // ── Billing contact ──────────────────────────────────────────────────────────
+  billing_email                String?
+  billing_phone                String?
+  billing_address_1            String?
+  billing_address_2            String?
+  billing_city                 String?
+  billing_state                String?
+  billing_postcode             String?
+  billing_country              String?                  @default("AU")
+  // ── Company profile ───────────────────────────────────────────────────────────
+  founded_year                 Int?
+  company_size                 String?
+  certifications               Json?                    @default("[]")
+  compliance_documents         Json?                    @default("[]")
+  provider_agreement_signed    Boolean                  @default(false)
+  provider_agreement_signed_at DateTime?
+  provider_agreement_version   String?
+  super_liability_flag         Boolean                  @default(false)
+  invitations                  CompanyInvitation[]
+  invoices                     CompanyInvoice[]         @relation("CompanyInvoices")
+  members                      CompanyMember[]
+  proposals                    CompanyOrderProposal[]   @relation("CompanyProposals")
+  payout_preference            CompanyPayoutPreference?
+  company_payout_records       CompanyPayoutRecord[]    @relation("CompanyPayoutRecords")
+  payout_accounts              CompanyPayoutAccount[]
+  primary_admin                User                     @relation("CompanyPrimaryAdmin", fields: [primary_admin_id], references: [id])
+  insurance_certificates       InsuranceCertificate[]   @relation("CompanyInsurance")
+  orders                       Order[]                  @relation("CompanyOrders")
+  payout_records               PayoutRecord[]           @relation("CompanyPayouts")
+  tax_declarations             ProviderTaxDeclaration[] @relation("CompanyTaxDeclarations")
+  stripe_connect_account       StripeConnectAccount?    @relation("CompanyStripe")
+  supplier_statements          SupplierStatement[]      @relation("CompanySupplierStatements")
+  tasks                        Task[]                   @relation("CompanyTasks")
+  tender_invitations           TenderInvitation[]       @relation("CompanyTenderInvitations")
+  tender_proposals             TenderProposal[]         @relation("CompanyTenderProposals")
+  tender_contracts             TenderContract[]         @relation("CompanyContracts")
+  tc_invoices                  TenderContractInvoice[]  @relation("TCInvoiceCompany")
+  document_requests            AdminDocumentRequest[]   @relation("CompanyDocRequests")
+
+  // ── Subscription module ──────────────────────────────────────────────────────
+  stripe_customer_id        String?          @unique
+  subscription              Subscription?
+  subscription_invoices     Invoice[]        @relation("InvoiceBilledToCompany")
+  service_invoices_sent     ServiceInvoice[] @relation("ServiceInvoiceFromCompany")
+  service_invoices_received ServiceInvoice[] @relation("ServiceInvoiceToCompany")
+
+  // ── Direct-payment instructions (Phase 1: subscription-only marketplace) ────
+  // Same shape as User.payment_methods. When a primary admin manages payment
+  // instructions, writes go here instead of the user record so the company
+  // owns its banking details.
+  payment_methods           Json             @default("{}")
+
+  @@index([status])
+  @@index([abn])
+  @@index([domains])
+}
+
+model CompanyPayoutAccount {
+  id         String @id @default(cuid())
+  company_id String
+
+  method_type String
+  nickname    String?
+  currency    String  @default("AUD")
+
+  // AU Bank Transfer
+  bank_name            String?
+  account_holder_name  String?
+  bsb                  String?
+  account_number       String?
+  account_number_last4 String?
+
+  // PayPal / Wise / Payoneer
+  paypal_email   String?
+  wise_email     String?
+  payoneer_email String?
+
+  // Stripe Connect
+  stripe_account_id      String?
+  stripe_payouts_enabled Boolean @default(false)
+
+  // SWIFT / International
+  swift_bic          String?
+  iban               String?
+  iban_last4         String?
+  bank_country       String?
+  bank_address       String?
+  correspondent_bank String?
+
+  // Other
+  other_platform_name String?
+  other_account_id    String?
+  other_instructions  String?
+
+  // PayID
+  payid_email String?
+  payid_name  String?
+
+  // AML documents: [{ id, doc_type, file_name, blob_path, uploaded_at }]
+  aml_documents Json @default("[]")
+
+  is_primary          Boolean   @default(false)
+  verification_status String    @default("PENDING")
+  verified_at         DateTime?
+  verified_by_id      String?
+  rejection_reason    String?
+  reviewed_at         DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company ConsultingCompany @relation(fields: [company_id], references: [id], onDelete: Cascade)
+
+  @@index([company_id])
+  @@index([verification_status])
+}
+
+model CompanyMember {
+  id               String            @id @default(cuid())
+  company_id       String
+  user_id          String
+  role             CompanyMemberRole
+  job_title        String?
+  is_primary_admin Boolean           @default(false)
+  member_domains   Domain[]          @default([])
+  orders_completed Int               @default(0)
+  status           String            @default("ACTIVE")
+  invited_by_id    String?
+  joined_at        DateTime          @default(now())
+  removed_at       DateTime?
+  company          ConsultingCompany @relation(fields: [company_id], references: [id])
+  invited_by       User?             @relation("MemberInviter", fields: [invited_by_id], references: [id])
+  user             User              @relation("CompanyMemberships", fields: [user_id], references: [id])
+
+  @@unique([company_id, user_id])
+  @@index([company_id, status])
+  @@index([user_id])
+}
+
+model CompanyInvitation {
+  id                  String                  @id @default(cuid())
+  company_id          String
+  invited_email       String
+  role                CompanyMemberRole
+  job_title           String?
+  invited_by_id       String
+  token_hash          String                  @unique
+  expires_at          DateTime
+  status              CompanyInvitationStatus @default(PENDING)
+  accepted_at         DateTime?
+  accepted_by_user_id String?
+  created_at          DateTime                @default(now())
+  company             ConsultingCompany       @relation(fields: [company_id], references: [id])
+  invited_by          User                    @relation("InvitationSender", fields: [invited_by_id], references: [id])
+
+  @@index([company_id])
+  @@index([invited_email])
+  @@index([status])
+}
+
+model CompanyOrderProposal {
+  id                    String             @id @default(cuid())
+  order_id              String
+  company_id            String?
+  created_by_id         String
+  version               Int                @default(1)
+  status                ProposalStatus     @default(DRAFT)
+  scope_of_work         String
+  timeline_days         Int?
+  proposed_price_aud    Decimal            @db.Decimal(10, 2)
+  proposed_tax_aud      Decimal            @default(0) @db.Decimal(10, 2)
+  proposed_total_aud    Decimal            @db.Decimal(10, 2)
+  payment_terms         String?
+  notes                 String?
+  /// Supplier-authored legal terms attached to this proposal. Carried into
+  /// the PO PDF when set; falls back to the platform-config po_terms array
+  /// otherwise. Multi-paragraph plain text.
+  legal_terms           String?
+  pdf_blob_path         String?
+  sent_at               DateTime?
+  approved_at           DateTime?
+  rejected_at           DateTime?
+  change_request_note   String?
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @updatedAt
+  contractor_profile_id String?
+  company               ConsultingCompany? @relation("CompanyProposals", fields: [company_id], references: [id])
+  contractor_profile    ContractorProfile? @relation("ContractorProposals", fields: [contractor_profile_id], references: [id])
+  created_by            User               @relation("ProposalCreator", fields: [created_by_id], references: [id])
+  order                 Order              @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  @@index([order_id, status])
+  @@index([company_id])
+}
+
+model PurchaseOrder {
+  id            String    @id @default(cuid())
+  order_id      String    @unique
+  po_number     String    @unique
+  amount_aud    Decimal   @db.Decimal(10, 2)
+  tax_aud       Decimal   @default(0) @db.Decimal(10, 2)
+  total_aud     Decimal   @db.Decimal(10, 2)
+  pdf_blob_path String?
+  issued_at     DateTime  @default(now())
+  created_at    DateTime  @default(now())
+  scope_title   String?
+  approved_ip   String?
+  approved_at   DateTime?
+  order         Order     @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+  @@index([po_number])
+}
+
+model CompanyInvoice {
+  id                       String               @id @default(cuid())
+  order_id                 String               @unique
+  company_id               String?
+  created_by_id            String
+  invoice_number           String               @unique
+  amount_aud               Decimal              @db.Decimal(10, 2)
+  tax_aud                  Decimal              @default(0) @db.Decimal(10, 2)
+  total_aud                Decimal              @db.Decimal(10, 2)
+  due_date                 DateTime?
+  pdf_blob_path            String?
+  sent_at                  DateTime?
+  paid_at                  DateTime?
+  created_at               DateTime             @default(now())
+  updated_at               DateTime             @updatedAt
+  billing_agent_name       String?
+  customer_abn             String?
+  customer_legal_name      String?
+  gst_amount_aud           Decimal?             @db.Decimal(12, 2)
+  gst_free                 Boolean              @default(false)
+  invoice_type_label       String               @default("Invoice")
+  is_cross_border          Boolean              @default(false)
+  is_tax_invoice           Boolean              @default(false)
+  payment_terms_days       Int                  @default(14)
+  provider_abn             String?
+  provider_gst_registered  Boolean              @default(false)
+  provider_legal_name      String?
+  status                   String               @default("DRAFT")
+  subtotal_ex_gst_aud      Decimal?             @db.Decimal(12, 2)
+  withholding_amount_aud   Decimal?             @db.Decimal(12, 2)
+  withholding_applied      Boolean              @default(false)
+  withholding_rate         Decimal?             @db.Decimal(5, 4)
+  contractor_profile_id    String?
+  stripe_payment_intent_id String?
+  company                  ConsultingCompany?   @relation("CompanyInvoices", fields: [company_id], references: [id])
+  contractor_profile       ContractorProfile?   @relation("ContractorInvoices", fields: [contractor_profile_id], references: [id])
+  created_by               User                 @relation("InvoiceCreator", fields: [created_by_id], references: [id])
+  order                    Order                @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  bank_transfer_payment    BankTransferPayment?
+
+  @@index([company_id])
+  @@index([invoice_number])
+  @@index([status])
+  @@index([stripe_payment_intent_id])
+}
+
+model BankTransferPayment {
+  id                String    @id @default(cuid())
+  invoice_id        String    @unique
+  order_id          String    @unique
+  method            String // PAYID_EMAIL | AU_BSB | SWIFT
+  status            String    @default("PENDING") // PENDING | CONFIRMED | REJECTED
+  amount_aud        Decimal   @db.Decimal(10, 2)
+  payment_reference String?
+  receipt_blob_path String?
+  submitted_at      DateTime  @default(now())
+  confirmed_at      DateTime?
+  confirmed_by_id   String?
+  rejected_at       DateTime?
+  rejection_reason  String?
+  admin_notes       String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  invoice      CompanyInvoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  order        Order          @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  confirmed_by User?          @relation("BankTransferConfirmer", fields: [confirmed_by_id], references: [id])
+
+  @@index([status])
+  @@index([order_id])
+}
+
+model CompanyPayoutPreference {
+  id                String              @id @default(cuid())
+  company_id        String              @unique
+  method            CompanyPayoutMethod @default(AU_BANK)
+  bsb               String?
+  account_number    String?
+  account_name      String?
+  swift_code        String?
+  iban              String?
+  bank_name         String?
+  bank_address      String?
+  stripe_account_id String?
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  company           ConsultingCompany   @relation(fields: [company_id], references: [id], onDelete: Cascade)
+}
+
+model CompanyPayoutRecord {
+  id                           String              @id @default(cuid())
+  order_id                     String              @unique
+  company_id                   String?
+  processed_by_id              String?
+  method                       CompanyPayoutMethod
+  status                       CompanyPayoutStatus @default(PENDING)
+  gross_amount_aud             Decimal             @db.Decimal(10, 2)
+  platform_fee_aud             Decimal             @default(0) @db.Decimal(10, 2)
+  commission_gst_aud           Decimal             @default(0) @db.Decimal(10, 2)
+  net_amount_aud               Decimal             @db.Decimal(10, 2)
+  transfer_reference           String?
+  admin_notes                  String?
+  receipt_blob_path            String?
+  commission_invoice_blob_path String?
+  commission_invoice_number    String?
+  initiated_at                 DateTime?
+  completed_at                 DateTime?
+  failed_at                    DateTime?
+  failure_reason               String?
+  created_at                   DateTime            @default(now())
+  updated_at                   DateTime            @updatedAt
+  contractor_profile_id        String?
+  company                      ConsultingCompany?  @relation("CompanyPayoutRecords", fields: [company_id], references: [id])
+  contractor_profile           ContractorProfile?  @relation("ContractorPayoutRecords", fields: [contractor_profile_id], references: [id])
+  order                        Order               @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  processed_by                 User?               @relation("PayoutProcessor", fields: [processed_by_id], references: [id])
+
+  @@index([company_id, status])
+  @@index([status])
+}
+
+model OrderChatMessage {
+  id         String            @id @default(cuid())
+  order_id   String
+  sender_id  String
+  body       String
+  status     ChatMessageStatus @default(SENT)
+  created_at DateTime          @default(now())
+  updated_at DateTime          @updatedAt
+  order      Order             @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  sender     User              @relation("OrderChatSender", fields: [sender_id], references: [id])
+
+  @@index([order_id, created_at])
+  @@index([sender_id])
+}
+
+model DocumentSequence {
+  id         String   @id @default(cuid())
+  type       String   @unique
+  last_value Int      @default(0)
+  year       Int
+  updated_at DateTime @updatedAt
+
+  @@index([type, year])
+}
+
+model ProviderTaxDeclaration {
+  id                      String             @id @default(cuid())
+  user_id                 String?
+  company_id              String?
+  declaration_type        String
+  declared_abn            String?
+  declared_gst_registered Boolean?
+  declared_business_type  String?
+  declared_tax_residency  String?
+  declared_super_exempt   Boolean?
+  declaration_text        String?
+  signed_by_user_id       String
+  signed_at               DateTime           @default(now())
+  ip_address              String?
+  user_agent              String?
+  form_version            String
+  company                 ConsultingCompany? @relation("CompanyTaxDeclarations", fields: [company_id], references: [id])
+  user                    User?              @relation("UserTaxDeclarations", fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([company_id])
+}
+
+model SupplierStatement {
+  id            String             @id @default(cuid())
+  user_id       String?
+  company_id    String?
+  reason_code   String
+  reason_detail String?
+  signed_at     DateTime           @default(now())
+  ip_address    String?
+  valid_until   DateTime?
+  company       ConsultingCompany? @relation("CompanySupplierStatements", fields: [company_id], references: [id])
+  user          User?              @relation("UserSupplierStatements", fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([company_id])
+}
+
+enum AccountType {
+  CUSTOMER
+  INDIVIDUAL_CONTRACTOR
+  ORGANIZATION_ADMIN
+  ORG_MEMBER
+  PLATFORM_ADMIN
+  SUPPORT_ADMIN
+  COMPLIANCE_ADMIN
+  COMPANY_ADMIN
+  COMPANY_MEMBER
+}
+
+enum ContractorStatus {
+  INCOMPLETE
+  PENDING
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum IdentityStatus {
+  NOT_STARTED
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum InsuranceTier {
+  STANDARD
+  ELEVATED
+  HIGH_RISK
+  ORGANIZATION
+}
+
+enum InsuranceStatus {
+  PENDING_REVIEW
+  VERIFIED
+  REJECTED
+  EXPIRED
+  SUSPENDED
+  SUPERSEDED
+}
+
+enum InsuranceType {
+  PI
+  PL
+  CYBER
+}
+
+enum KycStatus {
+  NOT_STARTED
+  SCHEDULED
+  COMPLETED_PENDING_REVIEW
+  APPROVED
+  REJECTED
+  REQUIRES_INFO
+}
+
+enum Domain {
+  // Tier 1 — core infrastructure
+  FIREWALL
+  NETWORKING
+  DATABASE
+  CLOUD_INFRASTRUCTURE
+  LINUX
+  WINDOWS_ADMIN
+  // Tier 2 — security & compliance
+  CYBERSECURITY
+  IDENTITY_ACCESS
+  GRC
+  // Tier 3 — engineering & automation
+  DEVOPS
+  AI_INTEGRATION
+  DATA_ENGINEERING
+  LOW_CODE
+  // Tier 4 — infrastructure management
+  STORAGE
+  VIRTUALISATION
+  BACKUP_DR
+  SYSTEM_ADMIN
+  WIRELESS
+  // Tier 5 — productivity & communication
+  OFFICE_365
+  UNIFIED_COMMS
+  END_USER_COMPUTING
+  // Tier 6 — enterprise systems
+  ITSM
+  ERP_ENTERPRISE_APPS
+  MDM
+  // Tier 7 — architecture & development
+  IT_ARCHITECTURE
+  IT_PROJECT_MGMT
+  ENTERPRISE_APP_DEV
+  INTEGRATION_MIDDLEWARE
+}
+
+enum TaskStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING_APPROVAL
+  SCOPED
+  ACCEPTED
+  // ── Legacy escrow flow (pre direct-payment cutover) ────────────────────
+  PAYMENT_HELD
+  // ── Direct-payment flow (post-cutover) ─────────────────────────────────
+  AWAITING_PAYMENT
+  PAYMENT_REPORTED
+  PAYMENT_CONFIRMED
+  // ────────────────────────────────────────────────────────────────────────
+  IN_PROGRESS
+  PENDING_REVIEW
+  REVISION_REQUESTED
+  COMPLETED
+  DISPUTED
+  CANCELLED
+}
+
+enum OrderOrigin {
+  CATALOG_TASK
+  AI_SCOPED
+}
+
+enum SessionType {
+  VIDEO_KYC
+  PRE_TASK_SCOPING
+  ORDER_KICKOFF
+  MILESTONE_CHECK_IN
+  DELIVERY_WALKTHROUGH
+  DISPUTE_REVIEW
+}
+
+enum SessionStatus {
+  SCHEDULED
+  ACTIVE
+  RECORDING
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum KycOutcome {
+  APPROVED
+  REJECTED
+  INCONCLUSIVE
+}
+
+enum RescheduleRequestStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum DisputeGrounds {
+  DELIVERABLES_NOT_AS_SCOPED
+  WORK_ABANDONED
+  ACCESS_EXCEEDED
+  CUSTOMER_WITHHOLDING_APPROVAL
+  SCOPE_MISREPRESENTATION
+  DATA_BREACH
+}
+
+enum DisputeOutcome {
+  FULL_PAYMENT
+  PARTIAL_PAYMENT
+  FULL_REFUND
+  REMEDY_REQUIRED
+}
+
+// Phase 3 advisory sanctions. Recorded on Dispute as a recommendation; admins
+// must invoke the sanctions service separately to actually apply.
+enum RecommendedAction {
+  NONE
+  WARNING
+  TEMP_SUSPEND
+  INDEFINITE_SUSPEND
+  BAN
+}
+
+enum DisputeStatus {
+  OPEN
+  ASSIGNED
+  UNDER_REVIEW
+  DETERMINED
+  CLOSED
+}
+
+enum RatingTag {
+  CLEAR_SCOPE
+  FAST_DELIVERY
+  GREAT_DOCS
+  RESPONSIVE
+  WENT_ABOVE_SCOPE
+  LATE_DELIVERY
+  POOR_DOCS
+  SCOPE_CREEP
+  UNRESPONSIVE
+}
+
+enum ChangeRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  EXPIRED
+}
+
+enum DeliverableStatus {
+  UPLOADED
+  ACCEPTED
+  REJECTED
+}
+
+enum ScopingJobStatus {
+  PENDING
+  PROCESSING
+  COMPLETE
+  FAILED
+}
+
+enum AmlCheckType {
+  PEP
+  SANCTIONS
+  EDD
+}
+
+enum EmploymentType {
+  SOLE_TRADER
+  EMPLOYED_WITH_PERMISSION
+  EMPLOYED_NO_RESTRICTION
+  BUSINESS_ENTITY
+}
+
+enum CredentialType {
+  SSH_KEY
+  PASSWORD
+  API_KEY
+  VPN_CONFIG
+  OTHER
+}
+
+enum OrgMemberRole {
+  ORG_ADMIN
+  ORG_MEMBER
+}
+
+enum OrgVerificationStatus {
+  INCOMPLETE
+  PENDING_REVIEW
+  VERIFIED
+  SUSPENDED
+  REJECTED
+}
+
+enum OrgMemberStatus {
+  INVITED
+  PENDING
+  VERIFIED
+  INACTIVE
+  REMOVED
+}
+
+enum ScopeElementType {
+  ACTIVITY
+  ASSUMPTION
+  DELIVERABLE
+  PRICE
+  HOURS
+  MILESTONE
+}
+
+enum SmrResponse {
+  ACCEPT
+  ACCEPT_WITH_REVISION
+  DECLINE
+}
+
+enum SmrStatus {
+  PENDING
+  RESPONDED
+  EXPIRED
+}
+
+enum CurrencyCode {
+  AUD
+  USD
+  GBP
+  EUR
+  NZD
+  SGD
+  CAD
+}
+
+enum StripeConnectStatus {
+  PENDING
+  ENABLED
+  RESTRICTED
+  DEAUTHORIZED
+}
+
+enum PayoutStatus {
+  PENDING
+  INITIATED
+  COMPLETED
+  FAILED
+  ON_HOLD
+  PENDING_APPROVAL
+}
+
+enum MilestoneReleaseStatus {
+  PENDING
+  APPROVED
+  TRANSFERRED
+  FAILED
+}
+
+enum CompanyStatus {
+  DRAFT
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum CompanyMemberRole {
+  COMPANY_ADMIN
+  SENIOR_CONSULTANT
+  CONSULTANT
+  JUNIOR_CONSULTANT
+}
+
+enum CompanyInvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+enum CompanyOrderStatus {
+  BOOKED
+  PROPOSAL_DRAFT
+  PROPOSAL_SENT
+  PROPOSAL_CHANGES_REQUESTED
+  PO_GENERATED
+  IN_PROGRESS
+  PENDING_REVIEW
+  REVISION_REQUESTED
+  DELIVERABLES_ACCEPTED
+  INVOICE_SENT
+  BANK_TRANSFER_PENDING
+  PAYMENT_RECEIVED
+  PAYOUT_PENDING
+  PAYOUT_PROCESSING
+  COMPLETED
+  DISPUTED
+  CANCELLED
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  APPROVED
+  CHANGES_REQUESTED
+  SUPERSEDED
+  REJECTED
+}
+
+enum CompanyPayoutMethod {
+  STRIPE_CONNECT
+  AU_BANK
+  OVERSEAS_BANK
+}
+
+enum CompanyPayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ChatMessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+// ─── Tender / RFP System ──────────────────────────────────────────────────────
+
+enum TenderStatus {
+  OPEN
+  CLOSED
+  AWARDED
+  CANCELLED
+  EXPIRED
+}
+
+enum SelectionMode {
+  DIRECT
+  AUTO_MATCH
+}
+
+enum TenderInvitationStatus {
+  PENDING
+  VIEWED
+  DECLINED
+  SUBMITTED
+  AWARDED
+}
+
+enum TenderProposalStatus {
+  DRAFT
+  SUBMITTED
+  SHORTLISTED
+  AWARDED
+  REJECTED
+  WITHDRAWN
+}
+
+model TenderRequest {
+  id               String @id @default(cuid())
+  pending_scope_id String @unique
+  customer_id      String
+
+  // How providers were selected
+  selection_mode SelectionMode @default(AUTO_MATCH)
+
+  // Immutable scope snapshot captured at publish time
+  title          String
+  domain         String
+  scope_snapshot Json
+
+  // Eligibility criteria — populated only when selection_mode = AUTO_MATCH
+  // { provider_types, requires_kyc, requires_insurance,
+  //   min_experience_years, required_certs[] }
+  eligibility_criteria Json?
+
+  // Tender settings
+  max_proposals       Int      @default(5)
+  deadline_days       Int      @default(7)
+  submission_deadline DateTime
+
+  // State
+  status              TenderStatus @default(OPEN)
+  invited_count       Int          @default(0)
+  proposal_count      Int          @default(0)
+  awarded_proposal_id String?      @unique
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  closed_at  DateTime?
+
+  customer         User               @relation("CustomerTenders", fields: [customer_id], references: [id])
+  pending_scope    PendingScope       @relation(fields: [pending_scope_id], references: [id])
+  invitations      TenderInvitation[]
+  proposals        TenderProposal[]
+  awarded_proposal TenderProposal?    @relation("AwardedProposal", fields: [awarded_proposal_id], references: [id])
+  contract         TenderContract?    @relation("TenderContractRequest")
+
+  @@index([customer_id, status])
+  @@index([status])
+  @@index([submission_deadline])
+}
+
+model TenderInvitation {
+  id                 String  @id @default(cuid())
+  tender_request_id  String
+  invitee_user_id    String? // individual contractor's user id
+  invitee_company_id String? // consulting company id
+
+  status         TenderInvitationStatus @default(PENDING)
+  notified_at    DateTime?
+  viewed_at      DateTime?
+  declined_at    DateTime?
+  decline_reason String?
+
+  created_at DateTime @default(now())
+
+  tender          TenderRequest      @relation(fields: [tender_request_id], references: [id], onDelete: Cascade)
+  invitee_user    User?              @relation("TenderInvitationsReceived", fields: [invitee_user_id], references: [id])
+  invitee_company ConsultingCompany? @relation("CompanyTenderInvitations", fields: [invitee_company_id], references: [id])
+  proposal        TenderProposal?
+
+  @@unique([tender_request_id, invitee_user_id])
+  @@unique([tender_request_id, invitee_company_id])
+  @@index([tender_request_id, status])
+  @@index([invitee_user_id])
+  @@index([invitee_company_id])
+}
+
+// ─── IT Domain catalogue ─────────────────────────────────────────────────────
+// Source of truth for all domain labels, icons, and insurance tier classification.
+// All UI lists must be driven from this table via GET /api/v1/domains.
+
+model ITDomain {
+  id             String   @id @default(cuid())
+  key            String   @unique // matches Domain enum values
+  label          String // e.g. "Cloud Infrastructure"
+  short_label    String? // e.g. "Cloud"
+  icon           String? // emoji or icon token
+  description    String?
+  sort_order     Int      @default(0)
+  is_active      Boolean  @default(true)
+  insurance_tier String   @default("STANDARD") // STANDARD | ELEVATED | HIGH_RISK
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@index([is_active])
+  @@index([sort_order])
+}
+
+model TenderProposal {
+  id                    String  @id @default(cuid())
+  tender_request_id     String
+  invitation_id         String  @unique
+  submitted_by_user_id  String
+  contractor_profile_id String?
+  company_id            String?
+
+  // Proposal content
+  cover_letter          String   @db.Text
+  solution_details      String?  @db.Text
+  approach_notes        String?  @db.Text
+  proposed_price_aud    Decimal  @db.Decimal(10, 2)
+  proposed_hours        Int?
+  timeline_days         Int
+  certifications        String[] @default([])
+  deliverables          Json?
+  proposed_milestones   Json?
+  attachment_blob_paths String[] @default([])
+  terms_and_conditions  String?  @db.Text
+
+  // State
+  status           TenderProposalStatus @default(DRAFT)
+  submitted_at     DateTime?
+  withdrawn_at     DateTime?
+  awarded_at       DateTime?
+  rejected_at      DateTime?
+  rejection_reason String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  tender             TenderRequest      @relation(fields: [tender_request_id], references: [id], onDelete: Cascade)
+  invitation         TenderInvitation   @relation(fields: [invitation_id], references: [id])
+  submitted_by       User               @relation("TenderProposalsSubmitted", fields: [submitted_by_user_id], references: [id])
+  contractor_profile ContractorProfile? @relation("ContractorTenderProposals", fields: [contractor_profile_id], references: [id])
+  company            ConsultingCompany? @relation("CompanyTenderProposals", fields: [company_id], references: [id])
+  awarded_tender     TenderRequest?     @relation("AwardedProposal")
+  contract           TenderContract?    @relation("TenderContractProposal")
+
+  @@index([tender_request_id, status])
+  @@index([contractor_profile_id])
+  @@index([company_id])
+  @@index([submitted_by_user_id])
+}
+
+// ─── Tender Contract ──────────────────────────────────────────────────────────
+// Created when a customer awards a tender. Replaces the Order table for
+// AI-scoped tender work. Has its own milestone-driven payment lifecycle.
+
+model TenderContract {
+  id String @id @default(cuid())
+
+  // References
+  tender_request_id  String  @unique
+  proposal_id        String  @unique
+  customer_id        String
+  company_id         String?
+  contractor_user_id String?
+
+  // Agreed terms (snapshot from proposal at contract creation)
+  agreed_price_aud      Decimal @db.Decimal(10, 2)
+  agreed_timeline_days  Int
+  agreed_hours          Int?
+  scope_snapshot        Json
+  deliverables_snapshot Json?
+
+  // State
+  status              TenderContractStatus @default(PENDING)
+  customer_notes      String?              @db.Text
+  cancellation_reason String?
+
+  // Activity log (append-only JSON array)
+  activity_log Json @default("[]")
+
+  // Dates
+  created_at   DateTime  @default(now())
+  accepted_at  DateTime?
+  completed_at DateTime?
+  cancelled_at DateTime?
+  updated_at   DateTime  @updatedAt
+
+  // Relations
+  tender       TenderRequest           @relation("TenderContractRequest", fields: [tender_request_id], references: [id])
+  proposal     TenderProposal          @relation("TenderContractProposal", fields: [proposal_id], references: [id])
+  customer     User                    @relation("CustomerContracts", fields: [customer_id], references: [id])
+  company      ConsultingCompany?      @relation("CompanyContracts", fields: [company_id], references: [id])
+  contractor   User?                   @relation("ContractorContracts", fields: [contractor_user_id], references: [id])
+  milestones   TenderMilestone[]
+  deliverables TenderDeliverable[]
+  invoices     TenderContractInvoice[]
+
+  @@index([customer_id, status])
+  @@index([company_id, status])
+  @@index([contractor_user_id])
+  @@index([status])
+}
+
+model TenderMilestone {
+  id          String @id @default(cuid())
+  contract_id String
+  sort_order  Int    @default(0)
+
+  name        String
+  description String?   @db.Text
+  amount_aud  Decimal   @db.Decimal(10, 2)
+  due_date    DateTime?
+
+  status TenderMilestoneStatus @default(PENDING)
+
+  // Company submits evidence
+  submitted_at        DateTime?
+  completion_notes    String?   @db.Text
+  evidence_blob_paths String[]  @default([])
+
+  // Customer approves
+  approved_at    DateTime?
+  approved_by_id String?
+
+  // Payment
+  invoiced_at DateTime?
+  paid_at     DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  contract TenderContract         @relation(fields: [contract_id], references: [id], onDelete: Cascade)
+  invoice  TenderContractInvoice?
+
+  @@index([contract_id, status])
+  @@index([contract_id, sort_order])
+}
+
+model TenderDeliverable {
+  id          String @id @default(cuid())
+  contract_id String
+  sort_order  Int    @default(0)
+
+  title           String
+  description     String?   @db.Text
+  completed       Boolean   @default(false)
+  completed_at    DateTime?
+  completed_by_id String?
+
+  created_at DateTime @default(now())
+
+  contract TenderContract @relation(fields: [contract_id], references: [id], onDelete: Cascade)
+
+  @@index([contract_id])
+}
+
+// ─── TenderContract Invoice / Payment / Payout models ────────────────────────
+
+model TenderContractInvoice {
+  id                 String  @id @default(cuid())
+  contract_id        String
+  milestone_id       String? @unique
+  company_id         String?
+  contractor_user_id String?
+  created_by_id      String
+
+  invoice_number String  @unique // INV-TC-2026-000001
+  amount_aud     Decimal @db.Decimal(10, 2) // ex-GST
+  gst_amount_aud Decimal @default(0) @db.Decimal(10, 2)
+  total_aud      Decimal @db.Decimal(10, 2) // inc-GST
+
+  status        String    @default("SENT") // SENT | PAID | VOID
+  due_date      DateTime?
+  pdf_blob_path String?
+  sent_at       DateTime  @default(now())
+  paid_at       DateTime?
+
+  stripe_payment_intent_id String?
+
+  // Tax classification
+  is_tax_invoice          Boolean @default(true)
+  gst_free                Boolean @default(false)
+  is_cross_border         Boolean @default(false)
+  provider_gst_registered Boolean @default(false)
+  provider_abn            String?
+  customer_legal_name     String?
+  customer_abn            String?
+  // ATO-compliant invoice copy (added 2026-05-07). Computed at invoice
+  // creation based on supplier's GST registration, country, and whether
+  // the supply is cross-border. Rendered verbatim under the GST line on
+  // the PDF when GST isn't being charged at 10%.
+  // Examples:
+  //   "GST 10% applied"
+  //   "Supplier not registered for GST"
+  //   "GST-free export of services (s38-190 GST Act)"
+  //   "Reverse-charge applies — recipient liable for GST"
+  gst_treatment_reason    String?
+
+  // Optional metadata supplied by the supplier when raising the invoice.
+  // customer_po_number is the customer's internal PO that AP teams require
+  // to match the invoice. service_period_* records when the work was
+  // performed (separate from issue/due dates) — required for accrual
+  // accounting and standard on most B2B invoices.
+  customer_po_number      String?
+  service_period_start    DateTime?
+  service_period_end      DateTime?
+
+  // Payment-completion email tracking — set when we send the customer-copy
+  // and supplier-receipt emails on PAID, so a retry doesn't double-send.
+  paid_emails_sent_at     DateTime?
+
+  // ── Direct-payment fields (Phase 2: subscription-only marketplace) ─────
+  // Mirrors Order direct-payment fields. The `status` string adopts new
+  // values for direct-payment invoices: AWAITING_PAYMENT → PAYMENT_REPORTED
+  // → PAID. Legacy invoices keep using SENT → PAID via Stripe.
+  payment_method              PaymentMethod?
+  payment_reference           String?
+  payment_amount_reported_aud Decimal?       @db.Decimal(10, 2)
+  customer_reported_paid_at   DateTime?
+  supplier_confirmed_paid_at  DateTime?
+  payment_evidence_blob_path  String?
+  payment_evidence_file_name  String?
+  payment_dispute_reason      String?
+  payment_dispute_raised_at   DateTime?
+  // Append-only history mirroring the Order.payment_evidence_history field.
+  payment_evidence_history    Json           @default("[]")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  contract      TenderContract              @relation(fields: [contract_id], references: [id])
+  milestone     TenderMilestone?            @relation(fields: [milestone_id], references: [id])
+  company       ConsultingCompany?          @relation("TCInvoiceCompany", fields: [company_id], references: [id])
+  created_by    User                        @relation("TCInvoiceCreatedBy", fields: [created_by_id], references: [id])
+  bank_transfer TenderContractBankTransfer?
+  payout_record TenderContractPayoutRecord?
+
+  @@index([contract_id])
+  @@index([status])
+}
+
+model TenderContractBankTransfer {
+  id          String @id @default(cuid())
+  invoice_id  String @unique
+  contract_id String
+
+  method            String // PAYID_EMAIL | AU_BSB | SWIFT
+  status            String  @default("PENDING") // PENDING | CONFIRMED | REJECTED
+  amount_aud        Decimal @db.Decimal(10, 2)
+  payment_reference String?
+  receipt_blob_path String?
+
+  submitted_at     DateTime  @default(now())
+  confirmed_at     DateTime?
+  confirmed_by_id  String?
+  rejected_at      DateTime?
+  rejection_reason String?
+  admin_notes      String?
+
+  invoice      TenderContractInvoice @relation(fields: [invoice_id], references: [id])
+  confirmed_by User?                 @relation("TCBankTransferConfirmedBy", fields: [confirmed_by_id], references: [id])
+
+  @@index([contract_id])
+  @@index([status])
+}
+
+model TenderContractPayoutRecord {
+  id                 String  @id @default(cuid())
+  invoice_id         String  @unique
+  contract_id        String
+  milestone_id       String?
+  company_id         String?
+  contractor_user_id String?
+  processed_by_id    String?
+
+  method String // STRIPE_CONNECT | AU_BANK | OVERSEAS_BANK
+  status String @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
+
+  gross_amount_aud Decimal @db.Decimal(10, 2)
+  platform_fee_aud Decimal @db.Decimal(10, 2)
+  net_amount_aud   Decimal @db.Decimal(10, 2)
+
+  transfer_reference String?
+  receipt_blob_path  String?
+  admin_notes        String?
+
+  commission_invoice_blob_path String?
+  commission_invoice_number    String?
+
+  initiated_at   DateTime?
+  completed_at   DateTime?
+  failed_at      DateTime?
+  failure_reason String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  invoice      TenderContractInvoice @relation(fields: [invoice_id], references: [id])
+  processed_by User?                 @relation("TCPayoutProcessedBy", fields: [processed_by_id], references: [id])
+
+  @@index([contract_id])
+  @@index([status])
+}
+
+enum TenderContractStatus {
+  PENDING
+  ACTIVE
+  IN_PROGRESS
+  COMPLETED
+  DISPUTED
+  CANCELLED
+}
+
+enum TenderMilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  APPROVED
+  INVOICED
+  PAID
+  DISPUTED
+}
+
+// ─── Admin Document Request ───────────────────────────────────────────────────
+// Admin can request additional documents from a company or contractor before
+// approving their account. Target is identified by company_id OR contractor_user_id.
+
+model AdminDocumentRequest {
+  id                 String    @id @default(cuid())
+  company_id         String?
+  contractor_user_id String?
+  requested_by_id    String
+  message            String    @db.Text
+  status             String    @default("PENDING")
+  response_note      String?   @db.Text
+  documents          Json      @default("[]")
+  created_at         DateTime  @default(now())
+  fulfilled_at       DateTime?
+
+  company      ConsultingCompany? @relation("CompanyDocRequests", fields: [company_id], references: [id], onDelete: Cascade)
+  requested_by User               @relation("DocRequestedBy", fields: [requested_by_id], references: [id])
+
+  @@index([company_id])
+  @@index([contractor_user_id])
+  @@index([status])
+}
+
+// ─── Legal Name Change Request ────────────────────────────────────────────────
+// Contractor submits a name-change request with a supporting document.
+// Admin reviews and approves/rejects. On approval the ContractorProfile
+// legal_name and legal_name_verified fields are updated.
+
+model LegalNameChangeRequest {
+  id                 String    @id @default(cuid())
+  contractor_id      String
+  requested_name     String
+  document_blob_path String
+  document_file_name String
+  status             String    @default("PENDING")
+  rejection_reason   String?   @db.Text
+  reviewed_by_id     String?
+  reviewed_at        DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  contractor_profile ContractorProfile @relation(fields: [contractor_id], references: [id])
+  reviewed_by        User?             @relation("LegalNameReviewer", fields: [reviewed_by_id], references: [id])
+
+  @@index([status])
+  @@index([contractor_id])
+}
+
+model Notification {
+  id         String               @id @default(cuid())
+  user_id    String
+  category   NotificationCategory
+  title      String
+  body       String?
+  link_url   String?
+  metadata   Json?
+  read_at    DateTime?
+  created_at DateTime             @default(now())
+  user       User                 @relation(fields: [user_id], references: [id])
+
+  @@index([user_id, created_at])
+  @@index([user_id, read_at])
+}
+
+enum NotificationCategory {
+  ORDER
+  PAYMENT
+  DISPUTE
+  TENDER
+  ACCOUNT
+  MESSAGE
+  COMPLIANCE
+  ADMIN
+  MARKETING
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUBSCRIPTION MODULE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELLED
+  PAUSED
+  UNPAID
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum PlanType {
+  CUSTOMER_STARTER
+  CUSTOMER_BUSINESS
+  CUSTOMER_PROFESSIONAL
+  CUSTOMER_ENTERPRISE
+  SUPPLIER_FREE
+  SUPPLIER_SOLO
+  SUPPLIER_COMPANY_STARTER
+  SUPPLIER_COMPANY_PRO
+  SUPPLIER_GLOBAL
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+enum PaymentMethod {
+  STRIPE
+  PAYPAL
+  BANK_TRANSFER_BSB
+  BANK_TRANSFER_SWIFT
+  WISE
+  OTHER
+}
+
+enum PaymentEvidenceStatus {
+  PENDING
+  SUBMITTED
+  VERIFIED
+  REJECTED
+}
+
+// ── SUBSCRIPTION PLAN (admin-configured) ─────────────────────────────────────
+model SubscriptionPlan {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  plan_type   PlanType
+  is_active   Boolean  @default(true)
+  is_public   Boolean  @default(true)
+  sort_order  Int      @default(0)
+
+  // Pricing
+  monthly_price_aud Decimal? @db.Decimal(10, 2)
+  yearly_price_aud  Decimal? @db.Decimal(10, 2)
+  monthly_price_usd Decimal? @db.Decimal(10, 2)
+  yearly_price_usd  Decimal? @db.Decimal(10, 2)
+  trial_days        Int      @default(0)
+
+  // Stripe Price IDs (set by admin after creating in Stripe Dashboard)
+  stripe_price_id_monthly String?
+  stripe_price_id_yearly  String?
+  stripe_product_id       String?
+
+  // Feature limits (null = unlimited for customer plans; supplier plans use
+  // hard caps post-rebuild). See docs/supplier-subscription-plan.html.
+  max_active_tasks            Int?
+  max_team_seats              Int?
+  max_bids_per_month          Int?
+  max_domain_categories       Int?
+  max_ai_requests_per_month   Int?
+  allowed_listing_items       Int?
+  max_orders_per_month        Int?
+  max_active_tenders          Int?
+  max_active_orders           Int?
+  max_active_contracts        Int?
+  // Customer-side additions — see docs/customer-subscription-plan.html
+  max_task_bookings_per_month Int?
+  max_contracts_per_month     Int?
+
+  // Feature flags
+  allow_overseas_contractors Boolean @default(false)
+  allow_project_mode         Boolean @default(false)
+  allow_api_access           Boolean @default(false)
+  allow_priority_listing     Boolean @default(false)
+  allow_advanced_analytics   Boolean @default(false)
+  allow_custom_sla           Boolean @default(false)
+  allow_whitelabel           Boolean @default(false)
+  allow_sso                  Boolean @default(false)
+  allow_bulk_po              Boolean @default(false)
+  allow_compliance_docs      Boolean @default(false)
+  allow_dedicated_manager    Boolean @default(false)
+  allow_video_facility       Boolean @default(false)
+
+  // Custom features (admin-extensible)
+  custom_features Json? @default("[]")
+
+  // Marketing copy
+  badge_text      String?
+  cta_text        String?
+  highlight_color String?
+
+  subscriptions Subscription[]
+  addons        PlanAddon[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([plan_type])
+  @@index([is_active, is_public])
+  @@map("subscription_plans")
+}
+
+// ── PLAN ADD-ONS (admin-configured) ──────────────────────────────────────────
+model PlanAddon {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  price_aud       Decimal  @db.Decimal(10, 2)
+  price_usd       Decimal? @db.Decimal(10, 2)
+  stripe_price_id String?
+  is_active       Boolean  @default(true)
+
+  // What the addon grants
+  additional_tasks       Int?
+  additional_seats       Int?
+  additional_profiles    Int?
+  additional_ai_requests Int?
+  feature_flag           String?
+
+  // Plans this addon is offered with (implicit M2M)
+  available_for_plans SubscriptionPlan[]
+
+  addon_purchases AddonPurchase[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("plan_addons")
+}
+
+// ── USER / COMPANY SUBSCRIPTION ──────────────────────────────────────────────
+model Subscription {
+  id               String             @id @default(cuid())
+  status           SubscriptionStatus @default(INACTIVE)
+  billing_interval BillingInterval    @default(MONTHLY)
+
+  // Stripe
+  stripe_customer_id          String?
+  stripe_subscription_id      String?   @unique
+  stripe_current_period_start DateTime?
+  stripe_current_period_end   DateTime?
+  stripe_cancel_at_period_end Boolean   @default(false)
+  stripe_trial_end            DateTime?
+
+  // Effective limits snapshot (copied from plan, can override)
+  effective_limits Json?
+
+  // Usage tracking — counter columns reset to 0 at every period boundary.
+  // Period boundaries follow the subscription anniversary (period_start +
+  // 1 month, calendar-aware). The reset is performed lazily inside
+  // SubscriptionService.rolloverIfDue() — no cron required.
+  current_task_count         Int       @default(0)  // supplier-side: tasks published
+  current_project_count      Int       @default(0)
+  current_bid_count          Int       @default(0)  // supplier-side: tender bids
+  current_ai_request_count   Int       @default(0)  // customer-side: AI scopes
+  current_order_count        Int       @default(0)  // customer-side: total orders
+  current_tender_count       Int       @default(0)  // legacy — kept for back-compat
+  // Customer-side counters added with the customer subscription rebuild
+  current_task_booking_count Int       @default(0)  // customer Quota 1
+  current_contract_count     Int       @default(0)  // customer Quota 5
+  usage_reset_at             DateTime?
+
+  // Anniversary period boundaries — used by the lazy rollover. Set on
+  // subscription creation; period_end is recalculated each rollover.
+  period_start               DateTime?
+  period_end                 DateTime?
+
+  // Relations
+  plan       SubscriptionPlan   @relation(fields: [plan_id], references: [id])
+  plan_id    String
+  user       User?              @relation(fields: [user_id], references: [id])
+  user_id    String?            @unique
+  company    ConsultingCompany? @relation(fields: [company_id], references: [id])
+  company_id String?            @unique
+
+  invoices        Invoice[]
+  addon_purchases AddonPurchase[]
+  usage_history   SubscriptionUsageHistory[]
+
+  started_at   DateTime?
+  cancelled_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  @@index([status])
+  @@index([stripe_customer_id])
+  @@map("subscriptions")
+}
+
+// ── SUBSCRIPTION USAGE HISTORY ──────────────────────────────────────────────
+// Archive of every closed billing period, written by SubscriptionService.
+// rolloverIfDue() the moment a period_end is crossed. Snapshots both the
+// counters consumed and the limits in force at the time so the customer
+// can see accurate historical numbers across plan upgrades / downgrades.
+//
+// Retention: 36 months. A daily prune job removes rows older than that.
+model SubscriptionUsageHistory {
+  id              String       @id @default(cuid())
+  subscription    Subscription @relation(fields: [subscription_id], references: [id])
+  subscription_id String
+  // Snapshotted plan reference — plan can change between periods, the
+  // history row needs to reflect what was in force at the time.
+  plan_id         String
+  plan_name       String
+  period_start    DateTime
+  period_end      DateTime
+  // Counters consumed during the closed period
+  task_bookings_used Int          @default(0)
+  orders_used        Int          @default(0)
+  ai_scopes_used     Int          @default(0)
+  contracts_used     Int          @default(0)
+  // Limits as they were on the plan at the time (null = unlimited)
+  task_bookings_limit Int?
+  orders_limit        Int?
+  ai_scopes_limit     Int?
+  contracts_limit     Int?
+  archived_at         DateTime    @default(now())
+
+  @@index([subscription_id, period_end])
+  @@map("subscription_usage_history")
+}
+
+// ── ADDON PURCHASES ──────────────────────────────────────────────────────────
+model AddonPurchase {
+  id                String       @id @default(cuid())
+  subscription      Subscription @relation(fields: [subscription_id], references: [id])
+  subscription_id   String
+  addon             PlanAddon    @relation(fields: [addon_id], references: [id])
+  addon_id          String
+  stripe_payment_id String?
+  quantity          Int          @default(1)
+  purchased_at      DateTime     @default(now())
+  expires_at        DateTime?
+
+  @@index([subscription_id])
+  @@index([addon_id])
+  @@map("addon_purchases")
+}
+
+// ── PLATFORM INVOICE (subscription billing) ──────────────────────────────────
+model Invoice {
+  id             String        @id @default(cuid())
+  invoice_number String        @unique
+  status         InvoiceStatus @default(DRAFT)
+
+  // Parties
+  subscription         Subscription       @relation(fields: [subscription_id], references: [id])
+  subscription_id      String
+  billed_to_user       User?              @relation("InvoiceBilledToUser", fields: [billed_to_user_id], references: [id])
+  billed_to_user_id    String?
+  billed_to_company    ConsultingCompany? @relation("InvoiceBilledToCompany", fields: [billed_to_company_id], references: [id])
+  billed_to_company_id String?
+
+  // Stripe
+  stripe_invoice_id        String? @unique
+  stripe_payment_intent_id String?
+
+  // Amounts (AUD unless overridden)
+  currency          String @default("AUD")
+  subtotal_cents    Int
+  tax_cents         Int    @default(0)
+  total_cents       Int
+  amount_paid_cents Int    @default(0)
+
+  // Tax (AU GST default)
+  tax_rate           Decimal @default(0.1000) @db.Decimal(5, 4)
+  tax_description    String  @default("GST 10%")
+  tax_invoice_number String?
+
+  // Content
+  line_items           Json
+  billing_period_start DateTime?
+  billing_period_end   DateTime?
+  due_date             DateTime?
+  paid_at              DateTime?
+  notes                String?
+
+  // PDF
+  pdf_storage_url  String?
+  pdf_generated_at DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([subscription_id])
+  @@index([status])
+  @@index([billed_to_user_id])
+  @@index([billed_to_company_id])
+  @@map("invoices")
+}
+
+// ── SERVICE PROVIDER → CLIENT INVOICE (direct B2B invoicing) ─────────────────
+model ServiceInvoice {
+  id             String        @id @default(cuid())
+  invoice_number String        @unique
+  status         InvoiceStatus @default(DRAFT)
+
+  // Parties
+  from_user       User               @relation("ServiceInvoiceFrom", fields: [from_user_id], references: [id])
+  from_user_id    String
+  to_user         User               @relation("ServiceInvoiceTo", fields: [to_user_id], references: [id])
+  to_user_id      String
+  from_company    ConsultingCompany? @relation("ServiceInvoiceFromCompany", fields: [from_company_id], references: [id])
+  from_company_id String?
+  to_company      ConsultingCompany? @relation("ServiceInvoiceToCompany", fields: [to_company_id], references: [id])
+  to_company_id   String?
+
+  // Task / Order reference (Project model not yet defined → plain id)
+  task       Task?   @relation("ServiceInvoiceTask", fields: [task_id], references: [id])
+  task_id    String?
+  order      Order?  @relation("ServiceInvoiceOrder", fields: [order_id], references: [id])
+  order_id   String?
+  project_id String?
+
+  // Amounts
+  currency          String @default("AUD")
+  subtotal_cents    Int
+  tax_cents         Int    @default(0)
+  total_cents       Int
+  amount_paid_cents Int    @default(0)
+
+  // Tax (supplier's GST)
+  supplier_abn            String?
+  supplier_gst_registered Boolean  @default(false)
+  tax_rate                Decimal? @db.Decimal(5, 4)
+  tax_description         String?
+
+  // Line items
+  line_items Json
+  notes      String?
+  terms      String?
+  due_date   DateTime?
+  paid_at    DateTime?
+
+  // Payment
+  agreed_payment_method PaymentMethod?
+  payment_instructions  Json?
+  payment_evidence      PaymentEvidence[]
+
+  // PDF
+  pdf_storage_url  String?
+  pdf_generated_at DateTime?
+
+  // Stripe (if client pays via Stripe)
+  stripe_payment_intent_id String?
+
+  // Phase 5.2 — magic-link public access + overdue tracking
+  public_view_token_hash  String?  @unique
+  last_reminder_sent_at   DateTime?
+
+  sent_at    DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  @@index([from_user_id])
+  @@index([to_user_id])
+  @@index([from_company_id])
+  @@index([to_company_id])
+  @@index([task_id])
+  @@index([order_id])
+  @@index([status])
+  @@map("service_invoices")
+}
+
+// ── PAYMENT EVIDENCE (client submits proof of payment) ───────────────────────
+model PaymentEvidence {
+  id                   String         @id @default(cuid())
+  service_invoice      ServiceInvoice @relation(fields: [service_invoice_id], references: [id])
+  service_invoice_id   String
+  submitted_by         User           @relation("PaymentEvidenceSubmitter", fields: [submitted_by_user_id], references: [id])
+  submitted_by_user_id String
+
+  payment_method    PaymentMethod
+  payment_reference String?
+  payment_date      DateTime
+  amount_cents      Int
+  currency          String        @default("AUD")
+  notes             String?
+
+  // File evidence (bank screenshot, receipt etc.)
+  evidence_file_url  String?
+  evidence_file_name String?
+
+  status              PaymentEvidenceStatus @default(SUBMITTED)
+  reviewed_by         User?                 @relation("PaymentEvidenceReviewer", fields: [reviewed_by_user_id], references: [id])
+  reviewed_by_user_id String?
+  reviewed_at         DateTime?
+  rejection_reason    String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([service_invoice_id])
+  @@index([status])
+  @@map("payment_evidence")
+}

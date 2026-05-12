@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TalvexIT — End-to-End Functional Test Plan</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: #111c2e;
+    --panel-2: #16243b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --line: #1f2d44;
+    --teal: #5eead4;
+    --teal-soft: rgba(94, 234, 212, 0.12);
+    --amber: #fbbf24;
+    --amber-soft: rgba(251, 191, 36, 0.10);
+    --red: #f87171;
+    --red-soft: rgba(248, 113, 113, 0.12);
+    --green: #4ade80;
+    --green-soft: rgba(74, 222, 128, 0.12);
+    --blue: #60a5fa;
+    --blue-soft: rgba(96, 165, 250, 0.12);
+    --purple: #c084fc;
+    --purple-soft: rgba(192, 132, 252, 0.12);
+    --code: #0f1a2c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px 96px;
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+  }
+  main { max-width: 1240px; margin: 0 auto; }
+  h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h1 .sub { color: var(--teal); font-weight: 600; }
+  h2 {
+    margin: 56px 0 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    font-size: 22px; letter-spacing: -0.01em;
+  }
+  h3 { margin: 28px 0 8px; font-size: 16px; color: var(--teal); font-weight: 600; }
+  h4 { margin: 20px 0 6px; font-size: 13px; color: var(--text); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  p { margin: 8px 0 14px; }
+  small.dim, .dim { color: var(--muted); }
+  code, kbd, pre {
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    font-size: 12.5px;
+  }
+  code:not(pre code) {
+    background: var(--code); padding: 1px 6px; border-radius: 4px;
+    color: #cbd5e1; border: 1px solid var(--line);
+  }
+  pre {
+    background: var(--code); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; color: #cbd5e1; line-height: 1.5;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 12px 0 18px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 9px 11px; text-align: left;
+    border-bottom: 1px solid var(--line); vertical-align: top;
+  }
+  th {
+    background: var(--panel-2); font-weight: 600; color: var(--text);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.center, th.center { text-align: center; }
+  td.tight, th.tight { white-space: nowrap; }
+  td ol, td ul { margin: 4px 0; padding-left: 18px; }
+  td ol li, td ul li { margin: 2px 0; }
+  .callout {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; margin: 16px 0; background: var(--panel);
+  }
+  .callout.warn { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+  .callout.info { border-left: 4px solid var(--blue); background: var(--blue-soft); }
+  .callout.success { border-left: 4px solid var(--green); background: var(--green-soft); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-soft); }
+  ul, ol { padding-left: 22px; }
+  li { margin: 3px 0; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+  .pill {
+    display: inline-block; font-size: 10.5px; padding: 2px 7px;
+    border-radius: 999px; background: rgba(148,163,184,0.10);
+    color: var(--muted); border: 1px solid rgba(148,163,184,0.20);
+    margin-right: 3px; font-weight: 600; line-height: 1.4;
+    vertical-align: middle;
+  }
+  .pill.t { background: var(--teal-soft); color: var(--teal); border-color: rgba(94, 234, 212, 0.25); }
+  .pill.b { background: var(--blue-soft); color: var(--blue); border-color: rgba(96, 165, 250, 0.25); }
+  .pill.a { background: var(--amber-soft); color: var(--amber); border-color: rgba(251, 191, 36, 0.25); }
+  .pill.r { background: var(--red-soft); color: var(--red); border-color: rgba(248, 113, 113, 0.25); }
+  .pill.g { background: var(--green-soft); color: var(--green); border-color: rgba(74, 222, 128, 0.25); }
+  .pill.p { background: var(--purple-soft); color: var(--purple); border-color: rgba(192, 132, 252, 0.25); }
+  .toc {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px 20px; margin: 24px 0 32px;
+    columns: 2; column-gap: 24px;
+  }
+  .toc h3 { margin-top: 0; column-span: all; }
+  .toc ol { margin: 0; padding-left: 22px; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--teal); }
+  .id { font-family: "JetBrains Mono", monospace; font-weight: 600; color: var(--teal); white-space: nowrap; }
+  .status {
+    width: 70px; text-align: center;
+  }
+  .status .box {
+    display: inline-block; width: 20px; height: 20px;
+    border: 1px solid var(--line); border-radius: 4px;
+    background: var(--code); vertical-align: middle;
+  }
+  .col-id { width: 80px; }
+  .col-role { width: 110px; }
+  .col-status { width: 70px; }
+  .col-title { width: 220px; }
+  .header-band {
+    background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 24px 28px; margin: 0 0 28px;
+  }
+  .header-band .meta { color: var(--muted); margin-top: 6px; }
+  .matrix-cell {
+    text-align: center; font-size: 12px; padding: 6px 4px;
+  }
+  .matrix-cell.gst10 { background: var(--green-soft); color: var(--green); }
+  .matrix-cell.exp { background: var(--blue-soft); color: var(--blue); }
+  .matrix-cell.rev { background: var(--amber-soft); color: var(--amber); }
+  .matrix-cell.no  { background: rgba(148,163,184,0.08); color: var(--muted); }
+  .matrix-cell.oos { background: var(--purple-soft); color: var(--purple); }
+  @media print {
+    body { background: white; color: black; padding: 16px; font-size: 11px; }
+    main { max-width: 100%; }
+    .callout, table, .toc { background: white; border-color: #ccc; }
+    th { background: #eee; color: black; }
+    td, th { border-color: #ddd; }
+    h2 { border-color: #ccc; }
+    .id { color: #047857; }
+    .pill { border-color: #999; color: #333; background: #f5f5f5; }
+    .header-band { background: #f9f9f9; border-color: #ccc; }
+    pre, code { background: #f5f5f5; color: #222; border-color: #ddd; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<div class="header-band">
+  <h1>TalvexIT — End-to-End Functional Test Plan <span class="sub">v1.0</span></h1>
+  <div class="meta">
+    Manual QA script — covers the full marketplace lifecycle from account creation through order completion.
+    <br>
+    <strong>Date:</strong> 2026-05-08 &nbsp;·&nbsp;
+    <strong>Owner:</strong> QA &nbsp;·&nbsp;
+    <strong>Scope:</strong> Web UI + API contracts &nbsp;·&nbsp;
+    <strong>Environments:</strong> local dev (<code>http://localhost:3000</code>) → staging
+  </div>
+</div>
+
+<div class="callout info">
+  <strong>How to use this document.</strong> Run each phase in order — later phases depend on data created in earlier phases.
+  Mark each test case <span class="pill g">PASS</span>, <span class="pill r">FAIL</span>, or <span class="pill a">BLOCKED</span> in the rightmost column.
+  Capture screenshots into <code>/qa-evidence/&lt;TC-ID&gt;.png</code> on every FAIL.
+  The 12-combo tax matrix is exercised three times (orders, proposals, invoices) — discrepancies between phases indicate
+  a regression in <code>decideGstTreatment()</code> or one of its persistence sites.
+</div>
+
+<div class="toc">
+  <h3>Phases</h3>
+  <ol>
+    <li><a href="#p0">Test data & environment setup</a></li>
+    <li><a href="#p1">Account creation</a></li>
+    <li><a href="#p2">Onboarding & verification</a></li>
+    <li><a href="#p3">Task listing</a></li>
+    <li><a href="#p4">Order placement</a></li>
+    <li><a href="#p5">Messaging</a></li>
+    <li><a href="#p6">Proposal & PO</a></li>
+    <li><a href="#p7">Work execution</a></li>
+    <li><a href="#p8">Deliverables</a></li>
+    <li><a href="#p9">Invoicing</a></li>
+    <li><a href="#p10">Payments & receipts</a></li>
+    <li><a href="#p11">Order completion & payout</a></li>
+    <li><a href="#p12">Negative & edge cases</a></li>
+    <li><a href="#p13">Cross-cutting checks</a></li>
+    <li><a href="#matrix">Tax-matrix coverage</a></li>
+    <li><a href="#signoff">Sign-off</a></li>
+  </ol>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p0">Phase 0 · Test data & environment setup</h2>
+
+<p>
+  Spin up a clean dev environment and seed the fixtures below before running Phase 1.
+  Re-running this phase is the fastest way to recover from a corrupted test session.
+</p>
+
+<h3>0.1 Environment preconditions</h3>
+<table>
+  <colgroup><col class="col-id"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Step</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr><td class="id">TC-ENV-01</td>
+      <td>
+        <strong>Reset DB and seed.</strong>
+        <ol>
+          <li><code>cd apps/api &amp;&amp; pnpm prisma migrate reset --force</code></li>
+          <li><code>pnpm db:seed</code> (creates subscription plans + admin user)</li>
+          <li>Confirm console shows <em>"Free customer plan and free supplier plan seeded"</em></li>
+        </ol>
+        <strong>Expected:</strong> Postgres <code>onys_dev</code> populated with empty user/order tables, full <code>SubscriptionPlan</code> rows, one platform admin.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr><td class="id">TC-ENV-02</td>
+      <td>
+        <strong>Boot all services.</strong>
+        <ol>
+          <li><code>pnpm dev</code> from repo root (turborepo runs api + web + workers)</li>
+          <li>Wait for "API listening on :4000" and "ready started server on :3000"</li>
+          <li>Workers log "BullMQ connected to Redis"</li>
+        </ol>
+        <strong>Expected:</strong> three healthy processes; <code>http://localhost:3000</code> serves the marketing home; <code>http://localhost:4000/health</code> returns <code>{ok:true}</code>.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr><td class="id">TC-ENV-03</td>
+      <td>
+        <strong>Stripe + Mailpit.</strong>
+        Stripe CLI forwarding <code>stripe listen --forward-to localhost:4000/api/v1/stripe/webhook</code>.
+        Mailpit running on <code>:8025</code> to capture outbound email (verify links, OTPs, invoices).
+        <strong>Expected:</strong> webhook secret printed and matching <code>STRIPE_WEBHOOK_SECRET</code>; Mailpit UI loads.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr><td class="id">TC-ENV-04</td>
+      <td>
+        <strong>Azure blob emulator.</strong> Azurite or production Azure container reachable.
+        Test with <code>curl http://127.0.0.1:10000/devstoreaccount1?comp=list</code>.
+        <strong>Expected:</strong> 200 with empty container list (or your existing prod test container).
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr><td class="id">TC-ENV-05</td>
+      <td>
+        <strong>Bypass switches off (production-like).</strong>
+        Confirm <code>TEST_BYPASS_OTP</code>, <code>TEST_BYPASS_KYC</code>, <code>SKIP_ABR_LIVE</code> are <em>unset</em> for a production-faithful run,
+        or explicitly set to <code>true</code> for a fast smoke run. Document which mode this run uses.
+        <strong>Expected:</strong> <code>.env.local</code> values match the run mode; OTP emails arrive in Mailpit when bypass off.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>0.2 Test fixtures — accounts</h3>
+<p>
+  Use the same email pattern across runs so you can grep audit logs by persona.
+  All passwords: <code>TestPass!2026</code>. All TOTP secrets recorded in <code>/qa-evidence/totp-seeds.txt</code>.
+</p>
+<table>
+  <thead><tr>
+    <th>Persona key</th><th>Email</th><th>Account type</th><th>Country</th><th>GST</th><th>ABN (test-valid)</th>
+  </tr></thead>
+  <tbody>
+    <tr><td><code>customer-au</code></td><td>qa+customer-au@onsys.com.au</td><td>CUSTOMER</td><td>AU</td><td>—</td><td>53 004 085 616</td></tr>
+    <tr><td><code>customer-overseas</code></td><td>qa+customer-nz@onsys.com.au</td><td>CUSTOMER</td><td>NZ</td><td>—</td><td>—</td></tr>
+    <tr><td><code>contractor-au-gst</code></td><td>qa+contractor-au-gst@onsys.com.au</td><td>INDIVIDUAL_CONTRACTOR</td><td>AU</td><td>Yes</td><td>51 824 753 556</td></tr>
+    <tr><td><code>contractor-au-no-gst</code></td><td>qa+contractor-au-nogst@onsys.com.au</td><td>INDIVIDUAL_CONTRACTOR</td><td>AU</td><td>No</td><td>33 102 417 032</td></tr>
+    <tr><td><code>contractor-overseas</code></td><td>qa+contractor-us@onsys.com.au</td><td>INDIVIDUAL_CONTRACTOR (OVERSEAS_INDIVIDUAL)</td><td>US</td><td>No</td><td>—</td></tr>
+    <tr><td><code>company-au-gst</code></td><td>qa+company-au-gst@onsys.com.au</td><td>ORGANIZATION_ADMIN → COMPANY</td><td>AU</td><td>Yes</td><td>83 914 571 322</td></tr>
+    <tr><td><code>company-au-no-gst</code></td><td>qa+company-au-nogst@onsys.com.au</td><td>ORGANIZATION_ADMIN → COMPANY</td><td>AU</td><td>No</td><td>17 091 482 678</td></tr>
+    <tr><td><code>company-overseas</code></td><td>qa+company-gb@onsys.com.au</td><td>ORGANIZATION_ADMIN → COMPANY</td><td>GB</td><td>No</td><td>—</td></tr>
+    <tr><td><code>platform-admin</code></td><td>admin@onsys.com.au</td><td>PLATFORM_ADMIN</td><td>AU</td><td>—</td><td>—</td></tr>
+    <tr><td><code>compliance-admin</code></td><td>compliance@onsys.com.au</td><td>COMPLIANCE_ADMIN</td><td>AU</td><td>—</td><td>—</td></tr>
+  </tbody>
+</table>
+<div class="callout warn">
+  <strong>ABN note.</strong> The ABNs above all pass the modulo-89 check — verify before using.
+  When <code>SKIP_ABR_LIVE=true</code>, the API returns a stubbed legal name; otherwise it hits the real ABR.
+  Use a single known-good ABN per company persona to avoid ABR rate-limiting.
+</div>
+
+<h3>0.3 Test fixtures — payments</h3>
+<table>
+  <thead><tr><th>Use</th><th>Card / detail</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Stripe success</td><td><code>4242 4242 4242 4242</code> · any future expiry · CVC <code>123</code></td><td>Payment succeeds, webhook fires</td></tr>
+    <tr><td>Stripe 3DS challenge</td><td><code>4000 0027 6000 3184</code></td><td>Customer must complete 3DS challenge</td></tr>
+    <tr><td>Stripe insufficient funds</td><td><code>4000 0000 0000 9995</code></td><td>Payment fails with <code>card_declined</code></td></tr>
+    <tr><td>Bank-transfer receipt (PDF)</td><td><code>/qa-evidence/sample-receipts/au-bank-transfer.pdf</code></td><td>Manual upload + admin verifies</td></tr>
+    <tr><td>Sample deliverable PDF</td><td><code>/qa-evidence/sample-deliverables/security-report.pdf</code> (2.4 MB)</td><td>Uploads to blob &lt; 10 MB cap</td></tr>
+    <tr><td>Sample large file (rejection)</td><td>Any 11 MB+ binary</td><td>API rejects with <code>FILE_TOO_LARGE</code> 413</td></tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p1">Phase 1 · Account creation</h2>
+
+<p>
+  All registrations land at <code>/register</code>. Email verification + (optional) MFA gate first login.
+  After Phase 1, every persona should have <code>email_verified=true</code> and an active free subscription.
+</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-AUTH-01</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>AU customer registers</td>
+      <td>
+        <ol>
+          <li>Visit <code>/register</code></li>
+          <li>Pick "I'm hiring experts (Customer)"</li>
+          <li>Fill: full name "Test Customer AU", email <code>qa+customer-au@…</code>, password <code>TestPass!2026</code></li>
+          <li>Accept ToS + Privacy</li>
+          <li>Submit</li>
+          <li>Open Mailpit → click verify link</li>
+          <li>Login → enter email OTP from Mailpit</li>
+        </ol>
+        <strong>Expected:</strong> 201 register, redirect to verify page; after verify+OTP, lands at <code>/customer/dashboard</code>; <code>auth/me</code> shows <code>account_type=CUSTOMER</code>, <code>email_verified=true</code>; AuditLog has <code>USER_REGISTERED</code> + <code>EMAIL_VERIFIED</code> + <code>USER_LOGGED_IN</code>; free customer subscription auto-activated.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-02</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Overseas customer registers</td>
+      <td>
+        Same as TC-AUTH-01 with email <code>qa+customer-nz@…</code>, full name "Kiwi Customer".
+        <br><strong>Expected:</strong> Identical to AU customer at this stage; the NZ <code>billing_country</code> will be set in Phase 2.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-03</td>
+      <td><span class="pill t">Contractor</span></td>
+      <td>AU GST-registered individual contractor</td>
+      <td>
+        <ol>
+          <li>Register as Individual Contractor, AU resident</li>
+          <li>Verify email + OTP login</li>
+        </ol>
+        <strong>Expected:</strong> redirect to <code>/contractor/profile</code> with onboarding banner; <code>ContractorProfile.status='INCOMPLETE'</code>, <code>onboarding_step=1</code>; free supplier subscription auto-activated.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-04</td>
+      <td><span class="pill t">Contractor</span></td>
+      <td>AU contractor without GST</td>
+      <td>Same as 03 with email <code>qa+contractor-au-nogst@…</code>. Will toggle GST off in onboarding.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-05</td>
+      <td><span class="pill t">Contractor</span></td>
+      <td>Overseas contractor</td>
+      <td>
+        Pick entity type "Overseas individual" on register form.
+        <strong>Expected:</strong> User row stamped <code>entity_type='OVERSEAS_INDIVIDUAL'</code>, <code>tax_residency_country='OVERSEAS'</code>, <code>is_foreign_entity=true</code>.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-06</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>AU GST company registers</td>
+      <td>
+        <ol>
+          <li>Register as "Organisation"</li>
+          <li>Provide company name "TalvexQA AU GST Pty Ltd"</li>
+          <li>Verify email + OTP</li>
+        </ol>
+        <strong>Expected:</strong> User created with <code>account_type=ORGANIZATION_ADMIN</code>; <code>ConsultingCompany</code> row created; user is <code>primary_admin</code>; redirected to <code>/company/profile</code> for ABN/billing setup.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-07</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>AU no-GST company</td>
+      <td>Same as 06 with persona <code>company-au-no-gst</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-08</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>Overseas (GB) company</td>
+      <td>Same as 06 with persona <code>company-gb</code>; pick "Overseas entity" if available.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-09</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Duplicate email blocked</td>
+      <td>Re-register with <code>qa+customer-au@…</code>. <strong>Expected:</strong> 409 <code>EMAIL_EXISTS</code>; UI shows "Email already in use".</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-10</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Weak password rejected</td>
+      <td>Try password <code>password</code>. <strong>Expected:</strong> 400 <code>VALIDATION_ERROR</code> with field <code>password</code> highlighted; min 12 chars + 1 uppercase + 1 number + 1 special enforced.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-11</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Login before email verify</td>
+      <td>Register fresh, do NOT click email link, attempt login. <strong>Expected:</strong> 403 <code>EMAIL_NOT_VERIFIED</code> with resend-verification CTA.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-12</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>10 wrong passwords → account locked 15 min</td>
+      <td>Login with wrong password 10×. <strong>Expected:</strong> 11th attempt returns <code>ACCOUNT_LOCKED</code>; <code>locked_until</code> set; correct password also fails until lock expires.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-13</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Forgot password → reset → re-login</td>
+      <td>Use <code>/forgot-password</code> with customer-au email. Click reset link from Mailpit. Set new password. Old refresh tokens invalidated; old access tokens expire ≤ 15 min.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-AUTH-14</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Enable + validate MFA</td>
+      <td>
+        <ol>
+          <li><code>/customer/profile</code> → Security → "Enable 2FA"</li>
+          <li>Scan QR with Authy/Google Authenticator</li>
+          <li>Enter 6-digit TOTP to confirm</li>
+          <li>Logout + login → required to enter TOTP after email OTP</li>
+          <li>Use one backup code instead of TOTP — should consume the code</li>
+        </ol>
+        <strong>Expected:</strong> <code>mfa_enabled=true</code>; backup codes shown once; on login, <code>mfa_required:true</code> + <code>mfa_token</code> returned; consumed backup code disappears from list.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p2">Phase 2 · Onboarding & verification</h2>
+
+<p>Each persona must complete their onboarding before they can transact. Customer onboarding is light (billing details only); contractors and companies require ABN, KYC, insurance, and provider agreement signing.</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-ONB-01</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>AU customer billing — 4-section save</td>
+      <td>
+        At <code>/customer/billing</code> save each section independently:
+        <ol>
+          <li>Identity: legal_entity_name, trading_name, billing_email</li>
+          <li>Address: AU address with postcode 2000, country AU</li>
+          <li>Tax: ABN <code>53 004 085 616</code>, click Verify</li>
+          <li>Registrations: optional rows</li>
+        </ol>
+        <strong>Expected:</strong> each section toast "Billing details updated"; ABN verify hits ABR (or stub) → <code>abn_verified=true</code>, <code>legal_name</code> populated, locked badge appears on derived fields; <code>/auth/me</code> reflects all values after refetch.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-02</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Overseas customer billing</td>
+      <td>
+        Customer-NZ saves NZ address. ABN field hidden / not required.
+        <strong>Expected:</strong> save succeeds without ABN; <code>billing_country='NZ'</code>; no <code>ABN_REQUIRED_AU_CUSTOMER</code> error.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-03</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>AU customer save without ABN blocked</td>
+      <td>Customer-AU clears ABN field, saves Address section with country=AU. <strong>Expected:</strong> 400 <code>ABN_REQUIRED_AU_CUSTOMER</code>; UI surfaces the message under ABN field.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-04</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Edit ABR-locked field rejected</td>
+      <td>After ABN verify, attempt to overwrite <code>legal_name</code> via PATCH. <strong>Expected:</strong> 400 <code>LOCKED_BY_ABR_VERIFICATION</code> listing locked fields.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-05</td>
+      <td><span class="pill t">Contractor</span></td>
+      <td>AU contractor — full onboarding wizard</td>
+      <td>
+        Step through <code>/contractor/profile</code> wizard:
+        <ol>
+          <li>Personal + contact</li>
+          <li>ABN + GST registration</li>
+          <li>Tax declaration (TFN if applicable)</li>
+          <li>Skills + certifications</li>
+          <li>Insurance — upload PI certificate (PDF)</li>
+          <li>KYC — record video selfie (or admin-bypass with <code>TEST_BYPASS_KYC</code>)</li>
+          <li>Bank — connect Stripe (use test express account)</li>
+          <li>Sign Provider Agreement</li>
+        </ol>
+        <strong>Expected:</strong> after final step, status moves <code>INCOMPLETE → PENDING_REVIEW</code>; admin email queued; <code>onboarding_step</code> tracked at each save.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-06</td>
+      <td><span class="pill t">Contractor</span></td>
+      <td>Insurance file rejected if MIME mismatch</td>
+      <td>Upload an HTML file renamed to <code>cert.pdf</code>. <strong>Expected:</strong> 415 <code>CONTENT_TYPE_MISMATCH</code> from magic-byte verify.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-07</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>AU GST company — ABN verify + billing</td>
+      <td>
+        <code>/company/profile</code> → ABN verify → save 4 billing sections.
+        <strong>Expected:</strong> <code>ConsultingCompany.gst_registered=true</code>, <code>billing_country='AU'</code>, <code>abn_verified_at</code> set, audit log <code>ABN_VERIFIED</code>.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-08</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>AU no-GST company — verifies ABN, GST=false</td>
+      <td>Same flow but ABN belongs to a non-GST entity (or manually toggle off if ABR returns true). <strong>Expected:</strong> <code>gst_registered=false</code>; later invoices show "Invoice" not "Tax Invoice".</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-09</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>Overseas company billing — no ABN</td>
+      <td>Set country to GB; ABN section hidden. <strong>Expected:</strong> save succeeds; <code>is_foreign_entity=true</code>; later orders flag cross-border.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-10</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>Invite + activate company member</td>
+      <td>
+        <code>/company/members</code> → invite <code>qa+member1@onsys.com.au</code> with role COMPANY_MEMBER.
+        Member opens email link → completes registration → joins company.
+        <strong>Expected:</strong> CompanyMember row created in <code>ACTIVE</code> state; member can see <code>/company/orders</code>.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-11</td>
+      <td><span class="pill p">Org admin</span></td>
+      <td>Compliance docs upload</td>
+      <td>Upload Business Registration PDF + Tax Certificate (PDF). <strong>Expected:</strong> blob path returned; doc visible in <code>compliance_documents</code>; download link works (inline view for PDF, attachment for unknown types); X-Content-Type-Options: nosniff present.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-12</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>11 MB upload rejected</td>
+      <td>Upload an 11 MB PDF. <strong>Expected:</strong> 413 <code>FILE_TOO_LARGE</code>; UI shows "File must be under 10 MB".</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-13</td>
+      <td><span class="pill a">Admin</span></td>
+      <td>Approve contractor / company</td>
+      <td>
+        Login as <code>compliance-admin</code>. Visit <code>/admin/contractors</code> + <code>/admin/companies</code>.
+        Approve each persona. <strong>Expected:</strong> status moves to ACTIVE; party can list tasks (Phase 3).
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ONB-14</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Listing blocked while inactive</td>
+      <td>As contractor still <code>PENDING_REVIEW</code>, attempt <code>POST /api/v1/tasks</code>. <strong>Expected:</strong> 403 <code>NOT_ACTIVE</code>; UI hides "Create task" CTA.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p3">Phase 3 · Task listing</h2>
+
+<p>
+  Active contractors and company admins create catalog tasks. Each persona creates one task to drive the order matrix in Phase 4.
+  Verify GST display on the live preview is consistent with supplier's GST flag — this is the first visible tax surface.
+</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-TASK-01</td>
+      <td><span class="pill t">Contractor AU+GST</span></td>
+      <td>Create AUD task with GST preview</td>
+      <td>
+        <code>/contractor/tasks/new</code> → fill all sections (objective, in/out scope, deliverables, hours, milestones, price <strong>$1,000 AUD</strong>).
+        <strong>Expected:</strong> Price preview shows "ex-GST $1,000 / GST $100 / total $1,100"; submit → status DRAFT then publish → PUBLISHED.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-02</td>
+      <td><span class="pill t">Contractor AU no GST</span></td>
+      <td>Create AUD task with no-GST preview</td>
+      <td>Same shape, $1,000 AUD. <strong>Expected:</strong> Preview shows "$1,000" with note "Provider not GST-registered — GST does not apply"; no $100 line shown.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-03</td>
+      <td><span class="pill t">Contractor Overseas</span></td>
+      <td>Create USD task</td>
+      <td>Currency USD, price $750. <strong>Expected:</strong> Preview shows "USD $750" + "AUD ~ $1,127.50 (rate stub)"; saved task has <code>currency='USD'</code>, <code>price_aud</code> populated by FX conversion.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-04</td>
+      <td><span class="pill p">Company AU+GST</span></td>
+      <td>Company task with GST</td>
+      <td>Company admin creates task on company's behalf. <strong>Expected:</strong> Task <code>company_id</code> set, no <code>contractor_profile_id</code>; preview shows GST line.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-05</td>
+      <td><span class="pill p">Company AU no GST</span></td>
+      <td>Company task without GST</td>
+      <td>Same flow, GST line absent. <strong>Expected:</strong> "Invoice" wording, no Tax Invoice.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-06</td>
+      <td><span class="pill p">Company Overseas</span></td>
+      <td>Overseas company task</td>
+      <td>GB company creates AUD task. <strong>Expected:</strong> preview shows "Cross-border supply — see Australian recipient note"; metadata flags overseas supplier.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-07</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Required field missing</td>
+      <td>Try to publish with empty <code>objective</code>. <strong>Expected:</strong> 400 with field error; UI inline error.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-08</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Negative price rejected</td>
+      <td>Set price to -100. <strong>Expected:</strong> 400 <code>VALIDATION_ERROR</code> on price &gt; 0.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-TASK-09</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Browse / view a task as a guest</td>
+      <td>Logout. Visit <code>/tasks/&lt;id&gt;</code>. <strong>Expected:</strong> public preview renders; CTA "Sign in to order"; price preview matches what supplier saw.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p4">Phase 4 · Order placement</h2>
+
+<p>
+  This phase exercises the full <strong>2 customers × 6 suppliers = 12-combo tax matrix</strong> at the order-creation level.
+  After ordering, verify the persisted <code>tax_amount_aud</code> and <code>total_amount_aud</code> on the Order row match the matrix in §<a href="#matrix">Tax-matrix coverage</a>.
+</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-ORD-01</td>
+      <td><span class="pill b">Customer-AU</span></td>
+      <td>Order from AU+GST contractor</td>
+      <td>
+        <ol>
+          <li>Login as customer-au</li>
+          <li>Browse to contractor-au-gst's task ($1,000)</li>
+          <li>Click "Order this task"</li>
+          <li>Confirm in modal</li>
+        </ol>
+        <strong>Expected:</strong> Order row created with <code>tax_amount_aud=100</code>, <code>total_amount_aud=1100</code>; status SCOPED; <code>company_order_status=BOOKED</code>; contractor receives in-app + email notification; AuditLog <code>ORDER_CREATED</code>.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-02</td>
+      <td><span class="pill b">Customer-AU</span></td>
+      <td>Order from AU no-GST contractor</td>
+      <td>Same flow with <code>contractor-au-no-gst</code>. <strong>Expected:</strong> <code>tax_amount_aud=0</code>, <code>total=1000</code>; UI shows "No GST — supplier not registered".</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-03</td>
+      <td><span class="pill b">Customer-AU</span></td>
+      <td>Order from overseas contractor</td>
+      <td>Order from US contractor task. <strong>Expected:</strong> <code>tax_amount_aud=0</code>; UI shows "Reverse-charge may apply" prompt; AuditLog metadata records cross-border.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-04</td>
+      <td><span class="pill b">Customer-AU</span></td>
+      <td>Order from AU+GST company</td>
+      <td>Order company task. Company primary admin gets "needs assignment" notification. <strong>Expected:</strong> tax 10%; <code>company_order_status=BOOKED</code>; no contractor assigned yet.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-05</td>
+      <td><span class="pill b">Customer-AU</span></td>
+      <td>Order from AU no-GST company</td>
+      <td>tax 0; "Invoice" wording in preview.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-06</td>
+      <td><span class="pill b">Customer-AU</span></td>
+      <td>Order from overseas company</td>
+      <td>Cross-border AU recipient → reverse-charge prompt. tax 0.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-07</td>
+      <td><span class="pill b">Customer-NZ</span></td>
+      <td>NZ customer × AU+GST contractor</td>
+      <td>Cross-border export (s38-190) — tax 0; UI shows "GST-free export of services".</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-08</td>
+      <td><span class="pill b">Customer-NZ</span></td>
+      <td>NZ × AU no-GST contractor</td>
+      <td>tax 0; reason "Provider not GST registered" still applies (cross-border doesn't change supplier's status).</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-09</td>
+      <td><span class="pill b">Customer-NZ</span></td>
+      <td>NZ × overseas contractor</td>
+      <td>Out of AU GST scope — tax 0; reason "No GST — overseas supplier".</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-10</td>
+      <td><span class="pill b">Customer-NZ</span></td>
+      <td>NZ × AU+GST company</td>
+      <td>Cross-border export. tax 0.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-11</td>
+      <td><span class="pill b">Customer-NZ</span></td>
+      <td>NZ × AU no-GST company</td>
+      <td>tax 0.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-12</td>
+      <td><span class="pill b">Customer-NZ</span></td>
+      <td>NZ × overseas (GB) company</td>
+      <td>tax 0; reason "No GST — overseas supplier".</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-13</td>
+      <td><span class="pill p">Company admin</span></td>
+      <td>Assign member to company order</td>
+      <td>For TC-ORD-04: company-au-gst admin opens order, assigns member1. <strong>Expected:</strong> <code>executing_member_id</code> set; member receives notification; order moves into PROPOSAL_DRAFT-eligible state.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-14</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Customer cannot order their own task</td>
+      <td>Login as contractor-au-gst, try ordering own task. <strong>Expected:</strong> 403 <code>WRONG_ACCOUNT_TYPE</code> (only CUSTOMER can order).</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-15</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Order DRAFT task blocked</td>
+      <td>Customer attempts API call against an unpublished task ID. <strong>Expected:</strong> 422 <code>TASK_NOT_AVAILABLE</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-16</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Order suspended contractor's task blocked</td>
+      <td>Compliance admin suspends contractor-au-gst. Customer-AU tries to order. <strong>Expected:</strong> 422 <code>CONTRACTOR_NOT_AVAILABLE</code>; once unsuspended, order works again.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-17</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Order list pagination</td>
+      <td>Place 12 orders, navigate <code>/customer/orders</code>. <strong>Expected:</strong> 10 per page, page 2 shows 2; sort by created_at desc; status filter works.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-ORD-18</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Order detail page renders correct totals</td>
+      <td>Open <code>/customer/orders/&lt;id&gt;</code> for each of TC-ORD-01..12. <strong>Expected:</strong> price_aud, tax, total all read from server (no client-side recompute); GST badge matches the matrix.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p5">Phase 5 · Messaging</h2>
+
+<p>Each order has its own thread, accessible from <code>/customer/orders/[id]</code> and <code>/contractor/orders/[id]</code>. Verify both parties see the same messages and that attachments stay scoped to the order.</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-MSG-01</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Send first message</td>
+      <td>From TC-ORD-01 detail page, post "Hi, when can you start?". <strong>Expected:</strong> message appears with sender avatar; contractor receives notification + email.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-MSG-02</td>
+      <td><span class="pill t">Contractor</span></td>
+      <td>Reply within 5 min</td>
+      <td>Login, open <code>/contractor/messages</code>, reply. <strong>Expected:</strong> thread sorted by last_message; customer sees reply on next refresh / via SSE; unread badge.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-MSG-03</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Attach a file (PDF)</td>
+      <td>Send a 1 MB PDF as attachment. <strong>Expected:</strong> upload succeeds; download link works; attachment row in DB; magic-byte verify on upload.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-MSG-04</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Third-party can't read thread</td>
+      <td>As contractor-au-no-gst (not party to TC-ORD-01), GET that order's messages via API. <strong>Expected:</strong> 403 <code>FORBIDDEN</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-MSG-05</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Empty message rejected</td>
+      <td>Submit blank body (no attachment). <strong>Expected:</strong> 400 <code>VALIDATION_ERROR</code>; UI keeps cursor in textarea.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-MSG-06</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Long thread renders</td>
+      <td>Send 30 messages back and forth. <strong>Expected:</strong> infinite scroll / pagination loads earlier messages; no perf regression; timestamps grouped by day.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p6">Phase 6 · Proposal & PO</h2>
+
+<p>For each company-side order placed in Phase 4, the supplier drafts a proposal. The customer reviews and either accepts (→ PO generated) or requests changes. The PO number sequence is a critical correctness check.</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-PRP-01</td>
+      <td><span class="pill p">Company admin</span></td>
+      <td>Draft proposal AU+GST</td>
+      <td>
+        For TC-ORD-04: <code>/company/orders/&lt;id&gt;/proposal/new</code>.
+        Fill scope, timeline 30 days, payment terms Net 14, price $1,500.
+        Save as DRAFT, then Send.
+        <strong>Expected:</strong> proposal row with <code>proposed_price_aud=1500</code>, <code>proposed_tax_aud=150</code>, <code>proposed_total_aud=1650</code>; <code>company_order_status=PROPOSAL_SENT</code>; customer notified.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-02</td>
+      <td><span class="pill p">Company AU no GST</span></td>
+      <td>Draft proposal no-GST</td>
+      <td><code>proposed_tax_aud=0</code>, total = price; "Invoice" wording in customer preview.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-03</td>
+      <td><span class="pill p">Company Overseas</span></td>
+      <td>Draft proposal cross-border</td>
+      <td>Customer sees "Reverse-charge may apply" callout; tax 0.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-04</td>
+      <td><span class="pill t">Contractor AU+GST</span></td>
+      <td>Contractor proposal flow</td>
+      <td>For TC-ORD-01 contractor drafts proposal $1,200. <strong>Expected:</strong> tax $120, total $1,320; PROPOSAL_SENT.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-05</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Approve proposal → PO generated</td>
+      <td>
+        Open proposal; click Approve.
+        <strong>Expected:</strong> proposal status APPROVED; <code>company_order_status=PO_GENERATED</code>; PO number formatted <code>PO-2026-000001</code>; PDF attached; both parties notified.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-06</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>PO sequence is monotonic</td>
+      <td>Approve a 2nd proposal. <strong>Expected:</strong> PO <code>PO-2026-000002</code>; sequence increments per year via DocumentSequence.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-07</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Request changes → supplier revises</td>
+      <td>
+        Customer requests changes with note. Supplier re-opens, edits, re-sends as version 2.
+        <strong>Expected:</strong> proposal version 2 created; original kept as REJECTED; customer can compare versions.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-08</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Reject proposal</td>
+      <td>Customer rejects with reason. <strong>Expected:</strong> proposal REJECTED; order reverts to BOOKED; supplier email queued.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-09</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Non-party can't view proposal</td>
+      <td>Other contractor calls GET proposal endpoint. <strong>Expected:</strong> 403.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PRP-10</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Cannot approve already-approved proposal</td>
+      <td>Approve TC-PRP-05 again. <strong>Expected:</strong> 409 <code>INVALID_STATE</code>; UI hides Approve once approved.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p7">Phase 7 · Work execution</h2>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-WRK-01</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Start work — order moves IN_PROGRESS</td>
+      <td>From PO_GENERATED, click "Start work". <strong>Expected:</strong> <code>company_order_status=IN_PROGRESS</code>; status_history records transition + actor + timestamp; both parties notified.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-WRK-02</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Add work log entry</td>
+      <td>Log 4 hours with note. <strong>Expected:</strong> WorkLog row; total_hours_logged accumulates; visible to customer in real time.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-WRK-03</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Multiple work logs</td>
+      <td>Add 3 entries (2h + 3h + 1.5h = 6.5h). <strong>Expected:</strong> sum displayed correctly; sortable by start_time.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-WRK-04</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Customer cannot add work log</td>
+      <td>Customer POSTs work-log endpoint. <strong>Expected:</strong> 403 <code>FORBIDDEN</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-WRK-05</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Raise change request</td>
+      <td>Customer raises CR for additional scope. <strong>Expected:</strong> ChangeRequest row PENDING; supplier notified; status badge on order.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-WRK-06</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Decide change request</td>
+      <td>Supplier accepts CR with $200 added. <strong>Expected:</strong> CR APPROVED; price update reflected; new total recomputed via decideGstTreatment (10% on the delta if AU+GST).</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p8">Phase 8 · Deliverables</h2>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-DLV-01</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Upload deliverable PDF</td>
+      <td>From order detail → Deliverables tab → upload <code>security-report.pdf</code>. <strong>Expected:</strong> blob stored under <code>orders/&lt;id&gt;/deliverables/</code>; row in OrderDeliverable; customer notified.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-DLV-02</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Upload multiple files</td>
+      <td>Upload 3 files (PDF + ZIP + image). <strong>Expected:</strong> all rows created; ZIP forced as attachment download (not inline).</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-DLV-03</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Submit for review</td>
+      <td>Click "Submit for review". <strong>Expected:</strong> order moves to PENDING_REVIEW; review_deadline_at = +72h; customer email queued.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-DLV-04</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Download deliverable inline</td>
+      <td>Click PDF → opens inline; download dialog for ZIP. <strong>Expected:</strong> <code>Content-Disposition: inline</code> for PDF, <code>attachment</code> for ZIP; <code>X-Content-Type-Options: nosniff</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-DLV-05</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Approve deliverables</td>
+      <td>Click Approve. <strong>Expected:</strong> order DELIVERABLES_ACCEPTED; status_history updated; supplier can now raise invoice (Phase 9).</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-DLV-06</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Request revision</td>
+      <td>For a different order, click "Request revision" with note. <strong>Expected:</strong> order REVISION_REQUESTED; supplier notified; revision count increments.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-DLV-07</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>HTML file masquerading as PDF rejected</td>
+      <td>Upload <code>shell.html</code> renamed <code>report.pdf</code>. <strong>Expected:</strong> 415 <code>CONTENT_TYPE_MISMATCH</code>; not stored.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-DLV-08</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>11 MB file rejected</td>
+      <td>Upload large file. <strong>Expected:</strong> 413 <code>FILE_TOO_LARGE</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p9">Phase 9 · Invoicing</h2>
+
+<p>
+  Now the <strong>tax matrix is exercised again</strong> at the invoice level. Compare the persisted invoice row against the same expected row from §<a href="#matrix">Tax-matrix coverage</a>.
+  Invoice numbering uses a per-year sequence; PDFs are generated server-side and stored in blob.
+</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-INV-01</td>
+      <td><span class="pill t">Supplier AU+GST</span></td>
+      <td>Raise invoice — Tax Invoice 10%</td>
+      <td>
+        From DELIVERABLES_ACCEPTED order → "Raise invoice".
+        <strong>Expected:</strong> Invoice row with <code>amount_aud=1100</code> (or proposal price), <code>gst_amount_aud=110</code>, <code>total_aud=1210</code>, <code>gst_free=false</code>, <code>is_tax_invoice=true</code>, <code>gst_treatment_reason='GST 10% applied'</code>; PDF "Tax Invoice" header; numbered <code>INV-2026-000001</code>.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-02</td>
+      <td><span class="pill t">Supplier AU no GST</span></td>
+      <td>Raise — "Invoice" not "Tax Invoice"</td>
+      <td>
+        <strong>Expected:</strong> <code>gst_amount_aud=0</code>, <code>gst_free=true</code>, <code>is_tax_invoice=false</code>, reason "GST not applicable — supplier is not registered for GST"; PDF reads "Invoice".
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-03</td>
+      <td><span class="pill t">Supplier overseas</span></td>
+      <td>Raise — Commercial Invoice</td>
+      <td>
+        <strong>Expected:</strong> label "Commercial Invoice"; <code>is_cross_border=true</code>; reason "No GST — overseas supplier" or appropriate variant; no withholding shown (foreign provider).
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-04</td>
+      <td><span class="pill t">Supplier AU+GST</span></td>
+      <td>Cross-border to NZ customer</td>
+      <td>
+        For one of TC-ORD-07/10 orders. <strong>Expected:</strong> <code>gst_amount_aud=0</code>, <code>is_tax_invoice=false</code>, reason "GST-free export of services (s38-190 of the GST Act)"; PDF label "Commercial Invoice" or "Invoice" with export note.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-05</td>
+      <td><span class="pill t">Overseas supplier</span></td>
+      <td>Reverse-charge prompt to AU customer</td>
+      <td>
+        For TC-ORD-03 (overseas → AU). <strong>Expected:</strong> reason "Reverse-charge may apply — AU recipient liable for GST under Div 84"; UI shows BAS-prep callout to customer.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-06</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>No-ABN supplier — withholding flag</td>
+      <td>
+        Manually clear ABN on contractor-au-gst (admin override). Raise invoice.
+        <strong>Expected:</strong> <code>withholdingRequired=true</code>, <code>withholdingRate=0.47</code>; PDF shows "47% withholding applies unless valid supplier statement provided".
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-07</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Invoice numbering monotonic</td>
+      <td>Raise 2nd, 3rd invoices. <strong>Expected:</strong> INV-2026-000002, 000003; sequence stored in DocumentSequence; concurrent raises don't dupe.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-08</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Invoice PDF correctness</td>
+      <td>
+        Open generated PDF.
+        <strong>Expected:</strong> supplier ABN, customer ABN (when &gt; $1000 ex-GST), line items, GST line, total, payment terms, reverse-charge note (when applicable), supplier bank details for bank-transfer flow.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-09</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Customer ABN required at &gt; $1000</td>
+      <td>Raise invoice for $1,500 to AU customer that has ABN. <strong>Expected:</strong> <code>requiresCustomerAbn=true</code>, customer ABN appears on PDF.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-10</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Customer ABN not required &lt; $1000</td>
+      <td>Raise $500 invoice. <strong>Expected:</strong> <code>requiresCustomerAbn=false</code>; PDF still includes ABN if customer has one but not required for validity.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-11</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>View invoice + download PDF</td>
+      <td><code>/customer/orders/&lt;id&gt;/invoice</code>. <strong>Expected:</strong> totals identical to backend row; PDF download works; "Pay now" CTA shown.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-12</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Tender-contract milestone invoice</td>
+      <td>
+        For an active TenderContract (out of catalog flow), raise milestone invoice.
+        <strong>Expected:</strong> <code>TenderContractInvoice</code> row carries the same matrix fields; numbering shared with regular invoices or per-contract sequence per spec.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-13</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Cannot raise invoice before deliverables accepted</td>
+      <td>Raise from IN_PROGRESS. <strong>Expected:</strong> 409 <code>INVALID_STATE</code>; UI hides "Raise invoice" CTA.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-INV-14</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Cannot raise invoice twice on same milestone</td>
+      <td>Raise twice. <strong>Expected:</strong> 409 <code>INVOICE_EXISTS</code>; only one TenderContractInvoice row per milestone.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p10">Phase 10 · Payments & receipts</h2>
+
+<p>
+  Two payment paths: Stripe checkout (default) or bank transfer with manual receipt upload.
+  Validate that the GST treatment travels with the payment record so admin reconciliation can re-check.
+</p>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-PAY-01</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Stripe success path</td>
+      <td>
+        From invoice page, click "Pay with card". Use 4242 card.
+        <strong>Expected:</strong> Stripe Elements renders; payment succeeds; webhook <code>payment_intent.succeeded</code> fires; invoice marked PAID; order moves PAYMENT_RECEIVED; supplier payout queued; both parties notified.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-02</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>3DS challenge path</td>
+      <td>Use 4000 0027 6000 3184. <strong>Expected:</strong> 3DS modal; complete challenge; payment succeeds.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-03</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Insufficient funds → graceful fail</td>
+      <td>Use 4000 0000 0000 9995. <strong>Expected:</strong> Stripe returns <code>card_declined</code>; UI shows error; invoice still UNPAID; no order transition; webhook <code>payment_intent.payment_failed</code> handled.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-04</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Bank transfer — initiate</td>
+      <td>From invoice → "Pay by bank transfer". <strong>Expected:</strong> screen shows supplier bank details, reference number = invoice number, "Awaiting payment" status; <code>company_order_status=BANK_TRANSFER_PENDING</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-05</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Upload bank-transfer receipt</td>
+      <td>Upload <code>au-bank-transfer.pdf</code> on the same screen. <strong>Expected:</strong> file stored at <code>bank-transfer-receipts/&lt;invoice_id&gt;/&hellip;</code>; receipt visible to admin; customer sees "Awaiting verification" state.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-06</td>
+      <td><span class="pill a">Admin</span></td>
+      <td>Verify receipt → mark paid</td>
+      <td>Compliance admin opens <code>/admin/payments</code> → reviews PDF → clicks Verify. <strong>Expected:</strong> invoice marked PAID; order PAYMENT_RECEIVED; AuditLog <code>BANK_TRANSFER_VERIFIED</code>; both parties notified.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-07</td>
+      <td><span class="pill a">Admin</span></td>
+      <td>Reject suspicious receipt</td>
+      <td>Reject with reason "Reference number mismatch". <strong>Expected:</strong> invoice stays UNPAID; customer notified to retry; no order transition.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-08</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Receipt download to customer</td>
+      <td>After verification, customer downloads payment confirmation PDF. <strong>Expected:</strong> PDF contains invoice ref, amount, GST line, supplier ABN, customer ABN; matches the invoice numbers exactly.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-09</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Webhook idempotency</td>
+      <td>Manually replay <code>payment_intent.succeeded</code> webhook for an already-paid invoice. <strong>Expected:</strong> handler returns 200 but skips all DB updates; no double payout queued.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-10</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Tampered amount — webhook signature</td>
+      <td>Send a webhook with invalid signature. <strong>Expected:</strong> 400 <code>INVALID_SIGNATURE</code>; not processed; warning logged.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-11</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Receipt PDF mime mismatch</td>
+      <td>Upload an HTML file as receipt. <strong>Expected:</strong> 415 <code>CONTENT_TYPE_MISMATCH</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-PAY-12</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Cannot pay invoice from another order</td>
+      <td>Customer-A attempts to pay customer-B's invoice. <strong>Expected:</strong> 403 <code>FORBIDDEN</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p11">Phase 11 · Order completion & payout</h2>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-CMP-01</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Mark order completed</td>
+      <td>After payment, customer clicks "Complete order". <strong>Expected:</strong> <code>company_order_status=COMPLETED</code>; <code>completed_at</code> set; rating/feedback prompt shown; supplier notified.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-CMP-02</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Submit rating + feedback</td>
+      <td>Rate 5★, add comment. <strong>Expected:</strong> Rating row stored; visible on supplier's public profile; supplier average updated.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-CMP-03</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Payout queued + processed</td>
+      <td>Worker processes payout job. <strong>Expected:</strong> Stripe transfer created; <code>company_order_status=PAYOUT_PROCESSING</code>; on transfer.paid webhook → PAYOUT_SENT; supplier notified.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-CMP-04</td>
+      <td><span class="pill p">Company</span></td>
+      <td>Commission tier verification</td>
+      <td>For a company with 5 completed orders → tier 1 (20%); 15 orders → tier 2 (17%); 50+ → tier 3 (15%). <strong>Expected:</strong> Payout net = gross × (1 - commission); CompanyPayoutRecord stamped with applied tier.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-CMP-05</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Upload payout receipt (manual)</td>
+      <td>For bank-transfer payout flow, supplier uploads "received" confirmation. <strong>Expected:</strong> CompanyPayoutRecord receipt_blob_path set; admin can download.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-CMP-06</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Order history persists</td>
+      <td>30 days later: open completed order. <strong>Expected:</strong> all data intact; PDF still downloadable; rating still shown; no orphaned blobs.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p12">Phase 12 · Negative & edge cases</h2>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-NEG-01</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>File dispute from IN_PROGRESS</td>
+      <td>Open order, click Dispute, select reason "Quality below scope". <strong>Expected:</strong> Dispute row CREATED; order DISPUTED; 72h response window; priority emails to both parties + admin.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-02</td>
+      <td><span class="pill t">Supplier</span></td>
+      <td>Respond to dispute</td>
+      <td>Supplier files response with evidence. <strong>Expected:</strong> dispute status RESPONDED; admin notified.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-03</td>
+      <td><span class="pill a">Admin</span></td>
+      <td>Determination — FULL_PAYMENT</td>
+      <td>Admin issues determination FULL_PAYMENT to supplier. <strong>Expected:</strong> Stripe transfer created; order COMPLETED; dispute CLOSED; both parties emailed.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-04</td>
+      <td><span class="pill a">Admin</span></td>
+      <td>Determination — FULL_REFUND</td>
+      <td>Different dispute → FULL_REFUND. <strong>Expected:</strong> Stripe refund issued; order COMPLETED; dispute CLOSED.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-05</td>
+      <td><span class="pill a">Admin</span></td>
+      <td>Determination — PARTIAL_PAYMENT</td>
+      <td>50% to supplier + 50% refund. <strong>Expected:</strong> both Stripe ops succeed; payment_result contains both IDs.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-06</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Partial exceeds order amount</td>
+      <td>Try to refund 110% of order. <strong>Expected:</strong> 422 <code>AMOUNT_EXCEEDS_ORDER</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-07</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Cancel order before SCOPED</td>
+      <td>Cancel within 5 min of placing. <strong>Expected:</strong> order CANCELLED; refund issued; supplier notified.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-08</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Cannot cancel after PO</td>
+      <td>Try to cancel post-PO. <strong>Expected:</strong> 409 <code>INVALID_STATE</code>; cancellation requires dispute path.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-09</td>
+      <td><span class="pill b">Customer</span></td>
+      <td>Scope modification request</td>
+      <td>From IN_PROGRESS, customer requests scope change. <strong>Expected:</strong> ScopeModificationRequest row; supplier reviews and accepts/rejects; round_number increments.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-10</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Refresh-token reuse → all sessions revoked</td>
+      <td>Replay an already-used refresh token. <strong>Expected:</strong> 401 <code>TOKEN_REUSE</code>; all refresh tokens for user deleted; AuditLog <code>TOKEN_REUSE</code>.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-11</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Login rate limit (10 / 15 min / IP)</td>
+      <td>Attempt 11 logins from same IP. <strong>Expected:</strong> 11th returns 429 with retry-after.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-12</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Forgot-password rate limit (5 / hr)</td>
+      <td>6× requests. <strong>Expected:</strong> 6th throttled; UI shows generic 200 (no enumeration).</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-13</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Banned user can't log in</td>
+      <td>Admin bans customer-au. Login attempt. <strong>Expected:</strong> 403 <code>ACCOUNT_BANNED</code> with reason.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-14</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Suspended supplier — listings hidden</td>
+      <td>Admin suspends contractor. <strong>Expected:</strong> contractor's tasks no longer browsable; existing orders continue; customer-facing pages omit hidden listings.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-NEG-15</td>
+      <td><span class="pill r">Negative</span></td>
+      <td>Concurrent invoice raise → only one succeeds</td>
+      <td>Two browser tabs → click Raise simultaneously. <strong>Expected:</strong> one 200, one 409 INVOICE_EXISTS; sequence not double-incremented.</td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="p13">Phase 13 · Cross-cutting checks</h2>
+
+<table>
+  <colgroup><col class="col-id"><col class="col-role"><col class="col-title"><col><col class="col-status"></colgroup>
+  <thead><tr><th>ID</th><th>Role</th><th>Title</th><th>Steps & expected</th><th class="status">Status</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="id">TC-XCT-01</td>
+      <td>—</td>
+      <td>AuditLog entries for the lifecycle</td>
+      <td>
+        Query <code>SELECT action_type, COUNT(*) FROM audit_log WHERE actor_id = &lt;customer-au-id&gt; GROUP BY action_type</code>.
+        <strong>Expected:</strong> at least USER_REGISTERED, EMAIL_VERIFIED, USER_LOGGED_IN, ORDER_CREATED, ORDER_PAID, ORDER_COMPLETED rows.
+        AuditLog table must reject UPDATE / DELETE (DB trigger).
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-XCT-02</td>
+      <td>—</td>
+      <td>Email notifications fired at every transition</td>
+      <td>
+        Mailpit count after running phases 1–11 should match the matrix:
+        register, verify, OTP, order created, proposal sent, proposal approved, deliverables submitted, deliverables approved, invoice raised, payment received, order completed.
+        No duplicates from idempotent webhooks.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-XCT-03</td>
+      <td>—</td>
+      <td>Role isolation — customer can't access supplier endpoints</td>
+      <td>
+        Customer hits <code>POST /api/v1/tasks</code>, <code>POST /api/v1/orders/&lt;id&gt;/work-logs</code>, <code>POST /api/v1/orders/&lt;id&gt;/deliverables</code>.
+        <strong>Expected:</strong> 403 on each.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-XCT-04</td>
+      <td>—</td>
+      <td>Role isolation — supplier can't access customer endpoints</td>
+      <td>
+        Supplier hits <code>POST /api/v1/orders</code>, <code>POST /api/v1/orders/&lt;id&gt;/approve</code>.
+        <strong>Expected:</strong> 403.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-XCT-05</td>
+      <td>—</td>
+      <td>Money formatting — 2 decimals everywhere</td>
+      <td>
+        Spot-check 5 surfaces (catalog price, order detail, proposal, invoice line, PDF). <strong>Expected:</strong> always <code>$1,234.50</code> not <code>$1234.5</code>; cents-rounded; no floating-point artifacts.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+    <tr>
+      <td class="id">TC-XCT-06</td>
+      <td>—</td>
+      <td>Tax matrix consistency between order, proposal, invoice</td>
+      <td>
+        For each of TC-ORD-01..12, compare <code>tax_amount_aud</code> on the Order row against <code>proposed_tax_aud</code> on the Proposal and <code>gst_amount_aud</code> on the Invoice (proportional to line amount).
+        <strong>Expected:</strong> identical at the per-cent level; any discrepancy means a regression in <code>decideGstTreatment</code> consumption.
+      </td>
+      <td class="status"><span class="box"></span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="matrix">Tax-matrix coverage</h2>
+
+<p>Same matrix referenced throughout — 2 customers × 6 suppliers, expected outcome at $1,000 ex-GST. Cross-reference this with TC-ORD-01..12, TC-PRP-01..03, and TC-INV-01..05.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Customer ↓ &nbsp; Supplier →</th>
+      <th>AU Co + GST</th>
+      <th>AU Co no GST</th>
+      <th>Overseas Co</th>
+      <th>AU Contractor + GST</th>
+      <th>AU Contractor no GST</th>
+      <th>Overseas Contractor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>AU customer</strong></td>
+      <td class="matrix-cell gst10">10% GST<br><small>$100 / $1,100</small></td>
+      <td class="matrix-cell no">No GST<br><small>not registered</small></td>
+      <td class="matrix-cell rev">Reverse-charge<br><small>Div 84</small></td>
+      <td class="matrix-cell gst10">10% GST<br><small>$100 / $1,100</small></td>
+      <td class="matrix-cell no">No GST<br><small>not registered</small></td>
+      <td class="matrix-cell rev">Reverse-charge<br><small>Div 84</small></td>
+    </tr>
+    <tr>
+      <td><strong>NZ customer</strong></td>
+      <td class="matrix-cell exp">Export<br><small>s38-190</small></td>
+      <td class="matrix-cell no">No GST<br><small>not registered</small></td>
+      <td class="matrix-cell oos">Out of scope<br><small>overseas supplier</small></td>
+      <td class="matrix-cell exp">Export<br><small>s38-190</small></td>
+      <td class="matrix-cell no">No GST<br><small>not registered</small></td>
+      <td class="matrix-cell oos">Out of scope<br><small>overseas supplier</small></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>Decision contract.</strong> All twelve cells route through <code>decideGstTreatment()</code> in <code>packages/shared/src/tax/decision.ts</code>.
+  This is the single canonical source of truth — both server invoice paths and client-side price previews call it.
+  Unit tests in <code>apps/api/src/services/__tests__/tax-decision.test.ts</code> + <code>tax-scenarios.test.ts</code> assert these 12 outcomes at the
+  decision level, the order-creation level, the proposal-creation level, and the invoice-creation level.
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="signoff">Sign-off</h2>
+
+<table>
+  <thead><tr><th>Phase</th><th>Cases</th><th>Pass</th><th>Fail</th><th>Blocked</th><th>Tester</th><th>Date</th></tr></thead>
+  <tbody>
+    <tr><td>0 · Environment</td><td class="center">5</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>1 · Account creation</td><td class="center">14</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2 · Onboarding</td><td class="center">14</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3 · Tasks</td><td class="center">9</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>4 · Orders</td><td class="center">18</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>5 · Messaging</td><td class="center">6</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>6 · Proposal & PO</td><td class="center">10</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>7 · Work execution</td><td class="center">6</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>8 · Deliverables</td><td class="center">8</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>9 · Invoicing</td><td class="center">14</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>10 · Payments</td><td class="center">12</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>11 · Completion</td><td class="center">6</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>12 · Negative</td><td class="center">15</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>13 · Cross-cutting</td><td class="center">6</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td><strong>Total</strong></td><td class="center"><strong>143</strong></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<div class="callout success">
+  <strong>Definition of Done.</strong>
+  All 143 cases marked <span class="pill g">PASS</span> on a single test run, with screenshots / DB snapshots saved for any non-trivial assertion.
+  Any <span class="pill r">FAIL</span> opens a tracked issue; <span class="pill a">BLOCKED</span> requires the blocker referenced in notes.
+  Re-run the full plan against staging before shipping to production.
+</div>
+
+<hr>
+
+<p class="dim" style="font-size: 12px;">
+  TalvexIT functional test plan v1.0 · 2026-05-08 ·
+  Companion docs: <code>docs/tax-invoicing-payment-analysis.html</code> for tax architecture.
+  Related test files: <code>apps/api/src/services/__tests__/tax-scenarios.test.ts</code> (53 automated tests covering the same matrix).
+</p>
+
+</main>
+</body>
+</html>

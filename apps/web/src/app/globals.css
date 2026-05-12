@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Theme: slate palette as RGB triplets (space-separated for Tailwind opacity) ── */
+
+:root {
+  /* Dark theme (default) */
+  --slate-950:  2 6 23;
+  --slate-900:  15 23 42;
+  --slate-800:  30 41 59;
+  --slate-700:  51 65 85;
+  --slate-600:  71 85 105;
+  --slate-500:  100 116 139;
+  --slate-400:  148 163 184;
+  --slate-300:  203 213 225;
+  --slate-200:  226 232 240;
+  --slate-100:  241 245 249;
+  --slate-50:   248 250 252;
+}
+
+[data-theme="light"] {
+  --slate-950:  248 250 252;
+  --slate-900:  241 245 249;
+  --slate-800:  226 232 240;
+  --slate-700:  203 213 225;
+  --slate-600:  148 163 184;
+  --slate-500:  100 116 139;
+  --slate-400:  71 85 105;
+  --slate-300:  51 65 85;
+  --slate-200:  30 41 59;
+  --slate-100:  15 23 42;
+  --slate-50:   2 6 23;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: rgb(var(--slate-950));
+    color: rgb(var(--slate-300));
+    font-family: var(--font-dm-sans), system-ui, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-syne), system-ui, sans-serif;
+    color: rgb(var(--slate-100));
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--slate-900));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--slate-700));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--slate-600));
+  }
+}
+
+@layer utilities {
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--slate-800)) 25%,
+      rgb(var(--slate-700)) 50%,
+      rgb(var(--slate-800)) 75%
+    );
+    background-size: 400px 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}

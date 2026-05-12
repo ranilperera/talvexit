@@ -1,0 +1,44 @@
+# Dependencies — installed fresh by Docker
+node_modules
+apps/*/node_modules
+packages/*/node_modules
+.pnpm-store
+
+# Build outputs — rebuilt by Docker
+apps/web/.next
+apps/api/dist
+apps/workers/dist
+packages/shared/dist
+
+# Git
+.git
+.gitignore
+
+# Local env files — never bake into image
+.env
+.env.local
+.env.*.local
+apps/**/.env
+apps/**/.env.local
+
+# Docker files themselves
+**/Dockerfile
+**/docker-compose*.yml
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+coverage
+
+# Turborepo cache
+.turbo

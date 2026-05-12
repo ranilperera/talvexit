@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat -ano)",
+      "Bash(findstr \":6379\")",
+      "Bash(pnpm typecheck)",
+      "Bash(grep -E \"^jsonwebtoken$|^@types.jsonwebtoken|^bcrypt$|^@types.bcrypt\")",
+      "Bash(pnpm install)",
+      "Bash(python3 -c \"import sys,json; p=json.load\\(sys.stdin\\); print\\(list\\(p.get\\(''exports'',{}\\).keys\\(\\)\\)[:10]\\)\")",
+      "Bash(npx prisma generate)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/api/v1/admin/sessions/kyc -X POST)",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3001 | Select-Object LocalPort,State,OwningProcess\")",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3001 -ErrorAction SilentlyContinue | Select-Object LocalPort,State,OwningProcess\")",
+      "Bash(__NEW_LINE_894c94e1e1f4d3a1__ echo \"\")",
+      "Bash(curl -s -o /dev/null -w \"POST /admin/sessions/kyc                       → %{http_code}\\\\n\" -X POST \"$BASE/admin/sessions/kyc\")",
+      "Bash(curl -s -o /dev/null -w \"GET  /sessions/x/join                          → %{http_code}\\\\n\" \"$BASE/sessions/x/join\")",
+      "Bash(curl -s -o /dev/null -w \"POST /sessions/x/consent                       → %{http_code}\\\\n\" -X POST \"$BASE/sessions/x/consent\")",
+      "Bash(curl -s -o /dev/null -w \"POST /admin/sessions/x/recording/start         → %{http_code}\\\\n\" -X POST \"$BASE/admin/sessions/x/recording/start\")",
+      "Bash(curl -s -o /dev/null -w \"POST /sessions/x/end                           → %{http_code}\\\\n\" -X POST \"$BASE/sessions/x/end\")",
+      "Bash(curl -s -o /dev/null -w \"POST /sessions/x/cancel                        → %{http_code}\\\\n\" -X POST \"$BASE/sessions/x/cancel\")",
+      "Bash(curl -s -o /dev/null -w \"POST /admin/sessions/x/kyc-outcome             → %{http_code}\\\\n\" -X POST \"$BASE/admin/sessions/x/kyc-outcome\")",
+      "Bash(curl -s -o /dev/null -w \"POST /admin/contractors/x/activate             → %{http_code}\\\\n\" -X POST \"$BASE/admin/contractors/x/activate\")",
+      "Bash(pnpm prisma generate)",
+      "Bash(powershell -Command \":*)",
+      "Read(//c/DEV2026/onsys-online/apps/workers/src//**)",
+      "Bash(pnpm prisma:*)",
+      "Read(//c/DEV2026/onsys-online/packages/shared/src/**)",
+      "Bash(curl -s -X POST http://localhost:3001/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"\"\"\"email\"\"\"\":\"\"\"\"admin@onys.local\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"Admin@onys2026!\"\"\"\"}')",
+      "Bash(curl -s -X POST http://localhost:3001/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"\"\"\"email\"\"\"\":\"\"\"\"admin@onys.local\"\"\"\",\"\"\"\"password\"\"\"\":\"\"\"\"TempAdmin2026!\"\"\"\"}')",
+      "Bash(git merge:*)",
+      "Bash(git push:*)",
+      "Bash(npx next:*)",
+      "Bash(grep '\"\"prisma\"\"' apps/api/package.json)",
+      "Bash(grep '\"\"@prisma/client\"\"' apps/api/package.json)",
+      "Bash(ls -la \"c:\\\\DEV2026\\\\onsys-online\\\\apps\\\\web\\\\src\\\\app\\\\\\(company\\)\\\\company\"\")",
+      "Bash(ls -la \"/c/DEV2026/onsys-online/apps/web/src/app/\\(company\\)/company/\")",
+      "Bash(ls c:/DEV2026/onsys-online/*.env* c:/DEV2026/onsys-online/.env*)",
+      "Bash(sed -i 's/import { ChevronLeft, Clock, FileText, CheckCircle2 } from '\\\\''lucide-react'\\\\'';/import { ChevronLeft, Clock, CheckCircle2 } from '\\\\''lucide-react'\\\\'';/' '/c/DEV2026/onsys-online/apps/web/src/app/\\(contractor\\)/contractor/invitations/[id]/page.tsx')",
+      "Bash(sed -i '/tenderTitle: string;/d' '/c/DEV2026/onsys-online/apps/web/src/app/\\(contractor\\)/contractor/invitations/[id]/page.tsx')",
+      "Bash(sed -i '/tenderTitle,$/d' '/c/DEV2026/onsys-online/apps/web/src/app/\\(contractor\\)/contractor/invitations/[id]/page.tsx')",
+      "Bash(sed -i '/tenderTitle={inv.tender.title}/d' '/c/DEV2026/onsys-online/apps/web/src/app/\\(contractor\\)/contractor/invitations/[id]/page.tsx')",
+      "Bash(sed -n 305,315p '/c/DEV2026/onsys-online/apps/web/src/app/\\(contractor\\)/contractor/invitations/[id]/page.tsx')"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\ranil\\.claude\\projects\\c--DEV2026-onsys-online",
+      "C:\\DEV2026\\onsys-online\\apps\\api\\prisma\\migrations",
+      "C:\\DEV2026\\onsys-online\\apps\\web\\src\\app\\customer\\tenders\\[id]"
+    ]
+  }
+}

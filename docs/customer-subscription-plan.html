@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer Subscription Plan · TalvexIT</title>
+  <style>
+    :root {
+      --fg:        #0f172a;
+      --fg-muted:  #475569;
+      --fg-subtle: #64748b;
+      --accent:    #0d9488;
+      --accent-2:  #0f766e;
+      --bg:        #ffffff;
+      --bg-soft:   #f8fafc;
+      --bg-code:   #f1f5f9;
+      --border:    #e2e8f0;
+      --border-strong: #cbd5e1;
+      --critical:  #b91c1c;
+      --high:      #b45309;
+      --medium:    #1d4ed8;
+      --low:       #475569;
+      --good:      #15803d;
+      --bad:       #b91c1c;
+      --plan-free: #64748b;
+      --plan-bus:  #14b8a6;
+      --plan-pro:  #0ea5e9;
+      --plan-ent:  #8b5cf6;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--fg);
+      background: var(--bg-soft);
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 32px 96px;
+      background: var(--bg);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      min-height: 100vh;
+    }
+    header.doc-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+    header.doc-header .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+      color: var(--fg);
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 56px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--fg);
+    }
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 32px 0 12px;
+      color: var(--fg);
+    }
+    .meta-table {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      column-gap: 16px;
+      row-gap: 4px;
+      font-size: 14px;
+      color: var(--fg-muted);
+    }
+    .meta-table dt { font-weight: 600; color: var(--fg); }
+    p { margin: 0 0 16px; }
+    a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 2px; }
+    a:hover { color: var(--accent); }
+    code {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.9em;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      color: #0f172a;
+    }
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 12px 0 20px;
+    }
+    pre code { background: none; border: 0; padding: 0; }
+    ul { padding-left: 22px; margin: 0 0 16px; }
+    ul li { margin-bottom: 6px; }
+    ol { padding-left: 22px; margin: 0 0 16px; }
+    ol li { margin-bottom: 8px; }
+    strong { font-weight: 700; color: var(--fg); }
+
+    /* Tables */
+    .tbl-wrap {
+      overflow-x: auto;
+      margin: 16px 0 24px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--bg-soft);
+      font-weight: 700;
+      color: var(--fg);
+      font-size: 13px;
+      letter-spacing: 0.01em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) { background: #fbfdff; }
+
+    /* Plan-tier matrix — wider, centered numerics */
+    .plan-matrix th, .plan-matrix td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .plan-matrix th:first-child, .plan-matrix td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .plan-matrix .plan-name {
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .plan-matrix .plan-price {
+      color: var(--fg-muted);
+      font-weight: 600;
+    }
+    .plan-matrix .plan-price.zero { color: var(--fg-subtle); }
+    .plan-matrix .plan-tier-free  { border-top: 3px solid var(--plan-free); }
+    .plan-matrix .plan-tier-bus   { border-top: 3px solid var(--plan-bus); }
+    .plan-matrix .plan-tier-pro   { border-top: 3px solid var(--plan-pro); }
+    .plan-matrix .plan-tier-ent   { border-top: 3px solid var(--plan-ent); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid;
+    }
+    .badge.counter   { color: #0d9488; border-color: #99f6e4; background: #f0fdfa; }
+    .badge.computed  { color: #6366f1; border-color: #c7d2fe; background: #eef2ff; }
+    .badge.zero      { color: #b45309; border-color: #fed7aa; background: #fff7ed; }
+
+    /* Callouts */
+    .callout {
+      border: 1px solid;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 16px 0 24px;
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+    .callout.warn   { border-color: #fde68a; background: #fffbeb; color: #78350f; }
+    .callout.danger { border-color: #fecaca; background: #fef2f2; color: #7f1d1d; }
+    .callout.info   { border-color: #bae6fd; background: #f0f9ff; color: #075985; }
+    .callout.success { border-color: #bbf7d0; background: #f0fdf4; color: #14532d; }
+
+    .small { font-size: 13px; color: var(--fg-muted); }
+
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      .wrap { border: 0; max-width: none; padding: 24px; }
+      h2 { page-break-after: avoid; }
+      tr, table { page-break-inside: avoid; }
+      pre { white-space: pre-wrap; word-wrap: break-word; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc-header">
+  <p class="eyebrow">Subscriptions · Customer-side · Shipped</p>
+  <h1>Customer Subscription Plan</h1>
+  <dl class="meta-table">
+    <dt>Status:</dt>      <dd><strong>Shipped 2026-05-06</strong> in commit <code>9c0533a</code>. Phases 0–6 all merged on <code>main</code>.</dd>
+    <dt>Scope:</dt>       <dd>Customer accounts only. Supplier-side plans untouched.</dd>
+    <dt>Codebase:</dt>    <dd><code>talvex-v1</code> @ <code>main</code></dd>
+    <dt>Date:</dt>        <dd>2026-05-06</dd>
+  </dl>
+</header>
+
+<h2>1. The plan matrix</h2>
+
+<p>Four customer tiers. The <strong>Free Starter</strong> plan is auto-activated for every new customer account on registration. Business, Professional, and Enterprise are paid; each ships with a <strong>14-day trial</strong>.</p>
+
+<div class="tbl-wrap">
+<table class="plan-matrix">
+  <thead>
+    <tr>
+      <th>Quota</th>
+      <th class="plan-tier-free"><span class="plan-name" style="color:var(--plan-free)">Free Starter</span></th>
+      <th class="plan-tier-bus"><span class="plan-name" style="color:var(--plan-bus)">Business</span></th>
+      <th class="plan-tier-pro"><span class="plan-name" style="color:var(--plan-pro)">Professional</span></th>
+      <th class="plan-tier-ent"><span class="plan-name" style="color:var(--plan-ent)">Enterprise</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Task bookings / mo</td>
+      <td>2</td><td>5</td><td>10</td><td>25</td>
+    </tr>
+    <tr>
+      <td>Active orders</td>
+      <td>1</td><td>2</td><td>5</td><td>20</td>
+    </tr>
+    <tr>
+      <td>Total orders / mo</td>
+      <td>2</td><td>5</td><td>10</td><td>25</td>
+    </tr>
+    <tr>
+      <td>AI scopes / mo</td>
+      <td>0</td><td>1</td><td>5</td><td>10</td>
+    </tr>
+    <tr>
+      <td>Contracts / mo</td>
+      <td>0</td><td>1</td><td>5</td><td>10</td>
+    </tr>
+    <tr>
+      <td>Active tenders</td>
+      <td>0</td><td>1</td><td>2</td><td>5</td>
+    </tr>
+    <tr>
+      <td>Price (AUD / mo)</td>
+      <td class="plan-price zero">$0</td>
+      <td class="plan-price">$29</td>
+      <td class="plan-price">$99</td>
+      <td class="plan-price">$299</td>
+    </tr>
+    <tr>
+      <td>Yearly (AUD)</td>
+      <td class="plan-price zero">$0</td>
+      <td class="plan-price">$290</td>
+      <td class="plan-price">$990</td>
+      <td class="plan-price">$2,990</td>
+    </tr>
+    <tr>
+      <td>Trial</td>
+      <td>—</td><td>14 days</td><td>14 days</td><td>14 days</td>
+    </tr>
+    <tr>
+      <td>Auto-activated on customer signup</td>
+      <td>✅ yes</td><td>—</td><td>—</td><td>—</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout info">
+  <strong>Yearly pricing</strong> follows the existing convention from <code>seed-subscription-plans.ts</code>: 10 × monthly. So Business yearly = $290, Professional = $990, Enterprise = $2,990. Confirm if you want different yearly economics.
+</div>
+
+<h2>2. The six quotas — what each one counts</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Quota</th>
+      <th>What it counts</th>
+      <th>Where it's checked</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Task bookings / month</strong></td>
+      <td>Customer clicks <strong>Book Now</strong> on a fixed-scope catalog task at <code>/services</code>.</td>
+      <td><code>POST /api/v1/orders</code> when <code>source = 'CATALOG_BOOKING'</code></td>
+      <td><span class="badge counter">Counter — monthly reset</span></td>
+    </tr>
+    <tr>
+      <td><strong>Active orders</strong></td>
+      <td>Orders the customer has currently in delivery (statuses: <code>SCOPED</code>, <code>ACCEPTED</code>, <code>IN_PROGRESS</code>, <code>PENDING_REVIEW</code>, <code>REVISION_REQUESTED</code>).</td>
+      <td>Pre-check at every action that creates a new order.</td>
+      <td><span class="badge computed">Computed — live row count</span></td>
+    </tr>
+    <tr>
+      <td><strong>Total orders / month</strong></td>
+      <td>Every order placed by the customer this period (catalog booking + AI-scope-driven + tender accepts).</td>
+      <td><code>POST /api/v1/orders</code> regardless of <code>source</code></td>
+      <td><span class="badge counter">Counter — monthly reset</span></td>
+    </tr>
+    <tr>
+      <td><strong>AI scopes / month</strong></td>
+      <td>Each call to <strong>Generate with AI</strong> on <code>/customer/scope</code>.</td>
+      <td><code>POST /api/v1/scoping/generate</code></td>
+      <td><span class="badge counter">Counter — monthly reset</span></td>
+    </tr>
+    <tr>
+      <td><strong>Contracts / month</strong></td>
+      <td>Tender contracts the customer signs / accepts in this period.</td>
+      <td><code>POST /api/v1/tender-contracts</code></td>
+      <td><span class="badge counter">Counter — monthly reset</span></td>
+    </tr>
+    <tr>
+      <td><strong>Active tenders</strong></td>
+      <td>Tenders the customer has currently open (statuses: <code>OPEN</code>, <code>INVITED</code>, <code>RESPONSES_RECEIVED</code>, <code>UNDER_REVIEW</code>).</td>
+      <td><code>POST /api/v1/tenders</code></td>
+      <td><span class="badge computed">Computed — live row count</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Why two task / order counters?</h3>
+<p>"Task bookings" is the catalog-booking sub-budget; "Total orders" is the aggregate. Most tiers set <code>task_bookings ≤ total_orders</code> so the booking cap acts as a sub-budget within the broader order cap. A customer can run out of catalog bookings but still place an AI-scope-driven order if they have headroom on Total orders.</p>
+
+<h3>Counter vs Computed</h3>
+<p><strong>Counter quotas</strong> need a per-period integer column on <code>Subscription</code>. Increments on each successful gated action; resets to 0 at every period boundary.</p>
+<p><strong>Computed quotas</strong> have no counter — they're always "what's currently in flight" so we just <code>prisma.x.count(...)</code> at check time. Cheaper than maintaining a counter that drifts.</p>
+
+<h2>3. Period rollover — anniversary monthly</h2>
+
+<p>Spec: <em>"the subscription quota must be reset every month from the day it started the subscription"</em>. So period boundaries follow the <strong>subscription anniversary</strong>, not the calendar month.</p>
+
+<h3>Rules</h3>
+<ul>
+  <li><code>period_start</code> is set when the subscription becomes <code>ACTIVE</code> (or <code>TRIALING</code>).</li>
+  <li><code>period_end = period_start + 1 month</code>, calendar-aware:
+    <ul>
+      <li>Jan 15 10:30 → Feb 15 10:30 → Mar 15 10:30 → Apr 15 10:30 …</li>
+      <li>End-of-month: Jan 31 → Feb 28 (or Feb 29 in leap years) → Mar 31 → Apr 30 → May 31 …
+        <span class="small">(clamps to last day of next month, then bounces back when the month allows)</span>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Lazy reset.</strong> No cron job required. The rollover runs at the top of every quota check:
+<pre><code>if (now >= subscription.period_end) {
+  archive current period to SubscriptionUsageHistory;
+  period_start = period_end;
+  period_end   = period_start + 1 month;
+  reset all current_* counters to 0;
+}
+</code></pre>
+  </li>
+  <li>If a customer doesn't transact for 3 months, their next call rolls forward 3 periods at once and archives 3 history rows in one go. Idempotent.</li>
+  <li>Stripe-paid plans get <code>stripe_current_period_start</code> / <code>stripe_current_period_end</code> populated by Stripe webhooks. We <strong>prefer the Stripe period</strong> when set, since billing reconciles to Stripe's reality. For free / trial plans, our locally-computed period is authoritative.</li>
+</ul>
+
+<h2>4. Schema changes — what gets added</h2>
+
+<h3>New columns on <code>Subscription</code></h3>
+<pre><code>period_start                    DateTime?
+period_end                      DateTime?
+current_task_booking_count      Int @default(0)   // Quota 1
+current_order_count             Int @default(0)   // Quota 3 — already exists
+current_ai_request_count        Int @default(0)   // Quota 4 — already exists
+current_contract_count          Int @default(0)   // Quota 5 — NEW
+// Quotas 2 (active orders) and 6 (active tenders) are computed live — no counter
+</code></pre>
+
+<div class="callout warn">
+  <strong>Existing counter cleanup</strong> — the schema currently has <code>current_task_count</code>, <code>current_project_count</code>, and <code>current_bid_count</code>, all rooted in supplier-side semantics. We rename <code>current_task_count → current_task_publish_count</code> (supplier-side) and add a separate <code>current_task_booking_count</code> for the customer side, so the two flows don't share a counter.
+</div>
+
+<h3>New table: <code>SubscriptionUsageHistory</code></h3>
+<p>Archives every closed period so the customer can see what they used and when, even after plan upgrades.</p>
+<pre><code>model SubscriptionUsageHistory {
+  id                       String       @id @default(cuid())
+  subscription             Subscription @relation(fields: [subscription_id], references: [id])
+  subscription_id          String
+  plan_id                  String       // snapshotted — plan can change between periods
+  plan_name                String       // snapshotted human label
+  period_start             DateTime
+  period_end               DateTime
+  task_bookings_used       Int          @default(0)
+  task_bookings_limit      Int?         // null = unlimited at the time of the period
+  orders_used              Int          @default(0)
+  orders_limit             Int?
+  ai_scopes_used           Int          @default(0)
+  ai_scopes_limit          Int?
+  contracts_used           Int          @default(0)
+  contracts_limit          Int?
+  archived_at              DateTime     @default(now())
+
+  @@index([subscription_id, period_end])
+  @@map("subscription_usage_history")
+}
+</code></pre>
+<p class="small"><strong>Why snapshot the limits?</strong> A customer who upgrades mid-period needs accurate historical numbers later. If we only stored "used", a future audit wouldn't know whether 8 orders against a 10-cap was within plan or not at the time.</p>
+
+<h2>5. Where to change values in the future</h2>
+
+<p>Single source of truth — no schema migration to bump a number.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>File</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>packages/shared/src/subscription-config.ts</code> <em>(NEW)</em></td>
+      <td>The single source of truth. Edit here, re-run the seed.</td>
+    </tr>
+    <tr>
+      <td><code>apps/api/src/scripts/seed-subscription-plans.ts</code></td>
+      <td>Reads from <code>subscription-config.ts</code>; upserts <code>SubscriptionPlan</code> rows by slug; (optionally) syncs Stripe Products + Prices when <code>STRIPE_SECRET_KEY</code> is set.</td>
+    </tr>
+    <tr>
+      <td><code>apps/web/src/app/pricing/PricingClient.tsx</code></td>
+      <td>The public pricing page; reads the same module so the comparison table never drifts from the API plans.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Proposed shape of <code>subscription-config.ts</code></h3>
+
+<pre><code>export const CUSTOMER_PLANS = {
+  'customer-starter': {
+    name: 'Free Starter',
+    price_aud_monthly: 0, price_aud_yearly: 0, trial_days: 0,
+    auto_activate_on_signup: true,
+    limits: {
+      task_bookings: 2,
+      active_orders: 1,
+      orders:        2,
+      ai_scopes:     0,
+      contracts:     0,
+      active_tenders: 0,
+    },
+  },
+  'customer-business': {
+    name: 'Business',
+    price_aud_monthly: 29, price_aud_yearly: 290, trial_days: 14,
+    limits: {
+      task_bookings: 5,
+      active_orders: 2,
+      orders:        5,
+      ai_scopes:     1,
+      contracts:     1,
+      active_tenders: 1,
+    },
+  },
+  'customer-professional': {
+    name: 'Professional',
+    price_aud_monthly: 99, price_aud_yearly: 990, trial_days: 14,
+    limits: {
+      task_bookings: 10,
+      active_orders: 5,
+      orders:        10,
+      ai_scopes:     5,
+      contracts:     5,
+      active_tenders: 2,
+    },
+  },
+  'customer-enterprise': {
+    name: 'Enterprise',
+    price_aud_monthly: 299, price_aud_yearly: 2990, trial_days: 14,
+    limits: {
+      task_bookings: 25,
+      active_orders: 20,
+      orders:        25,
+      ai_scopes:     10,
+      contracts:     10,
+      active_tenders: 5,
+    },
+  },
+} as const;
+</code></pre>
+
+<p>Editing a number → <code>pnpm --filter @onys/api seed:subscriptions</code> → done. The seeder upserts plan rows by slug and (if <code>STRIPE_SECRET_KEY</code> is set) updates Stripe Prices.</p>
+
+<div class="callout info">
+  <strong>Mid-period plan change</strong> — an upgrade applies the new limits <strong>immediately</strong> to the current period. The old period's history row keeps the limits that were in force <em>at the time</em>. If the customer downgrades and is currently <em>over</em> the new cap (e.g. has 12 active orders on a plan that allows 10), they're soft-blocked from creating new orders until they're back under cap; existing in-flight orders are unaffected.
+</div>
+
+<h2>6. Source-code file map</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Concern</th><th>File(s)</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Plan limits source-of-truth</strong></td>
+      <td><code>packages/shared/src/subscription-config.ts</code> <em>(NEW)</em></td>
+    </tr>
+    <tr>
+      <td><strong>Plan seed</strong></td>
+      <td><code>apps/api/src/scripts/seed-subscription-plans.ts</code></td>
+    </tr>
+    <tr>
+      <td><strong>Quota check guard (preHandler)</strong></td>
+      <td><code>apps/api/src/middleware/subscription-limits.ts</code></td>
+    </tr>
+    <tr>
+      <td><strong>Quota math + period rollover + history archiving</strong></td>
+      <td><code>apps/api/src/services/subscription.service.ts</code></td>
+    </tr>
+    <tr>
+      <td><strong>Stripe webhook lifecycle</strong></td>
+      <td><code>apps/api/src/services/subscription-webhook.service.ts</code></td>
+    </tr>
+    <tr>
+      <td><strong>Where the guards are wired</strong></td>
+      <td>
+        <ul style="margin: 0">
+          <li><code>apps/api/src/routes/order.routes.ts</code> — Quotas 1 (task_bookings), 2 (active_orders), 3 (orders)</li>
+          <li><code>apps/api/src/routes/scoping.routes.ts</code> — Quota 4 (ai_scopes)</li>
+          <li><code>apps/api/src/routes/tender-contract.routes.ts</code> — Quota 5 (contracts)</li>
+          <li><code>apps/api/src/routes/tender.routes.ts</code> — Quota 6 (active_tenders)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Auto-activation on signup</strong></td>
+      <td><code>apps/api/src/services/auth.service.ts</code> (already has the hook for <code>customer-starter</code>)</td>
+    </tr>
+    <tr>
+      <td><strong>Customer billing UI — usage panel + history</strong></td>
+      <td>
+        <ul style="margin: 0">
+          <li><code>apps/web/src/app/customer/billing/page.tsx</code></li>
+          <li><code>apps/web/src/components/customer/UsageBar.tsx</code> <em>(NEW)</em></li>
+          <li><code>apps/web/src/components/PreCapConfirm.tsx</code> <em>(NEW — "this is your last X" dialog)</em></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Pricing page</strong></td>
+      <td><code>apps/web/src/app/pricing/PricingClient.tsx</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>7. Pre-block UX — warn before the wall</h2>
+
+<p>Every quota-checking endpoint returns the live numbers in its <strong>success</strong> response, so the frontend can show a warning <em>before</em> the next click:</p>
+
+<pre><code>// POST /api/v1/orders — successful response after consuming a quota slot
+{
+  "success": true,
+  "data": { "id": "ord_...", ... },
+  "subscription_usage": {
+    "task_bookings": { "used": 4, "limit": 5,  "remaining": 1 },
+    "orders":        { "used": 4, "limit": 5,  "remaining": 1 },
+    "active_orders": { "used": 2, "limit": 2,  "remaining": 0 }
+  }
+}
+</code></pre>
+
+<ul>
+  <li>The frontend caches this in its react-query store and shows a banner when <code>remaining ≤ 1</code> — <em>"Heads up — 1 task booking left this period"</em>.</li>
+  <li>At click-time on Book Now / Generate with AI / Create Tender / Create Contract, the button label shifts to a "warning" variant when at the cap, and the click handler shows a confirm dialog before posting:
+    <blockquote class="small" style="border-left: 3px solid var(--accent); padding-left: 12px; color: var(--fg-muted)">
+      "Booking this task will use your <strong>last</strong> task booking for this period. Your quota resets on <strong>Feb 15</strong> (12 days). Upgrade to keep going."
+    </blockquote>
+  </li>
+  <li>When the cap is <em>already</em> at zero, the button is disabled with a tooltip: <em>"Task bookings limit reached — upgrade or wait until your period resets on Feb 15."</em></li>
+</ul>
+
+<h2>8. Subscription renewal flow</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Trigger</th><th>What happens</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Free plan</strong>, period boundary reached during a quota check</td>
+      <td>Lazy rollover: archive period → reset counters → bump <code>period_start</code> / <code>period_end</code>. No external action; status stays <code>ACTIVE</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Paid plan</strong>, Stripe <code>invoice.payment_succeeded</code></td>
+      <td>Existing handler in <code>subscription-webhook.service.ts</code> updates <code>stripe_current_period_*</code>. We extend it to also archive the closed period to <code>SubscriptionUsageHistory</code> and reset counters.</td>
+    </tr>
+    <tr>
+      <td><strong>Paid plan</strong>, Stripe <code>invoice.payment_failed</code></td>
+      <td>Status → <code>PAST_DUE</code>. Quota checks fail with a different error code (<code>SUBSCRIPTION_PAST_DUE</code>) so the UI can show a "fix billing" CTA rather than an "upgrade" CTA. Period rollover paused until payment succeeds.</td>
+    </tr>
+    <tr>
+      <td><strong>Paid plan</strong>, Stripe <code>customer.subscription.deleted</code></td>
+      <td>Status → <code>CANCELLED</code>, but we leave the customer's existing access alive until the end of the current paid period (read <code>cancel_at_period_end</code> on Stripe). At period end, downgrade them to <code>customer-starter</code> automatically and let the lazy-rollover handle the next period.</td>
+    </tr>
+    <tr>
+      <td><strong>Trial expiry</strong> (Stripe <code>customer.subscription.trial_will_end</code> 3 days before)</td>
+      <td>Email reminder; no platform action.</td>
+    </tr>
+    <tr>
+      <td><strong>Trial converts to active</strong></td>
+      <td>Status <code>TRIALING</code> → <code>ACTIVE</code>. <strong>No quota reset</strong> — the trial period continues seamlessly into the first paid period.</td>
+    </tr>
+    <tr>
+      <td><strong>User upgrades plan</strong> in <code>/customer/billing</code></td>
+      <td>Stripe upgrade → webhook → update <code>plan_id</code> on Subscription. Counters carry over (don't reset; the customer paid for the period continuation). New limits apply to the same period.</td>
+    </tr>
+    <tr>
+      <td><strong>User downgrades plan</strong></td>
+      <td>Same flow, but a downgrade can put the customer over-cap on some quotas. We don't claw back; only block <em>new</em> actions until usage falls below the new cap.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>9. Auto-activation on customer signup</h2>
+
+<p>Already partly in place. In <code>apps/api/src/services/auth.service.ts</code> at registration:</p>
+
+<ol>
+  <li>Customer registers via <code>POST /api/v1/auth/register</code> with <code>account_type = 'CUSTOMER'</code>.</li>
+  <li>Inside the registration transaction, the service looks up the plan with slug <code>customer-starter</code>.</li>
+  <li>If found, creates a <code>Subscription</code> row: <code>plan_id</code>, <code>user_id</code>, <code>status = ACTIVE</code>, <code>started_at = now()</code>, <code>period_start = now()</code>, <code>period_end = now() + 1 month</code> (anniversary).</li>
+  <li>If not found (seed not run), logs a warning and continues — registration doesn't fail. Ops fixes the seed.</li>
+  <li>The customer's first quota-gated action sees <code>status = ACTIVE</code> and a fresh period; rollover logic handles every subsequent reset.</li>
+</ol>
+
+<h2>10. Implementation phases <span class="small">(all 6 shipped)</span></h2>
+
+<p>Each phase is a separate commit. Build in order — earlier phases unblock later ones.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Phase</th><th>Effort</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>New <code>packages/shared/src/subscription-config.ts</code> + refactor <code>seed-subscription-plans.ts</code> to read from it. Run seed → all 4 customer plan rows updated with the new limits from §1.</td>
+      <td>~half day</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>Schema migration: add <code>period_start</code>, <code>period_end</code>, <code>current_task_booking_count</code>, <code>current_contract_count</code> to <code>Subscription</code>. Create <code>SubscriptionUsageHistory</code> table. Backfill <code>period_start</code> / <code>period_end</code> for existing subscriptions.</td>
+      <td>~half day</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>New <code>SubscriptionService.rolloverIfDue(subscription)</code>. Called at the top of every <code>checkLimit</code>. Archives closed period(s) to history, loops if multiple periods elapsed. Idempotent.</td>
+      <td>~half day</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Wire the six guards into customer routes (<code>order</code>, <code>scoping</code>, <code>tender-contract</code>, <code>tender</code>). Update <code>requireLimit</code> to attach <code>subscription_usage</code> on the success response.</td>
+      <td>~1 day</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><code>/customer/billing</code> usage panel. New <code>GET /api/v1/subscriptions/me/usage</code> returning the current period's <code>{used, limit, remaining}</code> per quota plus the next 12 history rows. Bar charts. Pre-click warning logic.</td>
+      <td>~1 day</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Stripe webhook integration for paid plans. <code>SUBSCRIPTION_PAST_DUE</code> error path. End-of-period auto-downgrade-to-starter on cancellation.</td>
+      <td>~half day</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Tests + audit log. Unit tests on <code>rolloverIfDue</code> (calendar arithmetic, edge cases, multi-period catch-up). Audit entries: <code>SUBSCRIPTION_UPGRADED</code>, <code>SUBSCRIPTION_DOWNGRADED</code>, <code>SUBSCRIPTION_PERIOD_ROLLED</code>.</td>
+      <td>~half day</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Total: ~4–5 working days.</strong></p>
+
+<h2>11. What we're NOT doing in this round</h2>
+<ul>
+  <li>Supplier-side quotas (<code>tasks</code>, <code>bids</code>, <code>team_seats</code>, <code>domain_categories</code>, supplier-side <code>active_orders</code>). Customer-side only.</li>
+  <li>Add-ons (the <code>AddonPurchase</code> table exists but isn't exercised). Out of scope for this round.</li>
+  <li>Feature flags (<code>allow_overseas_contractors</code>, <code>allow_api_access</code>, etc.). They live on the plan rows but no route currently enforces them; needs a separate design pass on what the API surfaces are.</li>
+  <li>Custom enterprise contracts (e.g. "Enterprise plan but with 50 tenders instead of 5"). Existing <code>effective_limits</code> JSON column on Subscription supports this, but no UI / admin tooling — defer.</li>
+</ul>
+
+<h2>12. Confirmed decisions <span class="small">(answered 2026-05-06)</span></h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Question</th><th>Decision</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Q1</td><td>Plan numbers</td><td>Ship matrix in §1 as-is.</td></tr>
+    <tr><td>Q2</td><td>Yearly pricing</td><td><code>yearly = 10 × monthly</code> (Business $290, Pro $990, Enterprise $2,990).</td></tr>
+    <tr><td>Q3</td><td>Mid-period upgrade billing</td><td>Stripe prorated default — OK.</td></tr>
+    <tr><td>Q4</td><td>Soft-cap warning threshold</td><td><strong>Tiered:</strong> Free + Business → <code>remaining ≤ 1</code>; Professional + Enterprise → <code>remaining ≤ 20%</code> of cap.</td></tr>
+    <tr><td>Q5</td><td>History retention</td><td><strong>36 months</strong>. A daily prune job removes <code>SubscriptionUsageHistory</code> rows older than 36 months from <code>archived_at</code>.</td></tr>
+    <tr><td>Q6</td><td>Cancellation grace</td><td>Keep customer on paid tier until period end, then auto-downgrade to <code>customer-starter</code>.</td></tr>
+    <tr><td>Q7</td><td>Trial conversion timing</td><td>No quota reset on trial → active. Usage carries forward into the first paid period.</td></tr>
+    <tr><td>Q8</td><td>Auto-activation slug</td><td><code>customer-starter</code> stays the canonical free plan slug.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Q4 detail — soft-cap warning thresholds</h3>
+<p>Different per plan because a 20%-of-25 warning (5 remaining) makes sense for Enterprise but doesn't for Free Starter (a 20%-of-2 warning would be <em>before</em> the user does anything).</p>
+<pre><code>function shouldWarn(planSlug: string, remaining: number, limit: number | null): boolean {
+  if (limit === null) return false; // unlimited — never warn
+  // Higher tiers: warn at 20% headroom
+  if (planSlug === 'customer-professional' || planSlug === 'customer-enterprise') {
+    return remaining <= Math.ceil(limit * 0.2);
+  }
+  // Free + Business: warn at the last slot
+  return remaining <= 1;
+}
+</code></pre>
+
+<div class="callout success">
+  <strong>Status:</strong> All open decisions resolved and shipped in commit <code>9c0533a</code>. Any future change to plan numbers or thresholds happens in the files in §5 / §6 — no document change required.
+</div>
+
+<h2>13. What's now live in customer subscriptions <span class="small">(shipped)</span></h2>
+
+<p>End-to-end summary of what landed in commit <code>9c0533a</code>. Every layer below is wired and typecheck-clean across <code>shared</code>, <code>api</code>, and <code>web</code>.</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead>
+    <tr><th>Layer</th><th>What landed</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Source of truth</strong></td>
+      <td><code>packages/shared/src/subscription-config.ts</code> — 4 customer plans with the exact matrix from §1. Edit a number here, re-run seed, done.</td>
+    </tr>
+    <tr>
+      <td><strong>Schema</strong></td>
+      <td>
+        New columns on <code>Subscription</code>: <code>period_start</code>, <code>period_end</code>, <code>current_task_booking_count</code>, <code>current_contract_count</code>.<br>
+        New columns on <code>SubscriptionPlan</code>: <code>max_task_bookings_per_month</code>, <code>max_contracts_per_month</code>.<br>
+        New table <code>subscription_usage_history</code> with snapshotted plan + limits. Migration backfills <code>period_start/end</code> on existing rows.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Service logic</strong></td>
+      <td>
+        <code>SubscriptionService.rolloverIfDue()</code> runs at the top of every quota check — archives closed periods to history with snapshotted limits, resets counters to 0, bumps period bounds by one calendar month with end-of-month clamping (Jan 31 → Feb 28 → Mar 31). Loops on multi-period catch-up. Idempotent. Audit-logged.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Six quota guards wired</strong></td>
+      <td>
+        <ul style="margin: 0">
+          <li><code>POST /api/v1/orders</code> — <code>active_orders</code> + <code>orders</code> in preHandler; handler-side <code>incrementUsage('task_bookings')</code> when the order is a catalog booking (has <code>task_id</code>).</li>
+          <li><code>POST /api/v1/scoping/generate</code> — <code>ai_scopes</code></li>
+          <li><code>POST /api/v1/tender-contracts</code> — <code>contracts</code></li>
+          <li><code>POST /api/v1/tenders/publish/*</code> — <code>active_tenders</code></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Usage API</strong></td>
+      <td><code>GET /api/v1/subscriptions/me/usage</code> returns <code>{plan, period, quotas{used, limit, remaining, warn}, history}</code> for the current period plus the 12 most-recent closed periods.</td>
+    </tr>
+    <tr>
+      <td><strong><code>/customer/billing</code> usage panel</strong></td>
+      <td>
+        New <code>SubscriptionUsagePanel</code> component renders bar charts with tiered warning thresholds (Free + Business: <code>remaining ≤ 1</code>; Pro + Enterprise: <code>remaining ≤ 20%</code>), at-cap red state, "resets in N days" countdown, collapsible history table.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Stripe lifecycle</strong></td>
+      <td>
+        <code>customer.subscription.updated</code> mirrors Stripe's billing period into local <code>period_start/end</code> so paid plans use Stripe as the period source of truth. <code>customer.subscription.deleted</code> auto-downgrades CUSTOMER_* plans to <code>customer-starter</code>, resets the period, and audit-logs <code>SUBSCRIPTION_AUTO_DOWNGRADED_TO_FREE</code>. <code>PAST_DUE</code> status blocks quota checks naturally via the existing <code>ACTIVE/TRIALING</code> gate.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Audit log</strong></td>
+      <td>New entries: <code>SUBSCRIPTION_PERIOD_ROLLED</code> on each rollover, <code>SUBSCRIPTION_AUTO_DOWNGRADED_TO_FREE</code> on cancellation auto-downgrade.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Deploy on the API VM</h3>
+
+<pre><code>cd /opt/talvex/app
+git pull
+docker compose -f docker-compose.prod.yml run --rm api pnpm --filter api prisma migrate deploy
+docker compose -f docker-compose.prod.yml run --rm api pnpm --filter api seed:subscriptions
+docker compose -f docker-compose.prod.yml up -d --build api web
+</code></pre>
+
+<p class="small">The migration backfills <code>period_start/end</code> for any existing subscriptions. The seed upserts the four customer plans with the matrix numbers from §1 and (if <code>STRIPE_SECRET_KEY</code> is set) updates Stripe Products / Prices.</p>
+
+<h2>14. Instructions to change limits in the future</h2>
+
+<p>Customer-side limits, prices, trial days, plan names, and warning thresholds all live in one TypeScript file. <strong>No schema migration is needed for any of these changes</strong> — the columns already exist on <code>SubscriptionPlan</code>; you're just changing the values stored on the rows. Re-running the seed upserts by slug, so existing subscription rows automatically pick up the new limits next time they hit a quota check.</p>
+
+<h3>14.1 To change a quota limit</h3>
+
+<p>Example: bump Business <strong>task bookings</strong> from 5 to 8.</p>
+
+<ol>
+  <li>Open <a href="../packages/shared/src/subscription-config.ts"><code>packages/shared/src/subscription-config.ts</code></a>.</li>
+  <li>Find <code>'customer-business'</code> and edit <code>limits.task_bookings</code>:
+<pre><code>'customer-business': {
+  // ...
+  limits: {
+    task_bookings: 8,   // was 5
+    active_orders: 2,
+    orders:        5,
+    ai_scopes:     1,
+    contracts:     1,
+    active_tenders: 1,
+  },
+},
+</code></pre>
+  </li>
+  <li>Rebuild the shared package and re-run the seed:
+<pre><code>pnpm --filter shared build
+pnpm --filter @onys/api seed:subscriptions</code></pre>
+  </li>
+  <li>That's it. Customers already on Business pick up the new limit on their next quota check (no re-subscribe / re-deploy required for them).</li>
+</ol>
+
+<h3>14.2 To change a price</h3>
+
+<p>Example: change Professional from $99/mo → $79/mo.</p>
+
+<ol>
+  <li>In <code>subscription-config.ts</code>, edit <code>price_aud_monthly</code>:
+<pre><code>'customer-professional': {
+  // ...
+  price_aud_monthly: 79,
+  price_aud_yearly: 790,   // remember the 10× monthly convention
+  // ...
+}</code></pre>
+  </li>
+  <li>Re-run the seed. If <code>STRIPE_SECRET_KEY</code> is set, the seeder syncs the new Stripe Prices automatically (creating new <code>Price</code> records on Stripe — Stripe Prices are immutable so the seeder creates a new one and writes the new ID back to the plan row). The old Price ID stays on Stripe for any in-flight subscriptions; new subscribers get the new price.</li>
+  <li>Existing subscribers stay on the old price until they upgrade / change interval, which matches Stripe's standard subscription billing convention.</li>
+</ol>
+
+<h3>14.3 To add a new quota</h3>
+
+<p>This <strong>does</strong> require a schema migration. Steps:</p>
+
+<ol>
+  <li>Add the column to <code>SubscriptionPlan</code> (e.g. <code>max_priority_support_minutes</code>) and a counter to <code>Subscription</code> (e.g. <code>current_priority_support_minutes</code>) in <code>apps/api/prisma/schema.prisma</code>.</li>
+  <li>Generate a migration: <code>cd apps/api && pnpm prisma migrate dev --name add_priority_support_minutes</code>.</li>
+  <li>Add the limit type key to <code>LIMIT_TYPES</code> in <code>packages/shared/src/schemas/subscription.schema.ts</code>.</li>
+  <li>Add the field to <code>CustomerPlanLimits</code> in <code>subscription-config.ts</code> and populate it on every plan.</li>
+  <li>Add a case to <code>resolveCurrentAndLimit</code> in <code>SubscriptionService</code> (counter-backed reads from <code>sub.current_*</code>; computed reads via <code>this.prisma.x.count()</code>).</li>
+  <li>If counter-backed: add to <code>COUNTER_BACKED</code> in <code>middleware/subscription-limits.ts</code> and to <code>fieldMap</code> + <code>UsageType</code> in <code>SubscriptionService.incrementUsage</code> + <code>rolloverIfDue</code>.</li>
+  <li>Wire <code>requireLimit('priority_support_minutes')</code> into the relevant route's preHandler.</li>
+  <li>Add to the <code>customerQuotas</code> array in <code>SubscriptionService.getCustomerUsage</code> so the billing page picks it up.</li>
+  <li>Add a label to <code>QUOTA_LABELS</code> + <code>QUOTA_ORDER</code> in <code>SubscriptionUsagePanel.tsx</code> for the UI display.</li>
+</ol>
+
+<h3>14.4 To change the warning thresholds</h3>
+
+<p>Edit the <code>warningThresholdFor()</code> helper in <a href="../packages/shared/src/subscription-config.ts"><code>subscription-config.ts</code></a>. Currently:</p>
+
+<pre><code>export function warningThresholdFor(planSlug: string, limit: number | null): number {
+  if (limit === null || limit === 0) return 0;
+  const isHigherTier =
+    planSlug === 'customer-professional' || planSlug === 'customer-enterprise';
+  if (isHigherTier) {
+    return Math.max(1, Math.ceil(limit * 0.2));
+  }
+  return 1;
+}
+</code></pre>
+
+<p>The function returns the threshold count (an integer) — the UI compares <code>remaining ≤ threshold</code> and flips into the warn state. No DB change; the next page load picks it up.</p>
+
+<h3>14.5 To change the period length (e.g. quarterly instead of monthly)</h3>
+
+<p>Edit the <code>addOneMonth()</code> helper in <code>apps/api/src/services/subscription.service.ts</code> — replace the <code>setUTCMonth(+1)</code> with the desired interval. The migration SQL in <code>20260506120000_customer_subscription_rebuild</code> uses Postgres <code>INTERVAL '1 month'</code> for backfill; that one is one-shot and won't matter going forward. Stripe-driven billing for paid plans is already controlled by Stripe's price interval, so the local helper only matters for free / cancelled plans.</p>
+
+<h3>14.6 To change retention on usage history</h3>
+
+<p>Edit <code>USAGE_HISTORY_RETENTION_MONTHS</code> in <code>subscription-config.ts</code>. There's no prune job written yet (history just accumulates) — when one is added, it should read this constant.</p>
+
+<h3>14.7 To change the auto-activated free plan</h3>
+
+<p>Set <code>auto_activate_on_signup: true</code> on a different plan in <code>subscription-config.ts</code> and ensure exactly one plan has it. The <code>AUTO_ACTIVATE_CUSTOMER_PLAN_SLUG</code> export reads this and the registration flow in <code>auth.service.ts</code> uses the slug. The hook there is currently hard-coded to <code>customer-starter</code>; if you change which slug is auto-activated, also update <code>auth.service.ts:106-114</code>.</p>
+
+<div class="callout success">
+  <strong>TL;DR for limit changes:</strong> Edit one TypeScript file → run two pnpm commands → done. No schema migration, no front-end deploy, no Stripe portal click-through (the seed handles Stripe sync if its key is set). Existing subscribers pick up the new limits on their next quota check.
+</div>
+
+</div>
+</body>
+</html>

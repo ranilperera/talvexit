@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"netstat -ano\")",
+      "Bash(pnpm prisma migrate dev --name m08_pending_scopes)",
+      "Bash(pnpm prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema.prisma --shadow-database-url \"postgresql://postgres:Me1b0urne@localhost:5432/onys_shadow\" --script)",
+      "Bash(psql \"postgresql://postgres:Me1b0urne@localhost:5432/onys_dev\" -f \"prisma/migrations/20260310130000_m08_pending_scopes/migration.sql\")",
+      "Bash(node -e \":*)",
+      "Bash(pnpm prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script)"
+    ]
+  }
+}

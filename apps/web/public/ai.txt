@@ -1,0 +1,68 @@
+# TalvexIT — AI crawler / training opt-out signals
+#
+# This file follows the emerging ai.txt convention used by some content
+# platforms. It declares whether AI vendors may train on this site's
+# content. We allow crawling for retrieval / answer generation (so users
+# get accurate platform information when they ask AI assistants about
+# TalvexIT), and disallow training-data ingestion.
+#
+# robots.txt at /robots.txt is the source of truth for crawl scope.
+# llms.txt at /llms.txt is the source of truth for content preferences.
+
+User-Agent: *
+Disallow: /train
+
+# AI training (model fine-tuning) — disallow.
+Disallow: /
+
+# Public retrieval for answers / citations — explicit opt-in for the
+# major answer engines so AI assistants can cite us correctly.
+
+User-Agent: GPTBot
+Allow: /
+Allow: /how-it-works
+Allow: /about
+Allow: /services
+Allow: /tasks
+Allow: /contractors
+Allow: /companies
+Disallow: /customer/
+Disallow: /contractor/
+Disallow: /company/
+Disallow: /admin/
+Disallow: /api/
+
+User-Agent: ChatGPT-User
+Allow: /
+Disallow: /customer/
+Disallow: /contractor/
+Disallow: /company/
+Disallow: /admin/
+Disallow: /api/
+
+User-Agent: PerplexityBot
+Allow: /
+Disallow: /customer/
+Disallow: /contractor/
+Disallow: /company/
+Disallow: /admin/
+Disallow: /api/
+
+User-Agent: ClaudeBot
+Allow: /
+Disallow: /customer/
+Disallow: /contractor/
+Disallow: /company/
+Disallow: /admin/
+Disallow: /api/
+
+User-Agent: Google-Extended
+Disallow: /
+
+User-Agent: anthropic-ai
+Allow: /
+Disallow: /customer/
+Disallow: /contractor/
+Disallow: /company/
+Disallow: /admin/
+Disallow: /api/

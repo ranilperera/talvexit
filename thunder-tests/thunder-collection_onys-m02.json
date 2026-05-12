@@ -1,0 +1,216 @@
+{
+  "_id": "col_onys_m02",
+  "colName": "onys.online — M02 Contractor Onboarding",
+  "created": "2026-03-09",
+  "clientVersion": "2.0",
+  "requests": [
+    {
+      "_id": "req_m02_01",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "01 — Register contractor",
+      "url": "http://localhost:3001/api/v1/auth/register",
+      "method": "POST",
+      "sortNum": 1,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john@contractor.com\",\n  \"password\": \"TestPass123!\",\n  \"account_type\": \"INDIVIDUAL_CONTRACTOR\",\n  \"full_name\": \"John Expert\"\n}"
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "201"
+        },
+        {
+          "type": "set-env-var",
+          "varName": "access_token",
+          "action": "SET_VAR",
+          "value": "data.access_token",
+          "custom": "json.data.access_token"
+        }
+      ]
+    },
+    {
+      "_id": "req_m02_02",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "02 — Get profile (INCOMPLETE, step 1)",
+      "url": "http://localhost:3001/api/v1/contractor/profile",
+      "method": "GET",
+      "sortNum": 2,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "INCOMPLETE" }
+      ]
+    },
+    {
+      "_id": "req_m02_03",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "03 — Step 1: Personal Info",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/1",
+      "method": "PATCH",
+      "sortNum": 3,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"timezone\": \"Australia/Sydney\",\n  \"bio\": \"IT professional with 10 years experience\",\n  \"phone\": \"+61400000000\"\n}"
+      },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "Australia/Sydney" }
+      ]
+    },
+    {
+      "_id": "req_m02_04",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "04 — Step 2: Employment Declaration",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/2",
+      "method": "PATCH",
+      "sortNum": 4,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"employment_type\": \"SOLE_TRADER\"\n}"
+      },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "SOLE_TRADER" }
+      ]
+    },
+    {
+      "_id": "req_m02_05",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "05 — Step 3: Domains & Skills",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/3",
+      "method": "PATCH",
+      "sortNum": 5,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"domains\": [\"NETWORKING\", \"CYBERSECURITY\"],\n  \"skills\": [\"Cisco\", \"Firewalls\", \"VPN\"]\n}"
+      },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "NETWORKING" }
+      ]
+    },
+    {
+      "_id": "req_m02_06",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "06 — Step 4: Rates & Availability",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/4",
+      "method": "PATCH",
+      "sortNum": 6,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"hourly_rate_aud\": 150,\n  \"availability_hours_per_week\": 20\n}"
+      },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "150" }
+      ]
+    },
+    {
+      "_id": "req_m02_07",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "07 — Step 5: Identity Upload (mock path)",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/5",
+      "method": "PATCH",
+      "sortNum": 7,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"identity_document_type\": \"PASSPORT\",\n  \"identity_document_blob_path\": \"identity/john-contractor/passport.jpg\"\n}"
+      },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "PASSPORT" }
+      ]
+    },
+    {
+      "_id": "req_m02_08",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "08 — Submit before step 7 (expect 422)",
+      "url": "http://localhost:3001/api/v1/contractor/profile/submit",
+      "method": "POST",
+      "sortNum": 8,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "422" },
+        { "type": "res-body", "action": "contains", "value": "INVALID_TRANSITION" }
+      ]
+    },
+    {
+      "_id": "req_m02_09",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "09 — Step 7: Agreement Acceptance",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/7",
+      "method": "PATCH",
+      "sortNum": 9,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"agreement_version\": \"2026-03-01\",\n  \"agreement_accepted\": true\n}"
+      },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "agreement_accepted_at" }
+      ]
+    },
+    {
+      "_id": "req_m02_10",
+      "colId": "col_onys_m02",
+      "containerId": "",
+      "name": "10 — Submit for review (expect PENDING)",
+      "url": "http://localhost:3001/api/v1/contractor/profile/submit",
+      "method": "POST",
+      "sortNum": 10,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{access_token}}" }
+      ],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-code", "action": "equal", "value": "200" },
+        { "type": "res-body", "action": "contains", "value": "PENDING" }
+      ]
+    }
+  ]
+}

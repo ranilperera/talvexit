@@ -1,0 +1,120 @@
+services:
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: onys_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - onys_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── API (Fastify) ───────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: onys_api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file: .env.prod
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "${DATABASE_URL}"
+      # IP/CIDR of the upstream HAProxy. Required so Fastify reads the real
+      # client IP from X-Forwarded-For instead of the proxy peer — without it,
+      # @fastify/rate-limit treats every request as the same client.
+      TRUSTED_PROXY: "${TRUSTED_PROXY:-10.1.3.100}"
+      # GUID issued per-user by abr.business.gov.au/Tools/WebServices.
+      # Required by ABR's terms of service for the AbnDetails endpoint.
+      # Sourced from .env.prod so rotation doesn't require a compose edit.
+      ABR_GUID: "${ABR_GUID}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - onys_net
+    healthcheck:
+      # node's built-in http instead of wget. Hit 127.0.0.1 explicitly — the
+      # API binds 0.0.0.0 (IPv4) and Alpine's `localhost` resolves to ::1
+      # (IPv6) first, so a `localhost` probe gets ECONNREFUSED. node is
+      # guaranteed present in the image so we don't need an external binary.
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://127.0.0.1:3001/api/v1/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ── Workers (BullMQ background jobs) ────────────────────────────────────────
+  workers:
+    build:
+      context: .
+      dockerfile: apps/workers/Dockerfile
+    container_name: onys_workers
+    restart: unless-stopped
+    env_file: .env.prod
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "${DATABASE_URL}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - onys_net
+
+  # ── Web (Next.js standalone) ────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-}
+        NEXT_PUBLIC_HOMEPAGE_THEME: ${NEXT_PUBLIC_HOMEPAGE_THEME:-corporate-light}
+    container_name: onys_web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file: .env.prod
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      # Server- side only — Next.js rewrite proxies /api/v1/* to the API container.
+      # Not exposed to the browser (no NEXT_PUBLIC_ prefix).
+      API_URL: http://onys_api:3001
+      # Same secret the API signs JWTs with. The web middleware verifies the
+      # signature so a tampered onys_token cookie can't bypass role checks.
+      # NOT NEXT_PUBLIC_ — stays in the Next.js server runtime, never sent
+      # to the browser.
+      JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET}"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - onys_net
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://127.0.0.1:3000',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+
+volumes:
+  redis_data:
+
+networks:
+  onys_net:
+    driver: bridge

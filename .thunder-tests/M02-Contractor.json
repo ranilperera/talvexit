@@ -1,0 +1,245 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "M02-Contractor",
+  "dateExported": "2026-03-09T00:00:00.000Z",
+  "version": "1.1",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000001",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "01. Register Contractor",
+      "url": "http://localhost:3001/api/v1/auth/register",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john@contractor.com\",\n  \"password\": \"TestPass123!\",\n  \"account_type\": \"INDIVIDUAL_CONTRACTOR\",\n  \"full_name\": \"John Expert\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "201" },
+        { "type": "res-body", "custom": "json.success", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.access_token", "action": "isValue" },
+        { "type": "res-body", "custom": "json.data.user.account_type", "action": "equal", "value": "INDIVIDUAL_CONTRACTOR" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000002",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "02. Get Profile — INCOMPLETE step 1",
+      "url": "http://localhost:3001/api/v1/contractor/profile",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.profile.status", "action": "equal", "value": "INCOMPLETE" },
+        { "type": "res-body", "custom": "json.data.profile.onboarding_step", "action": "equal", "value": "1" },
+        { "type": "res-body", "custom": "json.data.onboarding_status.ready_to_submit", "action": "equal", "value": "false" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000003",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "03. Step 1 — Personal Info",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/1",
+      "method": "PATCH",
+      "sortNum": 30000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"timezone\": \"Australia/Sydney\",\n  \"bio\": \"IT professional with 10 years experience\",\n  \"phone\": \"+61400000000\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.profile.timezone", "action": "equal", "value": "Australia/Sydney" },
+        { "type": "res-body", "custom": "json.data.profile.onboarding_step", "action": "equal", "value": "2" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000004",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "04. Step 2 — Employment Declaration",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/2",
+      "method": "PATCH",
+      "sortNum": 40000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"employment_type\": \"SOLE_TRADER\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.profile.employment_type", "action": "equal", "value": "SOLE_TRADER" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000005",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "05. Step 3 — Domains & Skills",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/3",
+      "method": "PATCH",
+      "sortNum": 50000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"domains\": [\"NETWORKING\", \"CYBERSECURITY\"],\n  \"skills\": [\"Cisco\", \"Firewalls\", \"VPN\"]\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.profile.skills[0]", "action": "equal", "value": "Cisco" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000006",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "06. Step 4 — Rates & Availability",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/4",
+      "method": "PATCH",
+      "sortNum": 60000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"hourly_rate_aud\": 150,\n  \"availability_hours_per_week\": 20\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.profile.availability_hours_per_week", "action": "equal", "value": "20" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000007",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "07. Step 5 — Identity Upload (mock path)",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/5",
+      "method": "PATCH",
+      "sortNum": 70000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"identity_document_type\": \"PASSPORT\",\n  \"identity_document_blob_path\": \"identity/john-contractor/passport.jpg\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.profile.identity_document_type", "action": "equal", "value": "PASSPORT" },
+        { "type": "res-body", "custom": "json.data.profile.identity_status", "action": "equal", "value": "PENDING" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000008",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "08. Submit Early — expect 422 (no agreement yet)",
+      "url": "http://localhost:3001/api/v1/contractor/profile/submit",
+      "method": "POST",
+      "sortNum": 80000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "422" },
+        { "type": "res-body", "custom": "json.success", "action": "equal", "value": "false" },
+        { "type": "res-body", "custom": "json.error.code", "action": "equal", "value": "INVALID_TRANSITION" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000009",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "09. Step 7 — Agreement Acceptance",
+      "url": "http://localhost:3001/api/v1/contractor/profile/step/7",
+      "method": "PATCH",
+      "sortNum": 90000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"agreement_version\": \"2026-03-01\",\n  \"agreement_accepted\": true\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.profile.agreement_accepted_at", "action": "isValue" },
+        { "type": "res-body", "custom": "json.data.onboarding_status.ready_to_submit", "action": "equal", "value": "true" }
+      ]
+    },
+    {
+      "_id": "b2c3d4e5-0002-0000-0000-000000000010",
+      "colId": "b2c3d4e5-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "10. Submit for Review — expect PENDING",
+      "url": "http://localhost:3001/api/v1/contractor/profile/submit",
+      "method": "POST",
+      "sortNum": 100000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_ACCESS_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.success", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.profile.status", "action": "equal", "value": "PENDING" }
+      ]
+    }
+  ]
+}

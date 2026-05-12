@@ -1,0 +1,341 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "M03-Insurance",
+  "dateExported": "2026-03-09T00:00:00.000Z",
+  "version": "1.1",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000001",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "01. Login Contractor (john@contractor.com)",
+      "url": "http://localhost:3001/api/v1/auth/login",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john@contractor.com\",\n  \"password\": \"TestPass123!\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.success", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.access_token", "action": "isValue" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000002",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "02. Get Insurance — empty list",
+      "url": "http://localhost:3001/api/v1/contractor/insurance",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_CONTRACTOR_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.success", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.required_tier", "action": "equal", "value": "HIGH_RISK" },
+        { "type": "res-body", "custom": "json.data.coverage_status.met", "action": "equal", "value": "false" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000003",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "03. Upload PI Certificate ($1M)",
+      "url": "http://localhost:3001/api/v1/contractor/insurance",
+      "method": "POST",
+      "sortNum": 30000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_CONTRACTOR_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"insurer_name\": \"Chubb Australia\",\n  \"policy_number\": \"PI-2026-00001\",\n  \"insurance_type\": \"PI\",\n  \"coverage_amount_aud\": 1000000,\n  \"policy_start_date\": \"2026-01-01T00:00:00.000Z\",\n  \"policy_expiry_date\": \"2027-03-01T00:00:00.000Z\",\n  \"worldwide_coverage\": true,\n  \"certificate_blob_path\": \"certs/john/pi-2026.pdf\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "201" },
+        { "type": "res-body", "custom": "json.success", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.insurance_type", "action": "equal", "value": "PI" },
+        { "type": "res-body", "custom": "json.data.status", "action": "equal", "value": "PENDING_REVIEW" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000004",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "04. Upload PL Certificate ($1M)",
+      "url": "http://localhost:3001/api/v1/contractor/insurance",
+      "method": "POST",
+      "sortNum": 40000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_CONTRACTOR_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"insurer_name\": \"QBE Insurance\",\n  \"policy_number\": \"PL-2026-00001\",\n  \"insurance_type\": \"PL\",\n  \"coverage_amount_aud\": 1000000,\n  \"policy_start_date\": \"2026-01-01T00:00:00.000Z\",\n  \"policy_expiry_date\": \"2027-03-01T00:00:00.000Z\",\n  \"worldwide_coverage\": true,\n  \"certificate_blob_path\": \"certs/john/pl-2026.pdf\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "201" },
+        { "type": "res-body", "custom": "json.data.insurance_type", "action": "equal", "value": "PL" },
+        { "type": "res-body", "custom": "json.data.status", "action": "equal", "value": "PENDING_REVIEW" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000005",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "05. Upload CYBER Certificate (required — CYBERSECURITY domain)",
+      "url": "http://localhost:3001/api/v1/contractor/insurance",
+      "method": "POST",
+      "sortNum": 50000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_CONTRACTOR_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"insurer_name\": \"Beazley Group\",\n  \"policy_number\": \"CY-2026-00001\",\n  \"insurance_type\": \"CYBER\",\n  \"coverage_amount_aud\": 500000,\n  \"policy_start_date\": \"2026-01-01T00:00:00.000Z\",\n  \"policy_expiry_date\": \"2027-03-01T00:00:00.000Z\",\n  \"worldwide_coverage\": true,\n  \"certificate_blob_path\": \"certs/john/cyber-2026.pdf\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "201" },
+        { "type": "res-body", "custom": "json.data.insurance_type", "action": "equal", "value": "CYBER" },
+        { "type": "res-body", "custom": "json.data.status", "action": "equal", "value": "PENDING_REVIEW" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000006",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "06. Get Insurance — 3 certs, coverage NOT yet met",
+      "url": "http://localhost:3001/api/v1/contractor/insurance",
+      "method": "GET",
+      "sortNum": 60000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_CONTRACTOR_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.coverage_status.met", "action": "equal", "value": "false" },
+        { "type": "res-body", "custom": "json.data.required_tier", "action": "equal", "value": "HIGH_RISK" },
+        { "type": "res-body", "custom": "json.data.certificates[0].status", "action": "equal", "value": "PENDING_REVIEW" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000007",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "07. Login Admin (PASTE_ADMIN_EMAIL after Prisma Studio setup)",
+      "url": "http://localhost:3001/api/v1/auth/login",
+      "method": "POST",
+      "sortNum": 70000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"admin@onys.online\",\n  \"password\": \"AdminPass123!\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.access_token", "action": "isValue" },
+        { "type": "res-body", "custom": "json.data.user.account_type", "action": "equal", "value": "PLATFORM_ADMIN" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000008",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "08. Admin — View Pending Queue (expect 3)",
+      "url": "http://localhost:3001/api/v1/admin/insurance/pending",
+      "method": "GET",
+      "sortNum": 80000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_ADMIN_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.count", "action": "equal", "value": "3" },
+        { "type": "res-body", "custom": "json.data.certificates[0].contractor.user.full_name", "action": "isValue" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000009",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "09. Admin — Approve PI Certificate",
+      "url": "http://localhost:3001/api/v1/admin/insurance/PASTE_PI_CERT_ID_HERE/review",
+      "method": "PATCH",
+      "sortNum": 90000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ADMIN_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"decision\": \"VERIFIED\",\n  \"admin_notes\": \"Policy verified against issuer database\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.certificate.status", "action": "equal", "value": "VERIFIED" },
+        { "type": "res-body", "custom": "json.data.certificate.insurance_type", "action": "equal", "value": "PI" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000010",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "10. Admin — Approve PL Certificate",
+      "url": "http://localhost:3001/api/v1/admin/insurance/PASTE_PL_CERT_ID_HERE/review",
+      "method": "PATCH",
+      "sortNum": 100000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ADMIN_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"decision\": \"VERIFIED\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.certificate.status", "action": "equal", "value": "VERIFIED" },
+        { "type": "res-body", "custom": "json.data.certificate.insurance_type", "action": "equal", "value": "PL" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000011",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "11. Admin — Approve CYBER Certificate (triggers insurance_tier_met=true)",
+      "url": "http://localhost:3001/api/v1/admin/insurance/PASTE_CYBER_CERT_ID_HERE/review",
+      "method": "PATCH",
+      "sortNum": 110000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ADMIN_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"decision\": \"VERIFIED\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.certificate.status", "action": "equal", "value": "VERIFIED" },
+        { "type": "res-body", "custom": "json.data.certificate.insurance_type", "action": "equal", "value": "CYBER" },
+        { "type": "res-body", "custom": "json.data.message", "action": "equal", "value": "Certificate reviewed." }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000012",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "12. Get Insurance — coverage NOW met",
+      "url": "http://localhost:3001/api/v1/contractor/insurance",
+      "method": "GET",
+      "sortNum": 120000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_CONTRACTOR_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "200" },
+        { "type": "res-body", "custom": "json.data.coverage_status.met", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.coverage_status.has_valid_pi", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.coverage_status.has_valid_pl", "action": "equal", "value": "true" },
+        { "type": "res-body", "custom": "json.data.coverage_status.has_valid_cyber", "action": "equal", "value": "true" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000013",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "13. Admin — Reject with missing reason — expect 400",
+      "url": "http://localhost:3001/api/v1/admin/insurance/PASTE_ANY_PENDING_CERT_ID/review",
+      "method": "PATCH",
+      "sortNum": 130000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer PASTE_ADMIN_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"decision\": \"REJECTED\"\n}"
+      },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "400" },
+        { "type": "res-body", "custom": "json.error.code", "action": "equal", "value": "VALIDATION_ERROR" }
+      ]
+    },
+    {
+      "_id": "c3d4e5f6-0003-0000-0000-000000000014",
+      "colId": "c3d4e5f6-0000-0000-0000-000000000000",
+      "containerId": "",
+      "name": "14. Contractor tries admin route — expect 403",
+      "url": "http://localhost:3001/api/v1/admin/insurance/pending",
+      "method": "GET",
+      "sortNum": 140000,
+      "created": "2026-03-09T00:00:00.000Z",
+      "modified": "2026-03-09T00:00:00.000Z",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer PASTE_CONTRACTOR_TOKEN_HERE" }
+      ],
+      "params": [],
+      "body": { "type": "none", "raw": "" },
+      "tests": [
+        { "type": "res-status", "custom": "", "action": "equal", "value": "403" },
+        { "type": "res-body", "custom": "json.error.code", "action": "equal", "value": "FORBIDDEN" }
+      ]
+    }
+  ]
+}

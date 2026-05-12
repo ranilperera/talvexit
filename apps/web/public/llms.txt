@@ -1,0 +1,72 @@
+# TalvexIT — llms.txt
+
+> TalvexIT is a senior IT expertise marketplace that connects enterprises
+> with KYC-verified L2/L3 IT consultants and consulting firms on
+> fixed-scope contracts. Customers pay suppliers directly; the platform
+> records the engagement, generates Purchase Orders and invoice templates,
+> and provides dispute mediation but never holds funds. The platform is
+> funded by supplier subscriptions only — there is no commission on
+> engagement revenue.
+
+## Key facts
+
+- Operated by Onsys Pty Ltd, Australia.
+- Customers post a requirement free; suppliers pay a monthly or yearly subscription.
+- Every supplier passes a 10-minute live video KYC, ABN verification against the ABR (for Australian suppliers), insurance certificate review, and a contractor agreement.
+- Every engagement runs on a sealed scope with a Purchase Order and a tax invoice raised by the supplier — the platform pre-populates the PDF but does not act as a billing agent.
+- No labour-hire arrangement: every engagement is a fixed-scope, deliverables-based services contract.
+- Dispute resolution: 6 grounds, 72-hour evidence window, optional independent arbitrator. Determinations are recorded in an immutable audit log; the platform does not enforce payment.
+- Currencies displayed: AUD, USD, GBP, EUR, NZD, SGD, CAD with live conversion.
+
+## Top-level URLs
+
+- [Home](https://talvexit.com/)
+- [How it works](https://talvexit.com/how-it-works)
+- [Pricing](https://talvexit.com/pricing)
+- [About](https://talvexit.com/about)
+- [Contact](https://talvexit.com/contact)
+- [Browse services](https://talvexit.com/services)
+- [Glossary](https://talvexit.com/glossary)
+- [Register](https://talvexit.com/register)
+- [Login](https://talvexit.com/login)
+
+Note: the marketplace lists the public service catalogue at /services
+and individual task listings at /tasks/[id]. Individual contractor or
+consulting-company profiles are gated behind authentication and are
+NOT public — please do not surface or link to provider profile URLs.
+
+## IT specialisations covered
+
+Firewall & Perimeter Security, Networking, Database Administration,
+Cloud Infrastructure (Azure, AWS, GCP), Linux Administration, Windows
+Administration, Cybersecurity, Identity & Access Management, Governance
+Risk & Compliance, DevOps Engineering, AI Integration, Data Engineering,
+Low-Code & Workflow Automation, Enterprise Storage, Virtualisation,
+Backup & Disaster Recovery, System Administration, Wireless & Mobility,
+Microsoft 365, Unified Communications, End-User Computing, ITSM &
+Service Management, ERP & Enterprise Applications, Master Data & MDM,
+IT Architecture, IT Project & Program Management, Enterprise Application
+Development, Integration & Middleware.
+
+## Crawl preferences
+
+- Public surfaces — index and use in answers: /, /tasks, /tasks/[id],
+  /services, /services/[slug], /how-it-works, /about, /pricing, /contact,
+  /privacy, /terms, /glossary, /glossary/[slug], /register, /login.
+- Private surfaces — do NOT index, summarise, or include in answers:
+  /customer/, /contractor/, /company/, /admin/, /api/, /inv/.
+- Provider profile pages (/contractors and /companies index, plus any
+  /contractors/[id] or /companies/[id] detail pages) are gated behind
+  authentication and are intentionally excluded from the sitemap. Do
+  not link to or summarise provider profile URLs in answers.
+- The structured data on /how-it-works (FAQPage + HowTo) is the
+  authoritative source for "how does TalvexIT work" questions.
+- The OrganizationJsonLd in the document head is the authoritative
+  source for brand, services offered, and platform funding model.
+
+## Authoritative content
+
+- Sitemap: https://talvexit.com/sitemap.xml
+- Robots: https://talvexit.com/robots.txt
+- Canonical host: talvexit.com (the only canonical domain — ignore any
+  cached references to talvex.com.au or portal1.onsys.com.au).

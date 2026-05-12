@@ -1,0 +1,45 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: onsys_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: onsys_mailhog
+    restart: unless-stopped
+    ports:
+      - "1026:1025"   # SMTP (1025 taken by itm_mailhog)
+      - "8026:8025"   # Web UI (8025 taken by itm_mailhog)
+
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: onsys_livekit
+    restart: unless-stopped
+    environment:
+      LIVEKIT_KEYS: "devkey: devsecret"
+      NODE_IP: "${LIVEKIT_NODE_IP:-}"
+    command: --bind 0.0.0.0 --port 7880 --dev
+    ports:
+      - "7880:7880"       # HTTP API + WebSocket
+      - "7881:7881"       # RTC over TCP
+      - "7882:7882/udp"   # RTC over UDP
+
+  livekit-egress:
+    image: livekit/egress:latest
+    container_name: onsys_livekit_egress
+    restart: unless-stopped
+    environment:
+      EGRESS_CONFIG_BODY: |
+        api_key: devkey
+        api_secret: devsecret
+        ws_url: ws://livekit:7880
+        azure:
+          account_name: "${AZURE_ACCOUNT_NAME}"
+          account_key: "${AZURE_ACCOUNT_KEY}"
+          container_name: "${AZURE_RECORDINGS_CONTAINER:-recordings}"
+    depends_on:
+      - livekit
+

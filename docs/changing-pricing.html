@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TalvexIT — Changing subscription pricing</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #0b1220; --panel: #111c2e; --panel-2: #16243b;
+    --text: #e2e8f0; --muted: #94a3b8; --line: #1f2d44;
+    --teal: #5eead4; --teal-soft: rgba(94, 234, 212, 0.12);
+    --amber: #fbbf24; --amber-soft: rgba(251, 191, 36, 0.10);
+    --red: #f87171; --red-soft: rgba(248, 113, 113, 0.12);
+    --green: #4ade80; --green-soft: rgba(74, 222, 128, 0.12);
+    --blue: #60a5fa; --blue-soft: rgba(96, 165, 250, 0.12);
+    --code: #0f1a2c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 48px 24px 96px;
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    color: var(--text); background: var(--bg);
+  }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h1 .sub { color: var(--teal); font-weight: 600; }
+  h2 {
+    margin: 56px 0 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    font-size: 22px; letter-spacing: -0.01em;
+  }
+  h3 { margin: 32px 0 8px; font-size: 17px; color: var(--teal); font-weight: 600; }
+  h4 { margin: 20px 0 6px; font-size: 14px; font-weight: 600; }
+  p { margin: 8px 0 14px; }
+  small.dim, .dim { color: var(--muted); }
+  code, kbd, pre {
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    font-size: 13px;
+  }
+  code:not(pre code) {
+    background: var(--code); padding: 1px 6px; border-radius: 4px;
+    color: #cbd5e1; border: 1px solid var(--line);
+  }
+  pre {
+    background: var(--code); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; color: #cbd5e1; line-height: 1.5;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 12px 0 18px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+  }
+  th, td {
+    padding: 10px 12px; text-align: left;
+    border-bottom: 1px solid var(--line); vertical-align: top;
+    font-size: 14px;
+  }
+  th {
+    background: var(--panel-2); font-weight: 600; color: var(--text);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.center, th.center { text-align: center; }
+  .callout {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; margin: 16px 0; background: var(--panel);
+  }
+  .callout.warn { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+  .callout.info { border-left: 4px solid var(--blue); background: var(--blue-soft); }
+  .callout.success { border-left: 4px solid var(--green); background: var(--green-soft); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-soft); }
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+  .pill {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 999px; background: rgba(148,163,184,0.10);
+    color: var(--muted); border: 1px solid rgba(148,163,184,0.20);
+    margin-right: 4px; font-weight: 600;
+  }
+  .pill.t { background: var(--teal-soft); color: var(--teal); border-color: rgba(94, 234, 212, 0.25); }
+  .pill.b { background: var(--blue-soft); color: var(--blue); border-color: rgba(96, 165, 250, 0.25); }
+  .pill.a { background: var(--amber-soft); color: var(--amber); border-color: rgba(251, 191, 36, 0.25); }
+  .pill.r { background: var(--red-soft); color: var(--red); border-color: rgba(248, 113, 113, 0.25); }
+  .pill.g { background: var(--green-soft); color: var(--green); border-color: rgba(74, 222, 128, 0.25); }
+  .toc {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px 20px; margin: 24px 0 32px;
+  }
+  .toc h3 { margin-top: 0; }
+  .flow-step {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 14px 16px; margin: 12px 0;
+    display: grid; grid-template-columns: 48px 1fr; gap: 14px; align-items: start;
+  }
+  .flow-step .num {
+    background: var(--teal-soft); color: var(--teal);
+    border: 1px solid rgba(94, 234, 212, 0.25);
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .flow-step h4 { margin: 0 0 4px; }
+  .flow-step p { margin: 0; color: var(--muted); font-size: 13px; }
+  .matrix th, .matrix td { font-size: 12.5px; }
+  .pill.path { font-family: "JetBrains Mono", Consolas, monospace; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>TalvexIT — <span class="sub">Changing subscription pricing</span></h1>
+  <div class="dim">v1.0 · 2026-05-09 · Companion to <code>docs/customer-subscription-plan.html</code> + <code>docs/supplier-subscription-plan.html</code></div>
+</header>
+
+<div class="callout info">
+  <strong>TL;DR.</strong> Edit prices/limits/flags in <code>packages/shared/src/subscription-config.ts</code>,
+  then re-run <code>pnpm --filter @onys/api seed:subscriptions</code>. That writes to the DB and (if
+  <code>STRIPE_SECRET_KEY</code> is set) syncs Stripe Products and Prices in the same step. The public
+  <code>/pricing</code> page reads from the DB via <code>GET /api/v1/subscriptions/plans</code> and
+  re-renders within the 1-hour Next.js revalidate window.
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#flow">The data flow (one page)</a></li>
+    <li><a href="#paths">Three places to change pricing &mdash; which to use</a></li>
+    <li><a href="#config">Path A &mdash; edit subscription-config.ts (recommended)</a></li>
+    <li><a href="#admin">Path B &mdash; edit a single plan from /admin/subscriptions</a></li>
+    <li><a href="#db">Path C &mdash; direct DB update (emergencies only)</a></li>
+    <li><a href="#examples">Common scenarios &mdash; step-by-step recipes</a></li>
+    <li><a href="#stripe">Stripe pricing-sync caveats</a></li>
+    <li><a href="#cache">Cache &mdash; why your change isn't showing yet</a></li>
+    <li><a href="#audit">Audit &mdash; how to verify a change went through</a></li>
+    <li><a href="#anti">Anti-patterns &mdash; don't do these</a></li>
+  </ol>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="flow">§1 The data flow</h2>
+
+<p>Top to bottom, where pricing data lives and who reads it:</p>
+
+<div class="flow-step">
+  <div class="num">1</div>
+  <div>
+    <h4>Source of truth &mdash; <code>packages/shared/src/subscription-config.ts</code></h4>
+    <p>TypeScript constants. Two exported maps: <code>CUSTOMER_PLANS</code> (4 plans) and
+       <code>SUPPLIER_PLANS</code> (4 plans). Each plan has price, trial days, limits, feature
+       flags, sort order, CTA copy. This is the file that gets edited &mdash; everything below
+       reads from here.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">2</div>
+  <div>
+    <h4>Seed script &mdash; <code>apps/api/src/scripts/seed-subscription-plans.ts</code></h4>
+    <p>Reads the two PLAN_LISTs above, maps each shared <code>PlanDef</code> shape into the
+       Prisma upsert payload, and writes to <code>subscription_plans</code> via
+       <code>prisma.subscriptionPlan.upsert(where: { slug }, …)</code>. Idempotent &mdash;
+       safe to re-run any time. If <code>STRIPE_SECRET_KEY</code> is set it also creates/updates
+       Stripe Products + Prices and writes the IDs back to each row.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">3</div>
+  <div>
+    <h4>Database &mdash; <code>SubscriptionPlan</code> table</h4>
+    <p>The runtime source. Every quota check, every public-pricing render, every
+       <code>POST /subscribe</code> reads from here. Columns mirror the shared
+       <code>PlanDef</code> shape one-to-one (monthly_price_aud, yearly_price_aud,
+       max_active_tasks, allow_priority_listing, etc. &mdash; see
+       <a href="../apps/api/prisma/schema.prisma">prisma/schema.prisma</a> line ~2572).</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">4</div>
+  <div>
+    <h4>Public API &mdash; <code>GET /api/v1/subscriptions/plans</code></h4>
+    <p>Returns plans where <code>is_active = true AND is_public = true</code>, ordered by
+       <code>sort_order</code>. Backed by <code>SubscriptionService.getPublicPlans()</code> in
+       <code>apps/api/src/services/subscription.service.ts</code>.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">5</div>
+  <div>
+    <h4>Pricing page server fetch &mdash; <code>apps/web/src/app/pricing/page.tsx</code></h4>
+    <p>Server-renders the plans pre-fetched from the API with a <code>revalidate: 3600</code>
+       (1 hour) Next.js cache hint. The PricingClient component refetches client-side on mount
+       too, so admin edits at runtime show up within seconds in a fresh tab.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">6</div>
+  <div>
+    <h4>Card rendering &mdash; <code>apps/web/src/app/pricing/PricingClient.tsx</code></h4>
+    <p>The <code>PublicPlan</code> interface mirrors the SubscriptionPlan columns. Cards render
+       audience-aware feature lists from the plan's limits + flags. Don't edit prices here &mdash;
+       this file only displays them.</p>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="paths">§2 Three places to change pricing &mdash; which to use</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Path</th>
+      <th>Where</th>
+      <th>Best for</th>
+      <th>Survives re-seed?</th>
+      <th>Stripe sync?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="pill g">A &middot; Recommended</span></td>
+      <td><code>subscription-config.ts</code> &rarr; run seed</td>
+      <td>Permanent changes that should be in version control (price changes, new plans, retiring plans, limit revisions)</td>
+      <td class="center">✓ It <em>is</em> the source</td>
+      <td class="center">✓ Automatic on re-seed</td>
+    </tr>
+    <tr>
+      <td><span class="pill b">B &middot; Runtime tweaks</span></td>
+      <td><code>/admin/subscriptions</code> UI</td>
+      <td>One-off ad-hoc adjustments &mdash; e.g. temporary promo on a single tier, fixing a typo in description without a deploy</td>
+      <td class="center">✗ Overwritten</td>
+      <td class="center">Manual (click "Sync Stripe" per plan)</td>
+    </tr>
+    <tr>
+      <td><span class="pill r">C &middot; Emergencies only</span></td>
+      <td>Direct SQL <code>UPDATE</code></td>
+      <td>Pre-deploy hotfix when the seed can't run &mdash; you should still update <code>subscription-config.ts</code> in the same PR so it stays the source of truth</td>
+      <td class="center">✗ Overwritten</td>
+      <td class="center">No (do it manually in Stripe Dashboard)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <strong>Why Path A is the default.</strong> The seed is idempotent and runs on deploy. Any
+  change made via Path B or C will <em>silently revert</em> the next time
+  <code>seed:subscriptions</code> runs. Treat the admin UI as a "view-and-tweak" surface, not a
+  source of truth.
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="config">§3 Path A &mdash; edit <code>subscription-config.ts</code></h2>
+
+<h3>3.1 Where each plan lives</h3>
+
+<table>
+  <thead>
+    <tr><th>Plan</th><th>Slug</th><th>Lines in file</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Free Starter (customer)</td><td><code>customer-starter</code></td><td>~74&ndash;95</td></tr>
+    <tr><td>Business (customer)</td><td><code>customer-business</code></td><td>~96&ndash;117</td></tr>
+    <tr><td>Professional (customer) <span class="pill t">Most Popular</span></td><td><code>customer-professional</code></td><td>~118&ndash;140</td></tr>
+    <tr><td>Enterprise (customer)</td><td><code>customer-enterprise</code></td><td>~141&ndash;162</td></tr>
+    <tr><td>Solo Free (supplier)</td><td><code>supplier-free</code></td><td>~275&ndash;300</td></tr>
+    <tr><td>Solo Pro (supplier)</td><td><code>supplier-solo</code></td><td>~301&ndash;328</td></tr>
+    <tr><td>Company (supplier) <span class="pill t">Most Popular</span></td><td><code>supplier-company-starter</code></td><td>~329&ndash;361</td></tr>
+    <tr><td>Global (supplier)</td><td><code>supplier-global</code></td><td>~362&ndash;403</td></tr>
+  </tbody>
+</table>
+
+<h3>3.2 Anatomy of a plan entry</h3>
+
+<pre><code>'customer-business': {
+  slug:                    'customer-business',     // immutable — DB key
+  name:                    'Business',              // shown on the card
+  plan_type:               'CUSTOMER_BUSINESS',     // enum, do not change
+  description:             'For small teams …',     // 1-2 sentence pitch
+  price_aud_monthly:       29,                      // ← edit prices here
+  price_aud_yearly:        290,                     //   convention: 10×monthly
+  trial_days:              14,                      // 0 for free plans
+  auto_activate_on_signup: false,                   // exactly one per audience
+  badge_text:              undefined,               // e.g. 'Most Popular'
+  cta_text:                'Start Trial',           // button label
+  highlight_color:         '#14b8a6',               // accent stripe hex
+  sort_order:              20,                      // display order on /pricing
+  limits: {                                         // ← edit quotas here
+    task_bookings:   5,
+    active_orders:   2,
+    orders:          5,
+    ai_scopes:       1,
+    contracts:       1,
+    active_tenders:  1,
+  },
+}</code></pre>
+
+<p>Supplier plans add a <code>feature_flags</code> object alongside <code>limits</code>:</p>
+
+<pre><code>feature_flags: {
+  allow_priority_listing: true,
+  allow_project_mode:     true,
+  // … any subset of the 12 supplier flags
+},</code></pre>
+
+<h3>3.3 Procedure</h3>
+
+<ol>
+  <li>Open <code>packages/shared/src/subscription-config.ts</code>.</li>
+  <li>Edit the plan you want. Save.</li>
+  <li><strong>Rebuild the shared package</strong> &mdash; the seed imports from
+      <code>@onys/shared</code>'s <em>built dist</em>, not the TS source:
+    <pre><code>pnpm --filter @onys/shared build</code></pre>
+    <div class="callout warn" style="margin: 8px 0 0;">
+      <strong>Footgun.</strong> Skipping this step will silently run the seed against the
+      previously-built values &mdash; the seed will report "upserted" but the DB ends up
+      with the old numbers. Verify with the curl check in §9 if the price doesn't update.
+    </div>
+  </li>
+  <li>Run the seed:
+    <pre><code>pnpm --filter @onys/api seed:subscriptions</code></pre>
+  </li>
+  <li>Watch the output. You'll see <code>[seed-plans] upserted: customer-business</code> for each
+      changed row, and <code>[seed-plans] stripe synced: …</code> if Stripe is enabled.</li>
+  <li>Reload <code>/pricing</code> &mdash; the client-side refetch on mount picks up the new
+      prices within seconds. If you're testing across server-rendered visits, wait for the
+      Next.js <code>revalidate: 3600</code> window or restart the web dev server.</li>
+  <li>Commit the changed file. Don't commit just the DB &mdash; the source of truth is the file.</li>
+</ol>
+
+<div class="callout success">
+  <strong>The seed is idempotent.</strong> It uses Prisma <code>upsert</code> on the
+  <code>slug</code> column, so re-running doesn't duplicate rows. It also marks plans absent
+  from the source as <code>is_active=false, is_public=false</code> (soft-retire). Run it as
+  often as you like during iteration.
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="admin">§4 Path B &mdash; <code>/admin/subscriptions</code></h2>
+
+<p>For ad-hoc edits that don't justify a deploy. Available to PLATFORM_ADMIN with the
+<code>manage_platform_config</code> permission.</p>
+
+<h3>4.1 What the UI can do</h3>
+
+<table>
+  <thead><tr><th>Action</th><th>API endpoint</th><th>Survives re-seed?</th></tr></thead>
+  <tbody>
+    <tr><td>List all plans (incl. inactive)</td><td><code>GET /admin/subscriptions/plans</code></td><td>n/a</td></tr>
+    <tr><td>Create a one-off plan</td><td><code>POST /admin/subscriptions/plans</code></td><td>✗ &mdash; not in seed source</td></tr>
+    <tr><td>Update a plan (price, limits, flags, copy)</td><td><code>PUT /admin/subscriptions/plans/:id</code></td><td>✗ &mdash; overwritten</td></tr>
+    <tr><td>Soft-delete (set is_active=false)</td><td><code>DELETE /admin/subscriptions/plans/:id</code></td><td>✗ &mdash; seed re-activates if still in config</td></tr>
+    <tr><td>Sync a plan to Stripe</td><td><code>POST /admin/subscriptions/plans/:id/sync-stripe</code></td><td>n/a</td></tr>
+  </tbody>
+</table>
+
+<h3>4.2 Steps</h3>
+
+<ol>
+  <li>Visit <code>/admin/subscriptions</code> while signed in as PLATFORM_ADMIN.</li>
+  <li>Click the plan row you want to edit &rarr; the <code>PlanFormModal</code> opens.</li>
+  <li>Change prices, limits, feature flags, descriptions. Save.</li>
+  <li>If you changed prices, click <strong>Sync to Stripe</strong> on that row &mdash; otherwise
+      checkout will charge the old Stripe Price.</li>
+</ol>
+
+<div class="callout warn">
+  <strong>Drift warning.</strong> A change here is <em>not</em> reflected in
+  <code>subscription-config.ts</code>. The next time anyone runs the seed (CI deploy, dev's
+  laptop, anything) your change disappears. If the change is meant to be permanent, also edit
+  the source file in the same PR.
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="db">§5 Path C &mdash; direct DB update</h2>
+
+<p>Use only when neither A nor B is feasible &mdash; for example: pre-launch promo at 3am and
+the build is broken. Same drift caveat as Path B, with extra risk because there's no admin
+validation.</p>
+
+<pre><code>-- Example: drop the Solo Pro monthly price from $29 to $19 for a weekend promo
+UPDATE subscription_plans
+SET monthly_price_aud = 19,
+    yearly_price_aud  = 190
+WHERE slug = 'supplier-solo';</code></pre>
+
+<div class="callout danger">
+  <strong>Stripe will be out of sync.</strong> Direct DB updates do <em>not</em> touch Stripe
+  Products/Prices. New subscribers will be charged the old Stripe Price unless you also:
+  <ol>
+    <li>Create a new Price in the Stripe Dashboard manually, and</li>
+    <li>Run <code>POST /admin/subscriptions/plans/:id/sync-stripe</code> for that plan ID.</li>
+  </ol>
+  And of course update <code>subscription-config.ts</code> in the same PR so the seed doesn't
+  revert your change.
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="examples">§6 Common scenarios</h2>
+
+<h3>6.1 Change a plan's monthly price</h3>
+
+<ol>
+  <li>Open <code>subscription-config.ts</code>, find the plan map entry.</li>
+  <li>Edit <code>price_aud_monthly</code> (and <code>price_aud_yearly</code> &mdash; convention
+      is 10× monthly).</li>
+  <li>Run <code>pnpm --filter @onys/api seed:subscriptions</code>.</li>
+  <li>Verify on <code>/pricing</code> (client-side refetch &mdash; should be immediate in a
+      fresh tab).</li>
+  <li>Verify the new Stripe Price exists: Stripe Dashboard &rarr; Products &rarr; pick the plan
+      &rarr; Prices.</li>
+</ol>
+
+<h3>6.2 Change a quota limit</h3>
+
+<ol>
+  <li>Edit the relevant key inside <code>limits: { … }</code>.</li>
+  <li>Re-seed.</li>
+  <li>The change is immediately enforced on quota gates &mdash; e.g. a customer who's already
+      placed 4 orders on a plan whose <code>orders</code> limit just went from 5 to 3 will hit
+      the 4th order through, then be blocked on the 5th with an upgrade prompt.</li>
+</ol>
+
+<h3>6.3 Add a feature flag to an existing plan</h3>
+
+<ol>
+  <li>In <code>feature_flags: { … }</code> on the supplier plan, set
+      <code>allow_priority_listing: true</code> (or any of the 12).</li>
+  <li>Re-seed. The flag column flips to <code>true</code> in the DB row.</li>
+  <li><code>/pricing</code> card immediately starts showing the corresponding feature label
+      (e.g. "Priority placement in search").</li>
+  <li>Anywhere in the app that gates on the flag (search ranking, analytics dashboards, etc.)
+      starts honouring it on the next request.</li>
+</ol>
+
+<h3>6.4 Add a brand-new plan</h3>
+
+<ol>
+  <li>Add a new entry to either <code>CUSTOMER_PLANS</code> or <code>SUPPLIER_PLANS</code> in
+      <code>subscription-config.ts</code>. Pick a unique slug.</li>
+  <li>Pick a unique <code>plan_type</code> enum value &mdash; you'll need to add it to the
+      PlanType enum in <code>prisma/schema.prisma</code> and the type union in
+      <code>subscription-config.ts</code>, then generate + run a migration:
+      <pre><code>pnpm --filter api prisma migrate dev --name add_plan_type_xyz</code></pre>
+  </li>
+  <li>Re-seed. The plan is upserted with active+public flags = true and synced to Stripe.</li>
+</ol>
+
+<h3>6.5 Retire a plan</h3>
+
+<ol>
+  <li>Delete its entry from the plan map in <code>subscription-config.ts</code>.</li>
+  <li>Re-seed. The seed sees the plan is absent from the source and runs:
+      <pre><code>UPDATE subscription_plans
+SET is_active = false, is_public = false
+WHERE slug = 'the-retired-slug';</code></pre>
+  </li>
+  <li>Existing subscribers keep their subscriptions until they cancel or renewal fails (Stripe
+      Price remains valid).</li>
+  <li>The plan disappears from <code>/pricing</code> immediately (filter is
+      <code>is_active && is_public</code>).</li>
+</ol>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="stripe">§7 Stripe pricing-sync caveats</h2>
+
+<p>The seed creates Stripe resources in this order, per plan:</p>
+
+<ol>
+  <li>A Stripe <strong>Product</strong> (named after the plan). Idempotent on
+      <code>plan.stripe_product_id</code> &mdash; if already set, the Product is updated, not
+      recreated.</li>
+  <li>A <strong>monthly Price</strong> for the AUD monthly amount. Stored back to
+      <code>plan.stripe_price_id_monthly</code>.</li>
+  <li>A <strong>yearly Price</strong> for the AUD yearly amount. Stored back to
+      <code>plan.stripe_price_id_yearly</code>.</li>
+</ol>
+
+<div class="callout warn">
+  <strong>Prices are immutable in Stripe.</strong> If you change a plan's monthly price, the
+  seed creates a <em>new</em> Price ID and writes it to <code>stripe_price_id_monthly</code>.
+  Existing subscribers stay on the old Price until they cancel and resubscribe. The old Price
+  is archived &mdash; not deleted &mdash; on the Stripe side.
+</div>
+
+<table>
+  <thead><tr><th>Scenario</th><th>What happens</th></tr></thead>
+  <tbody>
+    <tr><td>Price change via Path A</td><td>New Stripe Price minted, old archived, new subscribers charged the new amount, old subscribers grandfathered.</td></tr>
+    <tr><td>Price change via Path B (UI)</td><td>DB updated; Stripe untouched until you click "Sync Stripe" on that plan.</td></tr>
+    <tr><td>Price change via Path C (SQL)</td><td>DB updated; Stripe untouched. <strong>You must</strong> create a Price in Stripe and run the sync endpoint manually.</td></tr>
+    <tr><td>Plan retired (Path A)</td><td>DB row deactivated; Stripe Product remains (just hidden from public catalog). Existing subscribers continue billing on the existing Price.</td></tr>
+    <tr><td>Plan retired (Path B/C without seed alignment)</td><td>Same as above, but a future seed will re-activate the plan &mdash; remove it from <code>subscription-config.ts</code> too.</td></tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="cache">§8 Cache &mdash; why your change isn't showing yet</h2>
+
+<p>Three places the new value might be stuck:</p>
+
+<table>
+  <thead><tr><th>Layer</th><th>What it caches</th><th>How to force a refresh</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Next.js server render</td>
+      <td>The plans JSON pre-fetched in <code>pricing/page.tsx</code> &mdash;
+          <code>revalidate: 3600</code> (1 hour).</td>
+      <td>Wait an hour, restart the dev server (<code>pnpm dev</code>), or trigger a new
+          deploy in production.</td>
+    </tr>
+    <tr>
+      <td>PricingClient mount fetch</td>
+      <td>The plans state after the client-side refetch. Lives only in the current React
+          tree.</td>
+      <td>Reload the page in a fresh tab &mdash; the on-mount fetch hits the live API and
+          replaces whatever the server pre-rendered.</td>
+    </tr>
+    <tr>
+      <td>SubscriptionService config cache</td>
+      <td>Limit-check code reads <code>plan.limits.*</code> via Prisma per-request &mdash; no
+          in-process cache.</td>
+      <td>n/a (changes are reflected immediately).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>Quick check.</strong> Open dev tools, look at the response of
+  <code>GET /api/v1/subscriptions/plans</code> in the Network tab. If the JSON shows your
+  new values, the API is updated &mdash; any UI mismatch is one of the cache layers above.
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="audit">§9 Verifying a change went through</h2>
+
+<p>In order of cost:</p>
+
+<ol>
+  <li><strong>Hit the API directly</strong> &mdash; fastest:
+      <pre><code>curl http://localhost:4000/api/v1/subscriptions/plans | jq '.data[] | {slug, monthly_price_aud, max_active_tasks}'</code></pre>
+  </li>
+  <li><strong>Reload <code>/pricing</code></strong> in a fresh tab. Toggle the audience tab
+      &mdash; if your edit was to a supplier plan you won't see it on the customer tab.</li>
+  <li><strong>Query the DB directly</strong>:
+      <pre><code>cd apps/api &amp;&amp; pnpm prisma studio
+# or
+psql $DATABASE_URL -c "SELECT slug, monthly_price_aud, yearly_price_aud FROM subscription_plans WHERE is_active;"</code></pre>
+  </li>
+  <li><strong>Check Stripe</strong> &mdash; Stripe Dashboard &rarr; Products. Each plan should
+      have exactly two active Prices (monthly + yearly) and any older Prices should be
+      archived.</li>
+</ol>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="anti">§10 Anti-patterns</h2>
+
+<table>
+  <thead><tr><th>Don't&hellip;</th><th>Because&hellip;</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Hard-code a price in <code>PricingClient.tsx</code> or any other UI file.</td>
+      <td>The UI reads from the API, which reads from the DB, which is seeded from
+          <code>subscription-config.ts</code>. Editing the UI bypasses every quota check that
+          uses the DB row's price.</td>
+    </tr>
+    <tr>
+      <td>Skip the seed after editing <code>subscription-config.ts</code>.</td>
+      <td>Nothing reads <code>subscription-config.ts</code> at runtime &mdash; the seed is the
+          only path from the source file to the DB.</td>
+    </tr>
+    <tr>
+      <td>Edit only via <code>/admin/subscriptions</code> and forget to also update the source.</td>
+      <td>The next seed run silently reverts your change. Always treat the admin UI as a
+          "tweak-and-also-update-source" surface, not a permanent edit point.</td>
+    </tr>
+    <tr>
+      <td>Change a price via SQL UPDATE without creating a new Stripe Price.</td>
+      <td>Checkout will charge the old Stripe Price. The plan card will say one number; the
+          customer's card statement will show another.</td>
+    </tr>
+    <tr>
+      <td>Reuse a slug after retiring a plan.</td>
+      <td><code>slug</code> is the upsert key. A new plan with the same slug will <em>update</em>
+          the retired row, including reactivating it. Pick a new slug.</td>
+    </tr>
+    <tr>
+      <td>Add a new plan_type enum value to <code>subscription-config.ts</code> without a
+          Prisma migration.</td>
+      <td>The seed will fail with a Prisma validation error because the enum doesn't accept
+          your new value. Always migrate the schema first.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>Related docs</h3>
+<ul>
+  <li><a href="customer-subscription-plan.html"><code>customer-subscription-plan.html</code></a> &mdash; full customer-side quota spec.</li>
+  <li><a href="supplier-subscription-plan.html"><code>supplier-subscription-plan.html</code></a> &mdash; full supplier-side quota spec.</li>
+  <li><a href="../packages/shared/src/subscription-config.ts">subscription-config.ts</a> &mdash; the source file.</li>
+  <li><a href="../apps/api/src/scripts/seed-subscription-plans.ts">seed-subscription-plans.ts</a> &mdash; the seed script.</li>
+  <li><a href="../apps/api/prisma/schema.prisma">prisma/schema.prisma</a> (line ~2572) &mdash; the SubscriptionPlan model.</li>
+</ul>
+
+<p class="dim" style="margin-top: 40px; font-size: 12px;">
+  Generated 2026-05-09. If this doc drifts from the code, the code wins &mdash; please open a PR
+  to update.
+</p>
+
+</main>
+</body>
+</html>

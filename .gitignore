@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.next/
+.turbo/
+out/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
+
+# Prisma — migrations MUST be committed so the Docker migrate container can deploy them
+
+# Test coverage
+coverage/
+
+# Production secrets - NEVER commit these
+.env.prod
+.env.local
+.env.production
+*.pem
+*.key
+ssl/
+
+### NEW VERSION ###
+
+node_modules/
+.next/
+dist/
+build/
+coverage/
+.env
+.env.*
+!.env.example
+docker-data/
+*.log
+.DS_Store
+.vscode/
+
+# LiveKit config contains real API keys on the server
+livekit.yaml

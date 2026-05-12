@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TalvexIT — Supplier Subscription Plan</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: #111c2e;
+    --panel-2: #16243b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --line: #1f2d44;
+    --teal: #5eead4;
+    --teal-soft: rgba(94, 234, 212, 0.12);
+    --amber: #fbbf24;
+    --amber-soft: rgba(251, 191, 36, 0.10);
+    --red: #f87171;
+    --red-soft: rgba(248, 113, 113, 0.12);
+    --green: #4ade80;
+    --green-soft: rgba(74, 222, 128, 0.12);
+    --blue: #60a5fa;
+    --blue-soft: rgba(96, 165, 250, 0.12);
+    --code: #0f1a2c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px 96px;
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+  }
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 30px;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+  h1 .sub {
+    color: var(--teal);
+    font-weight: 600;
+  }
+  h2 {
+    margin: 56px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    margin: 32px 0 8px;
+    font-size: 17px;
+    color: var(--teal);
+    font-weight: 600;
+  }
+  p { margin: 8px 0 14px; color: var(--text); }
+  small.dim, .dim { color: var(--muted); }
+  code, kbd, pre {
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    font-size: 13px;
+  }
+  code:not(pre code) {
+    background: var(--code);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: #cbd5e1;
+    border: 1px solid var(--line);
+  }
+  pre {
+    background: var(--code);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: var(--panel-2);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.center, th.center { text-align: center; }
+  td .tag {
+    display: inline-block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--teal-soft);
+    color: var(--teal);
+    border: 1px solid rgba(94, 234, 212, 0.25);
+    font-weight: 600;
+  }
+  td .tag.counter { background: var(--blue-soft); color: var(--blue); border-color: rgba(96, 165, 250, 0.25); }
+  td .tag.muted { background: rgba(148,163,184,0.10); color: var(--muted); border-color: rgba(148,163,184,0.20); }
+  .callout {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    background: var(--panel);
+  }
+  .callout.warn { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+  .callout.info { border-left: 4px solid var(--blue); background: var(--blue-soft); }
+  .callout.success { border-left: 4px solid var(--green); background: var(--green-soft); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-soft); }
+  .callout strong { color: var(--text); }
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 12px 0 18px;
+  }
+  .grid-2 .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .grid-2 .card h4 {
+    margin: 0 0 8px;
+    color: var(--teal);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .step {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--teal);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 10px 0;
+  }
+  .step .label {
+    color: var(--teal);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .pill {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(148,163,184,0.10);
+    color: var(--muted);
+    border: 1px solid rgba(148,163,184,0.20);
+    margin-right: 4px;
+    font-weight: 600;
+  }
+  .pill.t { background: var(--teal-soft); color: var(--teal); border-color: rgba(94, 234, 212, 0.25); }
+  .pill.b { background: var(--blue-soft); color: var(--blue); border-color: rgba(96, 165, 250, 0.25); }
+  .pill.a { background: var(--amber-soft); color: var(--amber); border-color: rgba(251, 191, 36, 0.25); }
+  .pill.r { background: var(--red-soft); color: var(--red); border-color: rgba(248, 113, 113, 0.25); }
+  .pill.g { background: var(--green-soft); color: var(--green); border-color: rgba(74, 222, 128, 0.25); }
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 24px 0 32px;
+  }
+  .toc h3 { margin-top: 0; }
+  .toc ol { margin: 0; padding-left: 22px; }
+  .toc li { margin: 3px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--teal); }
+  .check { color: var(--green); font-weight: 700; }
+  .cross { color: var(--red); font-weight: 700; }
+  @media print {
+    body { background: white; color: #111; padding: 16px; }
+    .toc, h2 { break-inside: avoid; }
+    pre, table { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Supplier Subscription Plan <span class="sub">— TalvexIT</span></h1>
+<p class="dim">Single source of truth for the supplier (provider) subscription model: tiers, quotas, gating, period semantics, lifecycle. Companion to <code>docs/customer-subscription-plan.html</code>. Last revised 2026-05-06.</p>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#overview">Overview &amp; design principles</a></li>
+    <li><a href="#tiers">The four supplier tiers</a></li>
+    <li><a href="#quotas">Quota keys (8) &amp; how they behave</a></li>
+    <li><a href="#matrix">The full limits matrix</a></li>
+    <li><a href="#feature-flags">Feature flags (currently decorative)</a></li>
+    <li><a href="#auto-activation">Auto-activation on registration</a></li>
+    <li><a href="#period">Period semantics &amp; rollover</a></li>
+    <li><a href="#enforcement">Where each limit is enforced</a></li>
+    <li><a href="#lifecycle">Trial / cancellation / downgrade</a></li>
+    <li><a href="#stripe">Stripe sync</a></li>
+    <li><a href="#sot">Source of truth (proposed)</a></li>
+    <li><a href="#ui">UI surfaces</a></li>
+    <li><a href="#diffs">Differences from customer plans</a></li>
+    <li><a href="#whats-changing">What changes from the current implementation</a></li>
+    <li><a href="#impl">Implementation checklist</a></li>
+    <li><a href="#future">Future change instructions</a></li>
+    <li><a href="#open">Open questions to confirm</a></li>
+  </ol>
+</div>
+
+<h2 id="overview">1. Overview &amp; design principles</h2>
+
+<p>Suppliers (individual contractors and consulting companies) sit on a four-tier ladder. Every paid tier is <strong>annual or monthly</strong> (yearly = 10× monthly), <strong>no free trial</strong>, with hard caps even on the top tier. The free tier exists so a contractor can register, finish onboarding (KYC + insurance), and publish a single listing to test the workflow — anything beyond that requires a paid plan.</p>
+
+<div class="grid-2">
+  <div class="card">
+    <h4>Design principles</h4>
+    <ul>
+      <li><strong>No trials.</strong> Trial-abuse risk on a marketplace where the supplier <em>publishes</em> listings is high (visibility-grab + cancel). Paid from day one.</li>
+      <li><strong>Hard caps everywhere.</strong> Even Global is capped — abuse prevention &gt; sales pitch.</li>
+      <li><strong>Live counts where it matters.</strong> Concurrent-resource limits (active listings, active orders, team seats) are computed from row counts, not counters — a supplier can't bypass by waiting for a counter reset.</li>
+      <li><strong>Counters only for actions.</strong> Bids placed and orders accepted are counted per period, snapshotted, then reset.</li>
+      <li><strong>Anniversary-monthly</strong> reset (calendar-aware), same engine as customers.</li>
+      <li><strong>Lazy rollover.</strong> No cron — the next limit check refreshes the period.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>What this document covers</h4>
+    <ul>
+      <li>The four tiers and their numbers</li>
+      <li>Eight quota keys, their semantics, and the columns that back them</li>
+      <li>Where the API enforces each limit</li>
+      <li>How periods open, close, and roll over</li>
+      <li>Trial / cancel / downgrade lifecycle</li>
+      <li>Stripe sync &amp; price catalogue</li>
+      <li>UI surfaces (plans, billing, usage)</li>
+      <li>Step-by-step implementation checklist for the migration off the current code</li>
+      <li>How to change limits in future without touching code beyond the shared config</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="tiers">2. The four supplier tiers</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Slug</th>
+      <th>Name</th>
+      <th>plan_type</th>
+      <th class="num">$/mo (AUD)</th>
+      <th class="num">$/yr (AUD)</th>
+      <th class="num">USD</th>
+      <th class="center">Trial</th>
+      <th class="center">Auto&#x2011;activate</th>
+      <th class="center">Sort</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>supplier-free</code></td>
+      <td><strong>Solo Free</strong></td>
+      <td>SUPPLIER_FREE</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="center">0d</td>
+      <td class="center"><span class="check">✓</span></td>
+      <td class="num">50</td>
+    </tr>
+    <tr>
+      <td><code>supplier-solo</code></td>
+      <td><strong>Solo Pro</strong></td>
+      <td>SUPPLIER_SOLO</td>
+      <td class="num">29</td>
+      <td class="num">290</td>
+      <td class="num">—</td>
+      <td class="center">0d</td>
+      <td class="center">—</td>
+      <td class="num">60</td>
+    </tr>
+    <tr>
+      <td><code>supplier-company-starter</code></td>
+      <td><strong>Company</strong> <span class="pill t">Most Popular</span></td>
+      <td>SUPPLIER_COMPANY_STARTER</td>
+      <td class="num">99</td>
+      <td class="num">990</td>
+      <td class="num">—</td>
+      <td class="center">0d</td>
+      <td class="center">—</td>
+      <td class="num">70</td>
+    </tr>
+    <tr>
+      <td><code>supplier-global</code></td>
+      <td><strong>Global</strong></td>
+      <td>SUPPLIER_GLOBAL</td>
+      <td class="num">299</td>
+      <td class="num">2990</td>
+      <td class="num">199 / 1990</td>
+      <td class="center">0d</td>
+      <td class="center">—</td>
+      <td class="num">80</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>Yearly = 10× monthly</strong> across every tier — the same convention as customer plans. Two months free if you commit annually. Stripe holds two prices per plan (monthly + yearly); the seed script creates them and writes the IDs back.
+</div>
+
+<h2 id="quotas">3. Quota keys (8) &amp; how they behave</h2>
+
+<p>Each quota has one canonical key. The same string is referenced by the middleware (<code>requireLimit('…')</code>), the plan-row column, the usage panel, and any audit log entry. Two semantics buckets:</p>
+
+<ul>
+  <li><span class="pill t">computed</span> — current value is calculated from live row counts every check (no counter to reset).</li>
+  <li><span class="pill b">counter</span> — current value lives on the <code>Subscription</code> row and is incremented on each successful gated action; reset to 0 at every period boundary.</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Quota key</th>
+      <th>Plan column</th>
+      <th>Semantic</th>
+      <th>What "current" means</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>active_tasks</code></td>
+      <td><code>max_active_tasks</code></td>
+      <td><span class="tag">computed</span></td>
+      <td>Count of <code>Task</code> rows owned by this supplier whose <code>status</code> is in <code>{ ACTIVE, PUBLISHED }</code> — i.e. listings currently visible on the marketplace for browse/book.</td>
+    </tr>
+    <tr>
+      <td><code>listing_items</code></td>
+      <td><code>allowed_listing_items</code></td>
+      <td><span class="tag">computed</span></td>
+      <td>Total catalogue size: every <code>Task</code> row owned by this supplier regardless of status (including <code>DRAFT</code>, <code>PAUSED</code>, archived). Caps the storage of catalogue items, not their visibility.</td>
+    </tr>
+    <tr>
+      <td><code>active_orders</code></td>
+      <td><code>max_active_orders</code></td>
+      <td><span class="tag">computed</span></td>
+      <td>Orders this supplier is currently delivering — <code>Order.status</code> in <code>{ ACCEPTED, PAYMENT_HELD, IN_PROGRESS, PENDING_REVIEW, REVISION_REQUESTED }</code>.</td>
+    </tr>
+    <tr>
+      <td><code>orders</code></td>
+      <td><code>max_orders_per_month</code></td>
+      <td><span class="tag counter">counter</span></td>
+      <td><code>Subscription.current_order_count</code> — increments when this supplier accepts an order (transitions to ACCEPTED).</td>
+    </tr>
+    <tr>
+      <td><code>active_tenders</code></td>
+      <td><code>max_active_tenders</code></td>
+      <td><span class="tag">computed</span></td>
+      <td>Tenders this supplier has live submissions on — <code>TenderBid.status = SUBMITTED</code> against <code>TenderRequest.status</code> in <code>{ OPEN, REVIEWING }</code>.</td>
+    </tr>
+    <tr>
+      <td><code>active_contracts</code></td>
+      <td><code>max_active_contracts</code></td>
+      <td><span class="tag">computed</span></td>
+      <td><code>TenderContract.status</code> in <code>{ PENDING, ACTIVE, IN_PROGRESS }</code> for this supplier.</td>
+    </tr>
+    <tr>
+      <td><code>bids</code></td>
+      <td><code>max_bids_per_month</code></td>
+      <td><span class="tag counter">counter</span></td>
+      <td><code>Subscription.current_bid_count</code> — increments on every successful bid submission.</td>
+    </tr>
+    <tr>
+      <td><code>domain_categories</code></td>
+      <td><code>max_domain_categories</code></td>
+      <td><span class="tag">computed</span></td>
+      <td>Length of the <code>domains[]</code> array on the supplier entity (<code>ContractorProfile</code> for solo, <code>ConsultingCompany</code> for org).</td>
+    </tr>
+    <tr>
+      <td><code>team_seats</code></td>
+      <td><code>max_team_seats</code></td>
+      <td><span class="tag">computed</span></td>
+      <td>Active <code>CompanyMember</code> rows for this supplier's company (<code>status = ACTIVE</code>). Solo plans have 1 implicit seat (the owner).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <strong>Renamed semantics:</strong> <code>max_active_tasks</code> previously meant "tasks created this period (counter)." It now means "live count of active listings." Code that reads <code>Subscription.current_task_count</code> needs to be removed for suppliers and the column kept only for backward compatibility (or dropped in a future migration). See §14.
+</div>
+
+<h2 id="matrix">4. The full limits matrix</h2>
+
+<p>All numbers are concrete integers. <code>null</code> is no longer used for supplier plans — even Global has hard caps.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Limit</th>
+      <th>Type</th>
+      <th class="num">Free</th>
+      <th class="num">Solo</th>
+      <th class="num">Company</th>
+      <th class="num">Global</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>max_active_tasks</code></td>
+      <td><span class="tag">computed</span></td>
+      <td class="num">1</td>
+      <td class="num">5</td>
+      <td class="num">10</td>
+      <td class="num">25</td>
+    </tr>
+    <tr>
+      <td><code>allowed_listing_items</code></td>
+      <td><span class="tag">computed</span></td>
+      <td class="num">1</td>
+      <td class="num">5</td>
+      <td class="num">10</td>
+      <td class="num">50</td>
+    </tr>
+    <tr>
+      <td><code>max_active_orders</code></td>
+      <td><span class="tag">computed</span></td>
+      <td class="num">1</td>
+      <td class="num">2</td>
+      <td class="num">5</td>
+      <td class="num">25</td>
+    </tr>
+    <tr>
+      <td><code>max_orders_per_month</code></td>
+      <td><span class="tag counter">counter</span></td>
+      <td class="num">1</td>
+      <td class="num">5</td>
+      <td class="num">10</td>
+      <td class="num">50</td>
+    </tr>
+    <tr>
+      <td><code>max_active_tenders</code></td>
+      <td><span class="tag">computed</span></td>
+      <td class="num">0</td>
+      <td class="num">2</td>
+      <td class="num">5</td>
+      <td class="num">25</td>
+    </tr>
+    <tr>
+      <td><code>max_active_contracts</code></td>
+      <td><span class="tag">computed</span></td>
+      <td class="num">0</td>
+      <td class="num">2</td>
+      <td class="num">5</td>
+      <td class="num">25</td>
+    </tr>
+    <tr>
+      <td><code>max_bids_per_month</code></td>
+      <td><span class="tag counter">counter</span></td>
+      <td class="num">0</td>
+      <td class="num">5</td>
+      <td class="num">10</td>
+      <td class="num">50</td>
+    </tr>
+    <tr>
+      <td><code>max_domain_categories</code></td>
+      <td><span class="tag">computed</span></td>
+      <td class="num">2</td>
+      <td class="num">5</td>
+      <td class="num">10</td>
+      <td class="num">28</td>
+    </tr>
+    <tr>
+      <td><code>max_team_seats</code></td>
+      <td><span class="tag">computed</span></td>
+      <td class="num">1</td>
+      <td class="num">1</td>
+      <td class="num">5</td>
+      <td class="num">25</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>Why 28 domain categories on Global?</strong> The platform's IT specialisation taxonomy has exactly 28 entries (see <code>apps/web/src/lib/it-domains.ts</code>). Setting the cap to the full taxonomy means Global suppliers can list across every domain — but they still can't exceed it (no <code>null</code>).
+</div>
+
+<h2 id="feature-flags">5. Feature flags (currently decorative)</h2>
+
+<p>The 12 boolean columns on <code>SubscriptionPlan</code> (<code>allow_priority_listing</code>, <code>allow_project_mode</code>, <code>allow_advanced_analytics</code>, …) <strong>are not enforced anywhere in the API today</strong> — no <code>requireFeature()</code> preHandler is registered on any route. They drive plan-card copy on the public pricing page and nothing else.</p>
+
+<table>
+  <thead>
+    <tr><th>Flag</th><th class="center">Free</th><th class="center">Solo</th><th class="center">Company</th><th class="center">Global</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>allow_priority_listing</td><td class="center">—</td><td class="center"><span class="check">✓</span></td><td class="center"><span class="check">✓</span></td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_project_mode</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_advanced_analytics</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_compliance_docs</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_video_facility</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_overseas_contractors</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_api_access</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_custom_sla</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_whitelabel</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_sso</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_bulk_po</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td></tr>
+    <tr><td>allow_dedicated_manager</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center"><span class="check">✓</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <strong>Decision deferred:</strong> these flags can stay decorative for now (the matrix above is the source of customer-facing copy), or we can wire <code>requireFeature()</code> on the routes that should be gated (e.g. <code>POST /scoping</code> for AI access, supplier project endpoints for project_mode). Flagged in §17 as an open question.
+</div>
+
+<h2 id="auto-activation">6. Auto-activation on registration</h2>
+
+<p>When a user registers as <code>INDIVIDUAL_CONTRACTOR</code> or <code>ORGANIZATION_ADMIN</code>, the registration transaction creates a <code>Subscription</code> row pointing at <code>supplier-free</code> with:</p>
+
+<ul>
+  <li><code>status = ACTIVE</code></li>
+  <li><code>billing_interval = MONTHLY</code></li>
+  <li><code>started_at = period_start = now()</code></li>
+  <li><code>period_end = now() + 1 calendar month</code> (end-of-month clamped — see §7)</li>
+  <li>All counter columns (<code>current_*_count</code>) initialised to <code>0</code></li>
+</ul>
+
+<p>This guarantees the very first call to <code>requireLimit(...)</code> finds an active subscription and a defined period, so the supplier can immediately attempt to publish their first listing (which the gate will allow on Free, since <code>max_active_tasks = 1</code>).</p>
+
+<div class="callout info">
+  <strong>Where:</strong> <code>apps/api/src/services/auth.service.ts</code> in the registration transaction. The slug is currently hardcoded; once the supplier config moves into shared (§11), the helper <code>AUTO_ACTIVATE_SUPPLIER_PLAN_SLUG</code> will resolve it from config the same way <code>AUTO_ACTIVATE_CUSTOMER_PLAN_SLUG</code> does.
+</div>
+
+<h2 id="period">7. Period semantics &amp; rollover</h2>
+
+<h3>Anniversary-monthly with end-of-month clamping</h3>
+<p>A supplier who upgrades on March 15 has period boundaries on the 15th of every month thereafter. Edge cases handled by the <code>addOneMonth()</code> helper in <code>SubscriptionService</code>:</p>
+
+<ul>
+  <li>Jan 31 → Feb 28 (or Feb 29 in a leap year)</li>
+  <li>Feb 28 → Mar 28 (anniversary stabilises)</li>
+  <li>Mar 31 → Apr 30 → May 31 (the 31st is preserved when the target month has it)</li>
+</ul>
+
+<h3>Lazy in-service rollover</h3>
+<p>No cron. Every limit check entry point (<code>SubscriptionService.checkLimit</code>) calls <code>rolloverIfDue(sub)</code> first. If <code>period_end &lt;= now()</code>:</p>
+
+<ol>
+  <li>Snapshot the closing period to <code>SubscriptionUsageHistory</code>:
+    <ul>
+      <li><code>plan_id</code>, <code>plan_name</code> (denormalised so renamed plans don't lose history)</li>
+      <li><code>period_start</code>, <code>period_end</code></li>
+      <li>Every counter column (<code>orders_used</code>, <code>bids_used</code>, …) and its limit at the time</li>
+    </ul>
+  </li>
+  <li>Reset all counter columns on <code>Subscription</code> to 0.</li>
+  <li>Compute the next anniversary boundary: <code>period_start = period_end</code>; <code>period_end = period_end + 1 calendar month</code> (clamped). Loop if multiple periods have elapsed.</li>
+  <li>Write an <code>AUDIT</code> row of type <code>SUBSCRIPTION_PERIOD_ROLLED</code>.</li>
+</ol>
+
+<div class="callout success">
+  <strong>Computed quotas need no rollover.</strong> They re-derive from row counts on every check. Only the two counter quotas (<code>orders</code>, <code>bids</code>) are snapshotted &amp; reset.
+</div>
+
+<h3>Retention</h3>
+<p>Closed-period rows in <code>SubscriptionUsageHistory</code> are retained for <strong>36 months</strong> (same as customers; <code>USAGE_HISTORY_RETENTION_MONTHS</code>). A daily prune job removes rows older than that. Suppliers see the current period plus the most recent 36 closed periods on their billing usage panel.</p>
+
+<h2 id="enforcement">8. Where each limit is enforced</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Quota</th>
+      <th>Route</th>
+      <th>Guard</th>
+      <th>Increment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>active_tasks</code></td>
+      <td><code>POST /tasks</code></td>
+      <td><code>requireLimit('active_tasks')</code> — preHandler</td>
+      <td>n/a (computed)</td>
+    </tr>
+    <tr>
+      <td><code>listing_items</code></td>
+      <td><code>POST /tasks</code> + <code>PATCH /tasks/:id</code> (when status moves out of ARCHIVED)</td>
+      <td><code>requireLimit('listing_items')</code> — preHandler</td>
+      <td>n/a (computed)</td>
+    </tr>
+    <tr>
+      <td><code>active_orders</code></td>
+      <td><code>POST /orders/:id/accept</code> (supplier accept) <em>and</em> <code>POST /orders</code> (catalogue book)</td>
+      <td><code>requireLimit('active_orders')</code> — preHandler</td>
+      <td>n/a (computed)</td>
+    </tr>
+    <tr>
+      <td><code>orders</code> (per month)</td>
+      <td>Same accept/book endpoints</td>
+      <td><code>requireLimit('orders')</code> — preHandler</td>
+      <td>increment <code>current_order_count</code> on success</td>
+    </tr>
+    <tr>
+      <td><code>active_tenders</code></td>
+      <td><code>POST /tenders/:id/bids</code></td>
+      <td><code>requireLimit('active_tenders')</code> — preHandler</td>
+      <td>n/a (computed from live bid + tender state)</td>
+    </tr>
+    <tr>
+      <td><code>active_contracts</code></td>
+      <td><code>POST /tender-contracts</code> (when supplier accepts)</td>
+      <td><code>requireLimit('active_contracts')</code> — preHandler</td>
+      <td>n/a (computed)</td>
+    </tr>
+    <tr>
+      <td><code>bids</code> (per month)</td>
+      <td><code>POST /tenders/:id/bids</code></td>
+      <td><code>requireLimit('bids')</code> — preHandler</td>
+      <td>increment <code>current_bid_count</code> on success</td>
+    </tr>
+    <tr>
+      <td><code>domain_categories</code></td>
+      <td><code>PATCH /contractor/profile</code> &amp; <code>PATCH /companies/me</code></td>
+      <td><code>requireLimit('domain_categories')</code> — preHandler on routes that mutate <code>domains[]</code></td>
+      <td>n/a (computed from final array)</td>
+    </tr>
+    <tr>
+      <td><code>team_seats</code></td>
+      <td><code>POST /companies/me/members/invite</code></td>
+      <td><code>requireLimit('team_seats')</code> — preHandler (already wired)</td>
+      <td>n/a (computed)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>The middleware is generic.</strong> <code>makeSubscriptionGuards(svc).requireLimit(key)</code> returns a Fastify preHandler that calls <code>checkLimit(userId, key)</code>, returns <code>429 SUBSCRIPTION_LIMIT_REACHED</code> with structured error body if the limit is hit, and increments the counter (when the key is in <code>COUNTER_BACKED</code>) on the way through. The trade-off: a counter increment that survives a downstream failure costs the supplier one quota slot. Acceptable for MVP — the alternative (post-success increment) requires every handler to call back into the service.
+</div>
+
+<h2 id="lifecycle">9. Trial / cancellation / downgrade</h2>
+
+<h3>Trial</h3>
+<p><strong>None.</strong> Every supplier plan ships <code>trial_days = 0</code>. Suppliers must commit to a paid tier to publish more than the free quota. Stripe checkout therefore never carries a <code>trial_period_days</code> for supplier plans — the customer is charged on day one.</p>
+
+<h3>Cancellation</h3>
+<p>Three triggers:</p>
+<ol>
+  <li><strong>User self-cancels</strong> via the Stripe Billing Portal → Stripe sets <code>cancel_at_period_end = true</code> → at <code>current_period_end</code> Stripe fires <code>customer.subscription.deleted</code>.</li>
+  <li><strong>Payment fails</strong> through the dunning grace window → Stripe terminates the sub → same webhook fires.</li>
+  <li><strong>Admin force-cancels</strong> via internal tooling → API directly cancels in Stripe → same webhook fires.</li>
+</ol>
+
+<h3>Auto-downgrade to free</h3>
+<p>On <code>customer.subscription.deleted</code> for a plan with <code>plan_type</code> matching <code>SUPPLIER_*</code>, the webhook handler:</p>
+<ol>
+  <li>Looks up the <code>supplier-free</code> plan row.</li>
+  <li>Updates the existing <code>Subscription</code> row (does NOT create a new one):
+    <ul>
+      <li><code>plan_id = supplier-free.id</code></li>
+      <li><code>status = ACTIVE</code></li>
+      <li><code>billing_interval = MONTHLY</code></li>
+      <li><code>stripe_subscription_id = null</code>, <code>stripe_current_period_start/end = null</code></li>
+      <li><code>period_start = now()</code>, <code>period_end = now() + 1 month</code></li>
+      <li>All <code>current_*_count</code> reset to 0</li>
+    </ul>
+  </li>
+  <li>Writes <code>SUBSCRIPTION_AUTO_DOWNGRADED_TO_FREE</code> audit.</li>
+</ol>
+
+<div class="callout success">
+  Same shape as the customer auto-downgrade (<code>customer-starter</code>). Single code path with a per-audience plan-slug resolver — no duplication.
+</div>
+
+<div class="callout warn">
+  <strong>Behaviour change vs current:</strong> today, supplier cancellations stay <code>CANCELLED</code> with no auto-downgrade, which means the next gated action returns <code>NO_ACTIVE_SUBSCRIPTION</code> — the supplier is locked out until they resubscribe. This document changes that to mirror customer behaviour. See §14.
+</div>
+
+<h2 id="stripe">10. Stripe sync</h2>
+
+<p>The seed script's <code>syncPlanToStripe(planId)</code> call (already implemented for customers) is invoked for each <code>SUPPLIER_*</code> tier when <code>STRIPE_SECRET_KEY</code> is present. Per supplier plan it:</p>
+
+<ol>
+  <li>Upserts a Stripe <code>Product</code> with <code>id = price-id-friendly-slug</code>.</li>
+  <li>Creates two recurring <code>Price</code> rows: <code>monthly</code> (interval=month) and <code>yearly</code> (interval=year).</li>
+  <li>For <code>supplier-global</code> only, also creates two USD prices (separate currency entries on the same product).</li>
+  <li>Writes <code>stripe_product_id</code>, <code>stripe_price_id_monthly</code>, <code>stripe_price_id_yearly</code> back onto the <code>SubscriptionPlan</code> row.</li>
+</ol>
+
+<div class="callout info">
+  <strong>Free tier:</strong> <code>supplier-free</code> never touches Stripe — no Product, no Prices, no Customer, no Subscription. The local <code>Subscription</code> row exists with <code>plan_id = supplier-free.id</code> and <code>stripe_subscription_id = null</code> as the marker.
+</div>
+
+<h2 id="sot">11. Source of truth (proposed)</h2>
+
+<p>Today: supplier plan numbers live inline in <code>apps/api/src/scripts/seed-subscription-plans.ts</code>; customer plan numbers live in <code>packages/shared/src/subscription-config.ts</code>. Inconsistent.</p>
+
+<p>Proposal: lift suppliers into the same shared file. The structure mirrors what we built for customers.</p>
+
+<pre>// packages/shared/src/subscription-config.ts
+
+export const SUPPLIER_QUOTA_KEYS = [
+  'active_tasks',        // computed
+  'listing_items',       // computed
+  'active_orders',       // computed
+  'orders',              // counter, monthly
+  'active_tenders',      // computed
+  'active_contracts',    // computed
+  'bids',                // counter, monthly
+  'domain_categories',   // computed
+  'team_seats',          // computed
+] as const;
+
+export type SupplierQuotaKey = (typeof SUPPLIER_QUOTA_KEYS)[number];
+
+export const SUPPLIER_COUNTER_QUOTAS: SupplierQuotaKey[] = [
+  'orders',
+  'bids',
+];
+
+export interface SupplierPlanLimits {
+  active_tasks: number;
+  listing_items: number;
+  active_orders: number;
+  orders: number;
+  active_tenders: number;
+  active_contracts: number;
+  bids: number;
+  domain_categories: number;
+  team_seats: number;
+}
+
+export interface SupplierPlanDef {
+  slug: string;
+  name: string;
+  plan_type: 'SUPPLIER_FREE' | 'SUPPLIER_SOLO'
+    | 'SUPPLIER_COMPANY_STARTER' | 'SUPPLIER_GLOBAL';
+  description: string;
+  price_aud_monthly: number;
+  price_aud_yearly: number;          // = 10 × monthly
+  price_usd_monthly?: number;        // global only
+  price_usd_yearly?: number;
+  trial_days: 0;                     // hard-coded zero — see §9
+  auto_activate_on_signup: boolean;  // exactly one SUPPLIER_* plan should be true
+  badge_text?: string;
+  cta_text: string;
+  highlight_color: string;
+  sort_order: number;
+  limits: SupplierPlanLimits;
+  feature_flags: Partial&lt;Record&lt;FeatureFlagKey, boolean&gt;&gt;;
+}
+
+export const SUPPLIER_PLANS: Readonly&lt;Record&lt;string, SupplierPlanDef&gt;&gt; = {
+  'supplier-free': { …limits: { active_tasks: 1, listing_items: 1, … } },
+  'supplier-solo': { …limits: { active_tasks: 5, listing_items: 5, … } },
+  'supplier-company-starter': { …limits: { active_tasks: 10, listing_items: 10, … } },
+  'supplier-global': { …limits: { active_tasks: 25, listing_items: 50, … } },
+};
+
+export const SUPPLIER_PLAN_LIST = Object.values(SUPPLIER_PLANS);
+
+export const AUTO_ACTIVATE_SUPPLIER_PLAN_SLUG: string =
+  SUPPLIER_PLAN_LIST.find(p =&gt; p.auto_activate_on_signup)?.slug
+    ?? 'supplier-free';
+</pre>
+
+<p>The seed script then drops the inline supplier definitions and imports <code>SUPPLIER_PLAN_LIST</code> the same way it imports <code>CUSTOMER_PLAN_LIST</code>.</p>
+
+<h2 id="ui">12. UI surfaces</h2>
+
+<table>
+  <thead>
+    <tr><th>Surface</th><th>What it shows</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>/contractor/plans</code></td>
+      <td><code>&lt;PlanSelector audience="SUPPLIER" /&gt;</code> — four plan cards with feature lists and upgrade CTAs.</td>
+      <td>Exists; needs feature-row regeneration to use the new 9-quota matrix.</td>
+    </tr>
+    <tr>
+      <td><code>/pricing</code></td>
+      <td>Public marketing page with the same four cards, plus customer plans on a tabbed switcher.</td>
+      <td>Exists; needs the same regeneration.</td>
+    </tr>
+    <tr>
+      <td><code>/subscribe</code></td>
+      <td>Self-serve upgrade flow that takes the supplier into Stripe Checkout for the chosen plan + interval.</td>
+      <td>Exists; will pick up the new prices as soon as the seed runs.</td>
+    </tr>
+    <tr>
+      <td><code>/billing</code> (supplier subject)</td>
+      <td>Subscription card + invoices + a usage panel with all 9 quotas, the next reset countdown, and a closed-period history table.</td>
+      <td>Today renders a legacy 10-meter block that doesn't match the new matrix. Needs a dedicated <code>SupplierUsagePanel</code> component, parallel to the <code>SubscriptionUsagePanel</code> we built for customers.</td>
+    </tr>
+    <tr>
+      <td><code>/company/billing</code></td>
+      <td>Same as <code>/billing</code> but with <code>subject="company"</code>; only the company primary admin can access.</td>
+      <td>Same component, same panel — already audience-aware via <code>BillingDashboard</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Warning thresholds</h3>
+<p>Customer plans use the <code>warningThresholdFor(planSlug, limit)</code> helper: Free + Business warn at <code>remaining ≤ 1</code>; Pro + Enterprise warn at <code>remaining ≤ 20%</code>. For suppliers we'll mirror this:</p>
+
+<ul>
+  <li><code>supplier-free</code> + <code>supplier-solo</code> → warn at <code>remaining ≤ 1</code></li>
+  <li><code>supplier-company-starter</code> + <code>supplier-global</code> → warn at <code>remaining ≤ 20%</code> (rounded up, min 1)</li>
+</ul>
+
+<h2 id="diffs">13. Differences from customer plans</h2>
+
+<table>
+  <thead>
+    <tr><th>Aspect</th><th>Customer</th><th>Supplier</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tiers</td>
+      <td>4 (Starter / Business / Pro / Enterprise)</td>
+      <td>4 (Free / Solo / Company / Global)</td>
+    </tr>
+    <tr>
+      <td>Trial</td>
+      <td>14 days on every paid tier</td>
+      <td><strong>0 days</strong> on every tier</td>
+    </tr>
+    <tr>
+      <td>Quotas</td>
+      <td>6 (task_bookings, active_orders, orders, ai_scopes, contracts, active_tenders)</td>
+      <td>9 (active_tasks, listing_items, active_orders, orders, active_tenders, active_contracts, bids, domain_categories, team_seats)</td>
+    </tr>
+    <tr>
+      <td>Counter quotas</td>
+      <td>4 (task_bookings, orders, ai_scopes, contracts)</td>
+      <td>2 (orders, bids)</td>
+    </tr>
+    <tr>
+      <td>Top tier ceiling</td>
+      <td>Hard caps (Enterprise: 25 / 20 / 25 / 10 / 10 / 5)</td>
+      <td>Hard caps (Global: 25 / 50 / 25 / 50 / 25 / 25 / 50 / 28 / 25)</td>
+    </tr>
+    <tr>
+      <td>USD pricing</td>
+      <td>None — AUD only</td>
+      <td>Global only (USD 199 / 1990)</td>
+    </tr>
+    <tr>
+      <td>Cancel-to-free downgrade</td>
+      <td>Yes (auto)</td>
+      <td>Yes (auto) — <em>new in this rev</em></td>
+    </tr>
+    <tr>
+      <td>Auto-activate slug</td>
+      <td><code>customer-starter</code></td>
+      <td><code>supplier-free</code></td>
+    </tr>
+    <tr>
+      <td>Source of truth</td>
+      <td><code>subscription-config.ts</code> (CUSTOMER_PLANS)</td>
+      <td><code>subscription-config.ts</code> (SUPPLIER_PLANS) — <em>after the migration in §11</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="whats-changing">14. What changes from the current implementation</h2>
+
+<h3>Removed columns / quotas</h3>
+<ul>
+  <li><code>max_consultant_profiles</code> — was always returning <code>current = 0</code>; no enforcement; no UI; remove from schema, seed, types, and the <code>LimitType</code> union. <strong>Migration:</strong> drop the column.</li>
+  <li><code>max_storage_gb</code> — same story; never enforced.</li>
+  <li><code>max_active_projects</code> — only set on Global, no enforcement, no UI. Remove.</li>
+  <li><code>max_ai_requests_per_month</code> on supplier plans — already not enforced for suppliers; the <code>ai_requests</code> column stays on the schema (customer plans use it as <code>ai_scopes</code>) but supplier plan rows null it out.</li>
+</ul>
+
+<h3>Renamed / repurposed quotas</h3>
+<ul>
+  <li><code>max_active_tasks</code>: was a <strong>monthly counter</strong>, now a <strong>live concurrent count</strong>. Implementation: drop the <code>current_task_count</code> read from the supplier path; replace with a <code>prisma.task.count({ where: { user_id|company_id, status: { in: ACTIVE_STATUSES } } })</code> in <code>resolveCurrentAndLimit</code>. Counter column stays on schema for backward compat but is no longer incremented on POST /tasks.</li>
+</ul>
+
+<h3>Newly active quotas</h3>
+<ul>
+  <li><code>allowed_listing_items</code>: existed as a column with <code>current = 0</code>, now wired to <code>prisma.task.count({ where: { user_id|company_id } })</code> (all statuses).</li>
+  <li><code>max_orders_per_month</code>: existed but supplier plans had it null. Now seeded with values; gated on the supplier accept-order endpoint and the catalogue book endpoint.</li>
+  <li><code>max_active_tenders</code>: existed but only used customer-side. Now seeded with supplier values and gated on <code>POST /tenders/:id/bids</code>.</li>
+</ul>
+
+<h3>Behaviour changes</h3>
+<ul>
+  <li><strong>Trial removed</strong> from every paid supplier tier (was 14 days on Solo + Company).</li>
+  <li><strong>Hard caps on Global.</strong> Previously every limit was <code>null</code> (unlimited). Now everything is a finite number.</li>
+  <li><strong>Auto-downgrade on cancel.</strong> The webhook handler no longer leaves cancelled supplier subs as <code>CANCELLED</code>; it auto-downgrades to <code>supplier-free</code>.</li>
+</ul>
+
+<h3>Schema migration</h3>
+<pre>-- 20260507120000_supplier_subscription_rebuild
+
+-- 1) Drop dead columns from subscription_plans
+ALTER TABLE subscription_plans
+  DROP COLUMN IF EXISTS max_consultant_profiles,
+  DROP COLUMN IF EXISTS max_storage_gb,
+  DROP COLUMN IF EXISTS max_active_projects;
+
+-- 2) Drop dead counter from subscriptions (max_active_tasks no longer counter-backed)
+-- Keep current_task_count for now to avoid breaking the deploy; remove in a
+-- follow-up once we're certain nothing reads it.
+-- ALTER TABLE subscriptions DROP COLUMN current_task_count;
+
+-- 3) Drop dead counter from subscription_usage_history
+-- Same migration plan — leave for a follow-up.
+</pre>
+
+<h2 id="impl">15. Implementation checklist</h2>
+
+<div class="step">
+  <span class="label">Step 1 — shared config</span>
+  <p>Create <code>SUPPLIER_PLANS</code>, <code>SUPPLIER_QUOTA_KEYS</code>, <code>SUPPLIER_COUNTER_QUOTAS</code>, <code>SUPPLIER_PLAN_LIST</code>, <code>AUTO_ACTIVATE_SUPPLIER_PLAN_SLUG</code> in <code>packages/shared/src/subscription-config.ts</code> with the numbers from §4 and the feature-flag map from §5.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 2 — extend LimitType</span>
+  <p>In <code>packages/shared/src/schemas/subscription.schema.ts</code>: add <code>'active_tasks'</code> and <code>'listing_items'</code> to <code>LIMIT_TYPES</code>. Remove <code>'storage'</code> and other unused entries if they exist.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 3 — seed script</span>
+  <p>Refactor <code>apps/api/src/scripts/seed-subscription-plans.ts</code>: replace the inline supplier <code>PLANS</code> entries with a <code>SUPPLIER_PLAN_SEEDS</code> built from <code>SUPPLIER_PLAN_LIST</code> (mirror the existing <code>CUSTOMER_PLAN_SEEDS</code> mapper). Drop <code>max_consultant_profiles</code> / <code>max_storage_gb</code> / <code>max_active_projects</code> from the upsert payload.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 4 — Prisma migration</span>
+  <p>Add the migration in §14. Run <code>prisma migrate deploy</code> on local + every environment.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 5 — service layer</span>
+  <p><code>SubscriptionService.resolveCurrentAndLimit</code>: add cases for <code>active_tasks</code> (compute via <code>task.count</code> with status in active set) and <code>listing_items</code> (<code>task.count</code> all statuses). Remove dead cases (<code>storage</code>, <code>listing_items</code> returning 0, <code>consultant_profiles</code> returning 0).</p>
+  <p><code>incrementUsage</code>: drop <code>'tasks'</code> from <code>UsageType</code> for the supplier path (kept only because customer side never used it). Confirm the only counter-backed supplier quotas left are <code>orders</code> and <code>bids</code>.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 6 — middleware</span>
+  <p><code>apps/api/src/middleware/subscription-limits.ts</code>: update <code>COUNTER_BACKED</code>:</p>
+  <pre>const COUNTER_BACKED = {
+  // suppliers
+  bids: 'bids',
+  orders: 'orders',
+  // customers (unchanged)
+  task_bookings: 'task_bookings',
+  contracts: 'contracts',
+  ai_scopes: 'ai_requests',
+};</pre>
+  <p>Ensure <code>active_tasks</code>, <code>listing_items</code>, <code>active_orders</code>, <code>active_tenders</code>, <code>active_contracts</code>, <code>domain_categories</code>, <code>team_seats</code> are NOT in this map.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 7 — wire the new gates</span>
+  <p>Add <code>requireLimit('active_tasks')</code> and <code>requireLimit('listing_items')</code> as preHandlers on <code>POST /tasks</code> in <code>task.routes.ts</code>. Add <code>requireLimit('active_tenders')</code> and <code>requireLimit('bids')</code> on <code>POST /tenders/:id/bids</code>. Add <code>requireLimit('active_orders')</code> + <code>requireLimit('orders')</code> on the supplier order-accept endpoint. Add <code>requireLimit('domain_categories')</code> on <code>PATCH /contractor/profile</code> and <code>PATCH /companies/me</code> only when the request mutates the <code>domains[]</code> array.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 8 — auto-downgrade on cancel</span>
+  <p><code>apps/api/src/services/subscription-webhook.service.ts</code> — extend the existing <code>handleSubscriptionDeleted</code> branch: if <code>plan_type</code> starts with <code>SUPPLIER_</code>, downgrade to <code>supplier-free</code> using the same shape as the customer downgrade (same audit type for parity, but log the downgrade target slug).</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 9 — auth.service.ts auto-activation</span>
+  <p>Replace the hardcoded <code>'supplier-free'</code> string with <code>AUTO_ACTIVATE_SUPPLIER_PLAN_SLUG</code> imported from <code>@onys/shared</code>.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 10 — usage endpoint</span>
+  <p>Extend <code>GET /subscriptions/me/usage</code> (currently customer-shaped) to return supplier-shaped data when the caller is on a SUPPLIER_* plan: same envelope (<code>{ period, quotas, history }</code>), 9 quota entries instead of 6.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 11 — UI: SupplierUsagePanel</span>
+  <p>Build <code>apps/web/src/components/supplier/SupplierUsagePanel.tsx</code> mirroring <code>SubscriptionUsagePanel</code>: 9 quota bars, anniversary-monthly countdown, collapsible 36-period history table. Wire it in <code>BillingDashboard</code> for <code>account_type ∈ { INDIVIDUAL_CONTRACTOR, ORGANIZATION_ADMIN, COMPANY_ADMIN }</code> when <code>subject = 'user'</code> or <code>subject = 'company'</code>.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 12 — UI: PlanSelector + SubscribeClient</span>
+  <p>Update the audience-aware feature builder to use the 9-quota structure for SUPPLIER cards. Same ✓/✗ rendering as customers (✗ when value = 0 with strikethrough; ✓ otherwise). Drop the diff lines (matched the customer change).</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 13 — backfill</span>
+  <p>One-shot script: every existing <code>Subscription</code> on a current SUPPLIER_* plan keeps its plan but gets <code>period_start</code>/<code>period_end</code> normalised to anniversary semantics if missing, and counter columns reset only if currently above the new caps.</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 14 — re-seed</span>
+  <p><code>pnpm --filter @onys/api seed:subscriptions</code> on every environment in turn. Confirms the new prices land in Stripe (test then live).</p>
+</div>
+
+<div class="step">
+  <span class="label">Step 15 — manual verification</span>
+  <p>For each tier: register a fresh user → confirm auto-activation → publish listings up to the cap → confirm 429 on the cap+1 → cancel → confirm auto-downgrade to free → confirm period rollover by manipulating <code>period_end</code>.</p>
+</div>
+
+<h2 id="future">16. Future change instructions</h2>
+
+<h3>To change a supplier limit number</h3>
+<ol>
+  <li>Edit the value in <code>packages/shared/src/subscription-config.ts</code>.</li>
+  <li>Run <code>pnpm --filter @onys/api seed:subscriptions</code>.</li>
+  <li>No migration, no schema change. The plan-row update propagates immediately to every <code>Subscription</code> via the <code>plan_id</code> join.</li>
+</ol>
+
+<h3>To add a new quota</h3>
+<ol>
+  <li>Add the canonical key to <code>SUPPLIER_QUOTA_KEYS</code> and <code>LIMIT_TYPES</code>.</li>
+  <li>Add a <code>max_*</code> column on <code>SubscriptionPlan</code> via Prisma migration.</li>
+  <li>Add a case in <code>SubscriptionService.resolveCurrentAndLimit</code>.</li>
+  <li>If counter-backed: add a counter column on <code>Subscription</code>, extend <code>UsageType</code>, add to <code>COUNTER_BACKED</code>, extend the rollover snapshot.</li>
+  <li>Wire <code>requireLimit('newKey')</code> as a preHandler on the relevant route(s).</li>
+  <li>Add the bar to <code>SupplierUsagePanel</code> and the row to <code>PlanSelector</code>.</li>
+  <li>Re-seed.</li>
+</ol>
+
+<h3>To add a feature flag</h3>
+<ol>
+  <li>Add the boolean column to <code>SubscriptionPlan</code> via migration.</li>
+  <li>Add to the <code>ALL_FLAGS</code> list in the seed script.</li>
+  <li>Set the values per plan in <code>SUPPLIER_PLANS</code>.</li>
+  <li>If the flag should be enforced: add <code>requireFeature('flag_name')</code> as a preHandler on the relevant route. Plan-card copy will pick up the boolean automatically.</li>
+</ol>
+
+<h3>To change pricing</h3>
+<ol>
+  <li>Edit <code>price_aud_monthly</code> / <code>price_aud_yearly</code> in shared config.</li>
+  <li>Re-seed. The seed deletes old Stripe Prices (or marks them inactive) and creates new ones; <code>stripe_price_id_*</code> is updated on the plan row.</li>
+  <li>Existing subscribers stay on their grandfathered Stripe Price. New checkouts use the new Price.</li>
+</ol>
+
+<h2 id="open">17. Open questions to confirm before implementation</h2>
+
+<div class="callout warn">
+  <ol>
+    <li><strong>Is my reading of <code>max_active_tasks</code> vs <code>allowed_listing_items</code> correct?</strong> Active = currently published &amp; visible on marketplace; listing_items = total catalogue including drafts/paused. Caps differ on Global only (25 vs 50).</li>
+    <li><strong>Domain categories cap of 28 on Global</strong> — that's exactly the size of the IT taxonomy. Is that intentional (no domain is off-limits) or should it be 29+ to leave headroom for new specialisations?</li>
+    <li><strong>Feature flags — enforce or stay decorative?</strong> Wiring <code>requireFeature()</code> on (e.g.) <code>allow_video_facility</code> would block Free + Solo from the in-call recording / KYC video features. Worth a per-flag review before wiring.</li>
+    <li><strong>USD pricing on Global only</strong> — confirmed? Or do we want USD prices on all tiers for overseas suppliers?</li>
+    <li><strong>Backfill behaviour for existing subscribers above the new caps</strong> — soft-warn for 30 days then hard-block, or hard-block immediately? Recommend the warn window since some Global subs are currently sitting on <code>null</code> (unlimited) and may have more than 25 active orders right now.</li>
+    <li><strong>Yearly = 10× monthly</strong> — sanity-check against business plan. Same convention as customers.</li>
+  </ol>
+</div>
+
+<hr>
+
+<p class="dim" style="margin-top: 48px;">Document version 1.0 — 2026-05-06. Authored alongside the supplier subscription rebuild plan. Companion: <code>docs/customer-subscription-plan.html</code> (customer-side equivalent). Source of truth for numbers post-migration: <code>packages/shared/src/subscription-config.ts</code>.</p>
+
+</main>
+</body>
+</html>

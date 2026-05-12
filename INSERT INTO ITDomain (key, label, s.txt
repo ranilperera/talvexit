@@ -1,0 +1,23 @@
+INSERT INTO "ITDomain" (key, label, short_label, icon, description, sort_order, insurance_tier)
+VALUES
+  ('FIREWALL',      'Firewall & Network Security',   'Firewall',    '🔥', 'Enterprise firewall configuration, rule management, and network perimeter security.',          1,  'HIGH_RISK'),
+  ('NETWORKING',    'Networking & Infrastructure',   'Networking',  '🌐', 'LAN/WAN design, switches, routers, SD-WAN, and network troubleshooting.',                     2,  'ELEVATED'),
+  ('DATABASE',      'Database Administration',       'Database',    '🗄️', 'SQL Server, PostgreSQL, Oracle, MySQL — DBA, tuning, migration, and HA.',                     3,  'ELEVATED'),
+  ('CLOUD_AZURE',   'Cloud Infrastructure',          'Cloud',       '☁️', 'Azure, AWS, and GCP architecture, migration, and managed services.',                          4,  'HIGH_RISK'),
+  ('LINUX',         'Linux Systems',                 'Linux',       '🐧', 'Linux server administration, scripting, hardening, and performance tuning.',                  5,  'STANDARD'),
+  ('WINDOWS_ADMIN', 'Windows Administration',        'Windows',     '🖥️', 'Active Directory, Group Policy, Windows Server, and desktop management.',                    6,  'STANDARD'),
+  ('CYBERSECURITY', 'Cybersecurity',                 'Security',    '🔒', 'Penetration testing, SIEM, incident response, compliance, and risk assessment.',              7,  'HIGH_RISK'),
+  ('DEVOPS',        'DevOps & CI/CD',                'DevOps',      '⚙️', 'Pipeline automation, containerisation, Kubernetes, and infrastructure as code.',              8,  'ELEVATED'),
+  ('STORAGE',       'Storage & SAN',                 'Storage',     '💾', 'SAN, NAS, object storage, capacity planning, and data tiering.',                             9,  'ELEVATED'),
+  ('VIRTUALIZATION','Virtualisation',                'Virtual',     '📦', 'VMware vSphere, Hyper-V, Proxmox — VM provisioning, vMotion, and consolidation.',            10, 'STANDARD'),
+  ('OFFICE_365',    'Microsoft 365',                 'M365',        '📧', 'Exchange Online, Teams, SharePoint, Intune, and tenant administration.',                     11, 'STANDARD'),
+  ('BACKUP',        'Backup & Disaster Recovery',    'Backup & DR', '💿', 'Veeam, Commvault, Backup Exec — RPO/RTO design, DR testing, and replication.',              12, 'ELEVATED'),
+  ('AI_INTEGRATION','AI & Automation',               'AI',          '🤖', 'AI/ML integration, process automation, Power Automate, and scripting.',                      13, 'HIGH_RISK'),
+  ('SYSTEM_ADMIN',  'System Administration',         'SysAdmin',    '🛠️', 'General IT operations, end-user support escalation, and infrastructure management.',         14, 'ELEVATED')
+ON CONFLICT (key) DO UPDATE SET
+  label          = EXCLUDED.label,
+  short_label    = EXCLUDED.short_label,
+  icon           = EXCLUDED.icon,
+  description    = EXCLUDED.description,
+  sort_order     = EXCLUDED.sort_order,
+  insurance_tier = EXCLUDED.insurance_tier;

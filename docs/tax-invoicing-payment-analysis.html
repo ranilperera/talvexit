@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TalvexIT — Tax, Invoicing &amp; Payment Analysis</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: #111c2e;
+    --panel-2: #16243b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --line: #1f2d44;
+    --teal: #5eead4;
+    --teal-soft: rgba(94, 234, 212, 0.12);
+    --amber: #fbbf24;
+    --amber-soft: rgba(251, 191, 36, 0.10);
+    --red: #f87171;
+    --red-soft: rgba(248, 113, 113, 0.12);
+    --green: #4ade80;
+    --green-soft: rgba(74, 222, 128, 0.12);
+    --blue: #60a5fa;
+    --blue-soft: rgba(96, 165, 250, 0.12);
+    --code: #0f1a2c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px 96px;
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+  }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h1 .sub { color: var(--teal); font-weight: 600; }
+  h2 {
+    margin: 56px 0 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    font-size: 22px; letter-spacing: -0.01em;
+  }
+  h3 { margin: 32px 0 8px; font-size: 17px; color: var(--teal); font-weight: 600; }
+  h4 { margin: 20px 0 6px; font-size: 14px; color: var(--text); font-weight: 600; }
+  p { margin: 8px 0 14px; }
+  small.dim, .dim { color: var(--muted); }
+  code, kbd, pre {
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    font-size: 13px;
+  }
+  code:not(pre code) {
+    background: var(--code); padding: 1px 6px; border-radius: 4px;
+    color: #cbd5e1; border: 1px solid var(--line);
+  }
+  pre {
+    background: var(--code); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; color: #cbd5e1; line-height: 1.5;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 12px 0 18px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+  }
+  th, td {
+    padding: 10px 12px; text-align: left;
+    border-bottom: 1px solid var(--line); vertical-align: top;
+  }
+  th {
+    background: var(--panel-2); font-weight: 600; color: var(--text);
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.center, th.center { text-align: center; }
+  .callout {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; margin: 16px 0; background: var(--panel);
+  }
+  .callout.warn { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+  .callout.info { border-left: 4px solid var(--blue); background: var(--blue-soft); }
+  .callout.success { border-left: 4px solid var(--green); background: var(--green-soft); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-soft); }
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+  .pill {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 999px; background: rgba(148,163,184,0.10);
+    color: var(--muted); border: 1px solid rgba(148,163,184,0.20);
+    margin-right: 4px; font-weight: 600;
+  }
+  .pill.t { background: var(--teal-soft); color: var(--teal); border-color: rgba(94, 234, 212, 0.25); }
+  .pill.b { background: var(--blue-soft); color: var(--blue); border-color: rgba(96, 165, 250, 0.25); }
+  .pill.a { background: var(--amber-soft); color: var(--amber); border-color: rgba(251, 191, 36, 0.25); }
+  .pill.r { background: var(--red-soft); color: var(--red); border-color: rgba(248, 113, 113, 0.25); }
+  .pill.g { background: var(--green-soft); color: var(--green); border-color: rgba(74, 222, 128, 0.25); }
+  .toc {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px 20px; margin: 24px 0 32px;
+  }
+  .toc h3 { margin-top: 0; }
+  .toc ol { margin: 0; padding-left: 22px; }
+  .toc li { margin: 3px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--teal); }
+  .priority {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 4px; font-weight: 700; letter-spacing: 0.05em;
+    margin-right: 8px;
+  }
+  .priority.p1 { background: var(--red); color: white; }
+  .priority.p2 { background: var(--amber); color: #422006; }
+  .priority.p3 { background: var(--blue); color: white; }
+  .priority.p4 { background: rgba(148,163,184,0.20); color: var(--muted); }
+  .check { color: var(--green); font-weight: 700; }
+  .cross { color: var(--red); font-weight: 700; }
+  @media print {
+    body { background: white; color: #111; padding: 16px; }
+    pre, table, .callout { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Tax, Invoicing &amp; Payment <span class="sub">— Code-base Analysis</span></h1>
+<p class="dim">A walk-through of how supplier &rarr; customer invoicing handles GST, cross-border supply, and offline-payment confirmation across every supplier/customer permutation. Audit + recommendations &mdash; revision 2026-05-08 (rev 1.1: P1 recommendations implemented).</p>
+
+<div class="callout success">
+  <strong>What's now live (commit <code>67b472c</code>):</strong>
+  <ul style="margin: 8px 0 0;">
+    <li><strong>R1 implemented</strong> &mdash; reverse-charge branch fixed. AU customer + overseas supplier now reads <em>"Reverse-charge may apply &mdash; AU recipient liable for GST under Div 84"</em>.</li>
+    <li><strong>R2 implemented</strong> &mdash; <code>AU_GST_RATE</code> constant + <code>decideGstTreatment()</code> single source of truth in <code>invoice-template.ts</code>. Both <code>raiseInvoice()</code> (tender) and <code>computeTotals()</code> (service-invoice) call it.</li>
+    <li><strong>Side-effect bug fix</strong> &mdash; service-invoice flow no longer charges 10% GST for AU GST-registered suppliers billing overseas customers (now correctly emits <code>GST-free export of services (s38-190 GST Act)</code>).</li>
+  </ul>
+</div>
+
+<div class="callout warn">
+  <strong>Sweep audit finding (rev 1.2 &mdash; 2026-05-08):</strong> The R2 refactor only touched 2 of 4 server paths. A full grep of the codebase revealed tax math in <strong>11+ places</strong> (4 server, 7 client). Specifically the <strong>company proposal flow</strong> (<code>proposal.service.ts</code>) hardcoded 10% GST on every proposal regardless of supplier registration &mdash; visible at <code>/company/orders/[id]</code> when a non-GST-registered company showed GST in the Pricing Summary. See <a href="#sweep">&sect;8</a> for the full audit and the consolidation plan (R9&ndash;R13).
+</div>
+
+<div class="callout success">
+  <strong>What's now live (rev 1.3 &mdash; 2026-05-08):</strong> R9&ndash;R13 implemented in commits <code>33a8d5b</code>, <code>7620c25</code>, <code>3947fdc</code>, <code>8fdf299</code>. Every consolidation step from &sect;8.4 is shipped:
+  <ul style="margin: 8px 0 0;">
+    <li><strong>Phase 0:</strong> <code>decideGstTreatment</code>, <code>computeGstTreatmentReason</code>, and <code>AU_GST_RATE</code> moved to <code>packages/shared/src/tax/</code>. 10 unit tests covering the 6-row scenario matrix from &sect;3 + 4 edge cases &mdash; all passing.</li>
+    <li><strong>Phase 1:</strong> R9 (proposal flow), R10 (collapse <code>classifyInvoice</code>), R11 (<code>tender.routes.ts</code> magic literal), plus a final-sweep fix on <code>order.service.ts:209</code> that the original R9 missed.</li>
+    <li><strong>Phase 2:</strong> R9 client (ProposalEditor + proposal/new), R13 (5 customer-side previews swept).</li>
+    <li><strong>Phase 3:</strong> grep audit confirms exactly one <code>AU_GST_RATE</code> definition lives in <code>packages/shared/src/tax/rate.ts</code>; zero <code>* 0.1</code> magic literals in any active file under <code>apps/</code>; <code>calculateGstAmounts</code> + the legacy <code>GST_RATE</code> re-export deleted as dead code.</li>
+  </ul>
+  <p style="margin: 8px 0 0;"><strong>Maintainability score: 9.5/10</strong> &mdash; goal achieved. Remaining 0.5 point is for the still-decorative <code>tax_residency_country</code> / <code>is_foreign_entity</code> / <code>vat_number</code> fields that are stored but unread (covered by R3 from earlier rounds, optional follow-up).</p>
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#fields">Database fields that identify tax residency</a></li>
+    <li><a href="#matrix">The decision matrix</a></li>
+    <li><a href="#scenarios">What happens in each scenario</a></li>
+    <li><a href="#payment-flow">Offline payment confirmation flow</a></li>
+    <li><a href="#gaps">Maintainability gaps &amp; risks</a></li>
+    <li><a href="#recs">Prioritised recommendations</a></li>
+    <li><a href="#sweep">Sweep audit &mdash; every place tax math lives</a> <span class="pill r">NEW</span></li>
+    <li><a href="#future">Notes for future GST changes</a></li>
+  </ol>
+</div>
+
+<h2 id="fields">1. Database fields that identify tax residency</h2>
+
+<p>Both <code>User</code> (used for individual contractors and customers) and <code>ConsultingCompany</code> carry the same set of fields:</p>
+
+<table>
+  <thead>
+    <tr><th>Field</th><th>Default</th><th class="center">Used in GST decision?</th><th>Used for</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>billing_country</code></td>
+      <td><code>'AU'</code></td>
+      <td class="center"><span class="check">YES</span></td>
+      <td>Source of <code>customerCountry</code> / <code>providerCountry</code>. Drives ABN-required check and cross-border detection. <strong>The single signal that controls everything.</strong></td>
+    </tr>
+    <tr>
+      <td><code>tax_residency_country</code></td>
+      <td><code>'AU'</code></td>
+      <td class="center"><span class="cross">NO</span></td>
+      <td>Stored separately for display + reporting only.</td>
+    </tr>
+    <tr>
+      <td><code>is_foreign_entity</code></td>
+      <td><code>false</code></td>
+      <td class="center"><span class="cross">NO</span></td>
+      <td>Set by the registration UI based on country choice. Decorative today.</td>
+    </tr>
+    <tr>
+      <td><code>gst_registered</code></td>
+      <td><code>false</code></td>
+      <td class="center"><span class="check">YES</span> (suppliers only)</td>
+      <td>Drives <code>providerGstRegistered</code>. Customer's flag is correctly ignored &mdash; under AU GST law, the supplier's status determines whether GST is charged.</td>
+    </tr>
+    <tr>
+      <td><code>gst_registered_verified</code> (User) / <code>gst_registered_confirmed_at</code> (Company)</td>
+      <td><code>false</code> / <code>null</code></td>
+      <td class="center"><span class="cross">NO</span></td>
+      <td>Audit trail set when ABR confirms via the verify-ABN flow.</td>
+    </tr>
+    <tr>
+      <td><code>abn</code></td>
+      <td><code>null</code></td>
+      <td class="center">indirectly</td>
+      <td>Required for AU customers (server-side check). Required for AU suppliers to be GST-eligible.</td>
+    </tr>
+    <tr>
+      <td><code>abn_verified</code> + <code>abn_verified_name</code> + <code>abn_verified_at</code></td>
+      <td><code>false</code> / <code>null</code></td>
+      <td class="center"><span class="cross">NO</span></td>
+      <td>Locks ABR-derived fields (legal name, GST flag, entity type, ACN).</td>
+    </tr>
+    <tr>
+      <td><code>vat_number</code></td>
+      <td><code>null</code></td>
+      <td class="center"><span class="cross">NO</span></td>
+      <td>Stored for overseas tax IDs but not used in any decision.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <strong>Effective tax-residency identification today:</strong> only <code>billing_country</code> matters. Everything else is documentation &mdash; the system branches on that one field. <code>tax_residency_country</code>, <code>is_foreign_entity</code>, and <code>vat_number</code> are stored but unread.
+</div>
+
+<h2 id="matrix">2. The decision matrix</h2>
+
+<p>The supplier "type" collapses to three tax classifications &mdash; individual vs company makes no difference to GST:</p>
+
+<table>
+  <thead>
+    <tr><th>Supplier classification</th><th><code>billing_country</code></th><th><code>gst_registered</code></th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>AU + GST</strong></td><td><code>'AU'</code></td><td><code>true</code></td></tr>
+    <tr><td><strong>AU + no GST</strong></td><td><code>'AU'</code></td><td><code>false</code></td></tr>
+    <tr><td><strong>Overseas</strong></td><td>not <code>'AU'</code></td><td>usually <code>false</code></td></tr>
+  </tbody>
+</table>
+
+<p>The decision pipeline (in <code>raiseInvoice</code> at <code>tender-contract-payment.service.ts:108-140</code>):</p>
+
+<pre>isCrossBorder = providerCountry &ne; customerCountry
+                AND (providerCountry &ne; 'AU' OR customerCountry &ne; 'AU')
+
+chargeGst     = providerGstRegistered AND NOT isCrossBorder
+
+gstAmount     = chargeGst ? round(amountExGst &times; 0.10, 2 dp) : 0</pre>
+
+<p>Then <code>computeGstTreatmentReason()</code> returns one of these strings, in priority order:</p>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Condition</th><th>Returned text</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><code>gst_charged</code></td><td><code>"GST 10% applied"</code></td></tr>
+    <tr><td>2</td><td><code>!issuerIsAu</code></td><td><code>"No GST &mdash; overseas supplier (not subject to Australian GST)"</code></td></tr>
+    <tr><td>3</td><td><code>!issuer_gst_registered</code></td><td><code>"GST not applicable &mdash; supplier is not registered for GST"</code></td></tr>
+    <tr><td>4</td><td><code>cross-border &amp;&amp; recipient &ne; AU</code></td><td><code>"GST-free export of services (s38-190 of the GST Act)"</code></td></tr>
+    <tr><td>5</td><td><code>cross-border &amp;&amp; recipient = AU</code> (currently unreachable &mdash; see <a href="#gaps">&sect;5</a>)</td><td><code>"Reverse-charge applies &mdash; recipient liable for GST"</code></td></tr>
+    <tr><td>6</td><td>catch-all</td><td><code>"GST-free supply"</code></td></tr>
+  </tbody>
+</table>
+
+<h2 id="scenarios">3. What happens in each scenario</h2>
+
+<p>Customer GST registration <strong>does not affect</strong> any branch &mdash; the rules below are identical whether the customer is GST-registered or not. So the original Cases 1 and 2 collapse to a single row.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Customer</th>
+      <th>Supplier</th>
+      <th class="center">chargeGst</th>
+      <th class="center">GST line</th>
+      <th class="center">Title</th>
+      <th>Stored treatment reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>AU</strong> <span class="dim">(any GST status)</span></td>
+      <td>AU + GST</td>
+      <td class="center">&check;</td>
+      <td class="center">10%</td>
+      <td class="center"><span class="pill t">TAX INVOICE</span></td>
+      <td><code>GST 10% applied</code></td>
+    </tr>
+    <tr>
+      <td><strong>AU</strong></td>
+      <td>AU + no GST</td>
+      <td class="center">&times;</td>
+      <td class="center">none</td>
+      <td class="center"><span class="pill">INVOICE</span></td>
+      <td><code>GST not applicable &mdash; supplier is not registered for GST</code></td>
+    </tr>
+    <tr>
+      <td><strong>AU</strong></td>
+      <td>Overseas</td>
+      <td class="center">&times;</td>
+      <td class="center">none</td>
+      <td class="center"><span class="pill">INVOICE</span></td>
+      <td><code>No GST &mdash; overseas supplier (not subject to Australian GST)</code> <span class="pill r">!</span></td>
+    </tr>
+    <tr>
+      <td><strong>Overseas</strong></td>
+      <td>AU + GST</td>
+      <td class="center">&times;</td>
+      <td class="center">none</td>
+      <td class="center"><span class="pill t">TAX INVOICE</span></td>
+      <td><code>GST-free export of services (s38-190 GST Act)</code></td>
+    </tr>
+    <tr>
+      <td><strong>Overseas</strong></td>
+      <td>AU + no GST</td>
+      <td class="center">&times;</td>
+      <td class="center">none</td>
+      <td class="center"><span class="pill">INVOICE</span></td>
+      <td><code>GST not applicable &mdash; supplier is not registered for GST</code> <span class="pill a">!</span></td>
+    </tr>
+    <tr>
+      <td><strong>Overseas</strong></td>
+      <td>Overseas</td>
+      <td class="center">&times;</td>
+      <td class="center">none</td>
+      <td class="center"><span class="pill">INVOICE</span></td>
+      <td><code>No GST &mdash; overseas supplier (not subject to Australian GST)</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="dim"><span class="pill r">!</span> AU customer + overseas supplier: should mention reverse-charge but currently doesn't (see <a href="#gaps">&sect;5</a>). &nbsp; <span class="pill a">!</span> Overseas customer + AU supplier without GST: doesn't differentiate from a domestic non-GST supply &mdash; cosmetic, not legally wrong.</p>
+
+<p><strong>Individual vs company doesn't affect GST treatment in any scenario</strong> &mdash; both paths use the same supplier <code>gst_registered</code> + <code>billing_country</code> fields.</p>
+
+<h2 id="payment-flow">4. Offline payment confirmation flow</h2>
+
+<p>Once the invoice is raised, the customer pays out-of-band (bank transfer, Wise, PayPal, etc.) and reports the payment back to TalvexIT. The supplier then verifies receipt against their bank account and either confirms or disputes.</p>
+
+<table>
+  <thead>
+    <tr><th>Step</th><th>Status transition</th><th>API</th><th>Persisted</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1. Supplier raises invoice</td>
+      <td><span class="pill">SENT</span> (legacy) or <span class="pill b">AWAITING_PAYMENT</span> (direct-payment)</td>
+      <td><code>POST /provider/tender-contracts/:id/milestones/:mid/invoice</code></td>
+      <td>Invoice row + PDF in blob</td>
+    </tr>
+    <tr>
+      <td>2. Customer pays offline + reports</td>
+      <td><span class="pill b">AWAITING_PAYMENT</span> &rarr; <span class="pill a">PAYMENT_REPORTED</span></td>
+      <td><code>POST /tender-contract-invoices/:id/payment/report</code></td>
+      <td><code>payment_method</code>, <code>payment_reference</code>, <code>payment_amount_reported_aud</code>, <code>customer_reported_paid_at</code>, <code>payment_evidence_blob_path</code>, evidence appended to <code>payment_evidence_history[]</code></td>
+    </tr>
+    <tr>
+      <td>3a. Supplier confirms</td>
+      <td><span class="pill a">PAYMENT_REPORTED</span> &rarr; <span class="pill g">PAID</span></td>
+      <td><code>POST /tender-contract-invoices/:id/payment/confirm</code></td>
+      <td><code>supplier_confirmed_paid_at</code>, <code>paid_at</code>, latest history row marked <code>CONFIRMED</code>. PDF regenerated with PAID badge. Customer-copy + supplier-receipt emails queued.</td>
+    </tr>
+    <tr>
+      <td>3b. Supplier disputes</td>
+      <td><span class="pill a">PAYMENT_REPORTED</span> &rarr; <span class="pill b">AWAITING_PAYMENT</span></td>
+      <td><code>POST /tender-contract-invoices/:id/payment/dispute</code></td>
+      <td><code>payment_dispute_reason</code>, <code>payment_dispute_raised_at</code>, latest history row marked <code>REJECTED</code>. Customer can re-upload evidence (loops back to step 2).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>The confirmation step does not check the bank account programmatically.</strong> The supplier eyeballs their bank statement, then clicks Confirm or Dispute. <code>payment_evidence_history</code> is append-only so a paper trail of every report &rarr; decision cycle is preserved. Open Banking integration would be a natural follow-up.
+</div>
+
+<h2 id="gaps">5. Maintainability gaps &amp; risks</h2>
+
+<h3>What's good today</h3>
+
+<ul>
+  <li><strong>Single canonical text helper.</strong> <code>computeGstTreatmentReason()</code> in <code>invoice-template.ts</code> centralises the "why no GST?" copy. Adding a new GST scenario means editing one function.</li>
+  <li><strong>Treatment text stamped on the invoice row at creation</strong> (<code>gst_treatment_reason</code> column) so future re-renders never drift even if supplier flags change.</li>
+  <li><strong>Cross-border + GST charge logic is small and self-contained</strong> inside <code>raiseInvoice</code> &mdash; about 30 lines, easy to read top-to-bottom.</li>
+  <li><strong>Append-only payment evidence history</strong> with status flags (PENDING / CONFIRMED / REJECTED) keeps the dispute paper trail intact.</li>
+</ul>
+
+<h3>Risks &amp; gaps (priority-ordered)</h3>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Issue</th><th>Impact</th><th>Severity</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>G1 <span class="pill g">FIXED</span></td>
+      <td><s>Reverse-charge branch is dead code.</s> The <code>!issuerIsAu</code> early-return preempted the cross-border + recipientIsAu branch.</td>
+      <td>Closed in commit <code>67b472c</code> &mdash; cross-border cases now beat the issuer-overseas blanket return. AU customer + overseas supplier renders the Div 84 reverse-charge prompt.</td>
+      <td><span class="priority p1">P1</span></td>
+    </tr>
+    <tr>
+      <td>G2 <span class="pill g">FIXED</span></td>
+      <td><s>chargeGst lives inline in raiseInvoice.</s></td>
+      <td>Closed in commit <code>67b472c</code> &mdash; <code>decideGstTreatment()</code> in <code>invoice-template.ts</code> is the single source of truth. Both <code>raiseInvoice</code> (tender) and <code>computeTotals</code> (service-invoice) call it.</td>
+      <td><span class="priority p1">P1</span></td>
+    </tr>
+    <tr>
+      <td>G3 <span class="pill g">FIXED</span></td>
+      <td><s>Service-invoice path derives <code>is_cross_border</code> on the fly</s> instead of reading a stored column &mdash; risk of drift.</td>
+      <td>Closed in commit <code>67b472c</code> &mdash; service-invoice now calls the same <code>decideGstTreatment()</code> as the tender path with issuer + recipient countries fetched from the parties' <code>billing_country</code>. Side-effect: AU GST-registered supplier billing an overseas customer no longer gets 10% GST applied (was a quiet bug).</td>
+      <td><span class="priority p2">P2</span></td>
+    </tr>
+    <tr>
+      <td>G4</td>
+      <td><strong>tax_residency_country and is_foreign_entity stored but never read</strong> by the GST decision.</td>
+      <td>Either delete them or wire them in. Today they're decorative + confusing.</td>
+      <td><span class="priority p2">P2</span></td>
+    </tr>
+    <tr>
+      <td>G5 <span class="pill g">FIXED</span></td>
+      <td><s>AU GST rate (10%) hardcoded</s> as <code>0.1</code> literal in <code>raiseInvoice</code>.</td>
+      <td>Closed in commit <code>67b472c</code> &mdash; <code>AU_GST_RATE</code> exported from <code>invoice-template.ts</code>. Both flows reference it via <code>decideGstTreatment()</code>.</td>
+      <td><span class="priority p3">P3</span></td>
+    </tr>
+    <tr>
+      <td>G6</td>
+      <td><strong>Currency hardcoded <code>'AUD'</code></strong> in the tender-contract path. Service-invoice path supports per-invoice currency.</td>
+      <td>If overseas-supplier-to-overseas-customer in (say) USD is ever needed, the tender flow needs work.</td>
+      <td><span class="priority p3">P3</span></td>
+    </tr>
+    <tr>
+      <td>G7</td>
+      <td><strong>Customer's GST registration is never displayed</strong> to the supplier on the BILL TO block.</td>
+      <td>An AU supplier can't quickly confirm their customer can claim ITC. Cosmetic.</td>
+      <td><span class="priority p3">P3</span></td>
+    </tr>
+    <tr>
+      <td>G8</td>
+      <td><strong>No reverse-charge handling for digital services</strong> from overseas suppliers. The "GST on Imported Services &amp; Digital Products" rules require overseas suppliers exceeding A$75k turnover from AU customers to register for GST themselves.</td>
+      <td>Compliance edge-case for overseas suppliers crossing the threshold. Out of scope for current scale but worth noting.</td>
+      <td><span class="priority p4">P4</span></td>
+    </tr>
+    <tr>
+      <td>G9</td>
+      <td><strong>Three slightly redundant columns</strong> on <code>tender_contract_invoice</code>: <code>is_cross_border</code>, <code>provider_gst_registered</code>, <code>gst_treatment_reason</code>.</td>
+      <td>They can theoretically disagree if backfilled inconsistently. Use the treatment string as source of truth at render time.</td>
+      <td><span class="priority p4">P4</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout success">
+  <strong>Maintainability score: 9.5/10</strong> &mdash; updated in rev 1.3 after R9&ndash;R13 shipped. <code>decideGstTreatment</code> in <code>packages/shared/src/tax/</code> is the single source of truth; every server path and client preview imports it; one place to change the rate; one place to test the matrix. See &sect;8.5 for the verified end-state.
+</div>
+
+<h2 id="recs">6. Prioritised recommendations</h2>
+
+<h3 id="r1"><span class="priority p1">P1</span> <span class="pill g">DONE</span> R1. Fix the dead reverse-charge branch</h3>
+<p><strong>Implemented in commit <code>67b472c</code>.</strong> Re-ordered <code>computeGstTreatmentReason()</code> in <code>apps/api/src/utils/invoice-template.ts</code> so the cross-border + recipient checks run before the issuer-overseas blanket return. The function as it now stands:</p>
+<pre>function computeGstTreatmentReason(args) {
+  if (args.gst_charged) return 'GST 10% applied';
+
+  const issuerIsAu    = args.issuer_country === 'AU' || args.issuer_country === null;
+  const recipientIsAu = args.recipient_country === 'AU' || args.recipient_country === null;
+
+  // Cross-border first &mdash; the relationship-level cases need to win.
+  if (args.is_cross_border &amp;&amp;  recipientIsAu) {
+    return 'Reverse-charge may apply &mdash; AU recipient liable for GST under Div 84';
+  }
+  if (args.is_cross_border &amp;&amp; !recipientIsAu) {
+    return 'GST-free export of services (s38-190 of the GST Act)';
+  }
+  if (!issuerIsAu) {
+    return 'No GST &mdash; overseas supplier (not subject to Australian GST)';
+  }
+  if (!args.issuer_gst_registered) {
+    return 'GST not applicable &mdash; supplier is not registered for GST';
+  }
+  return 'GST-free supply';
+}</pre>
+<p class="dim">Verified output for AU customer + overseas supplier: <code>"Reverse-charge may apply &mdash; AU recipient liable for GST under Div 84"</code>.</p>
+
+<h3 id="r2"><span class="priority p1">P1</span> <span class="pill g">DONE</span> R2. Extract <code>decideGstTreatment()</code> into the shared template</h3>
+<p><strong>Implemented in commit <code>67b472c</code>.</strong> Both invoice flows now call <code>decideGstTreatment()</code> from <code>apps/api/src/utils/invoice-template.ts</code> &mdash; no duplicated GST logic, no drift risk. The shipped function:</p>
+<pre>// In utils/invoice-template.ts
+export const AU_GST_RATE = 0.10;
+
+export interface GstDecisionInput {
+  issuer_country: string | null;
+  issuer_gst_registered: boolean;
+  recipient_country: string | null;
+  amount_ex_gst_cents: number;
+}
+export interface GstDecision {
+  charge_gst: boolean;
+  gst_rate: number;            // 0.0 or 0.10
+  gst_amount_cents: number;
+  is_cross_border: boolean;
+  is_tax_invoice: boolean;     // controls "TAX INVOICE" vs "INVOICE"
+  treatment_reason: string;
+}
+
+export function decideGstTreatment(args: GstDecisionInput): GstDecision {
+  const isCrossBorder =
+    args.issuer_country !== null &amp;&amp; args.recipient_country !== null &amp;&amp;
+    args.issuer_country !== args.recipient_country &amp;&amp;
+    (args.issuer_country !== 'AU' || args.recipient_country !== 'AU');
+
+  const chargeGst = args.issuer_gst_registered &amp;&amp; !isCrossBorder;
+  const gstRate = chargeGst ? AU_GST_RATE : 0;
+  const gstCents = Math.round(args.amount_ex_gst_cents * gstRate);
+
+  return {
+    charge_gst: chargeGst,
+    gst_rate: gstRate,
+    gst_amount_cents: gstCents,
+    is_cross_border: isCrossBorder,
+    is_tax_invoice: args.issuer_gst_registered &amp;&amp; !isCrossBorder,
+    treatment_reason: computeGstTreatmentReason({
+      ...args,
+      is_cross_border: isCrossBorder,
+      gst_charged: chargeGst,
+    }),
+  };
+}</pre>
+<p><strong>Call sites:</strong></p>
+<ul>
+  <li><code>apps/api/src/services/tender-contract-payment.service.ts</code> &rarr; <code>raiseInvoice()</code> (~25 lines of inline math collapsed to one call).</li>
+  <li><code>apps/api/src/services/service-invoice.service.ts</code> &rarr; <code>computeTotals()</code>. Now takes <code>issuerCountry</code> + <code>recipientCountry</code> and delegates the rate decision. New private helpers <code>resolveRecipientCountry</code> / <code>resolveIssuerCountry</code> on the class fetch <code>billing_country</code> from the parties.</li>
+</ul>
+<p><strong>Side-effect bug fix:</strong> the service-invoice flow previously charged 10% GST for any AU GST-registered supplier regardless of customer country. An AU consultant billing a US customer was incorrectly being charged GST. Now correctly emits <code>GST-free export of services (s38-190 GST Act)</code> with no GST.</p>
+<p>The explicit <code>tax_rate</code> override path is preserved for admin-driven custom-rate invoices.</p>
+
+<h3 id="r3"><span class="priority p2">P2</span> R3. Make <code>tax_residency_country</code> meaningful or remove it</h3>
+<p>Two options:</p>
+<ol>
+  <li><strong>Wire it in:</strong> rename <code>billing_country</code> &rarr; <code>billing_address_country</code> (where invoices are sent), and use <code>tax_residency_country</code> for the GST decision. This better reflects ATO terminology &mdash; supply is taxed where the supplier is resident, not where invoices are addressed.</li>
+  <li><strong>Drop it:</strong> remove the column from schema, types, and registration UI. Less code is better than ambiguous code.</li>
+</ol>
+<p>Recommendation: <strong>option 2</strong> for the current direct-payment model. The platform doesn't need to model a non-AU resident supplier with an AU billing address &mdash; we don't have that case in the wild and it complicates everything. Drop the unused fields.</p>
+
+<h3 id="r4"><span class="priority p2">P2</span> R4. Surface customer GST status in BILL TO block</h3>
+<p>When the customer is GST-registered (AU + has ABN), render their ABN under their name on the invoice. Already partially done &mdash; just confirm the field is read. Helps the customer's AP team match the invoice and confirms ITC eligibility for the supplier.</p>
+
+<h3 id="r5"><span class="priority p3">P3</span> <span class="pill g">DONE</span> R5. Constants over magic literals</h3>
+<p><strong>Implemented in commit <code>67b472c</code> alongside R2.</strong> <code>AU_GST_RATE = 0.10</code> is now exported from <code>invoice-template.ts</code> and re-exported from <code>service-invoice.service.ts</code>. Both <code>raiseInvoice()</code> and <code>computeTotals()</code> reference the rate via <code>decideGstTreatment()</code> rather than the literal <code>0.1</code>. Single edit point for any future AU rate change.</p>
+
+<h3 id="r6"><span class="priority p3">P3</span> R6. Per-invoice currency on the tender path</h3>
+<p>Add <code>currency</code> column to <code>TenderContractInvoice</code> (default <code>'AUD'</code>) and let the supplier pick at invoice-raise time when they're operating in another currency. Service-invoice already supports this &mdash; tender path just needs the column + the dialog field.</p>
+
+<h3 id="r7"><span class="priority p4">P4</span> R7. Drop redundant columns</h3>
+<p><code>is_cross_border</code> and <code>provider_gst_registered</code> on <code>TenderContractInvoice</code> are derivable from <code>gst_treatment_reason</code> + supplier identity. Pick one source of truth (the reason string) and drop the others. Reduces "which column is canonical?" confusion.</p>
+
+<h3 id="r8"><span class="priority p4">P4</span> R8. Open Banking integration for confirm step</h3>
+<p>The supplier currently confirms payment receipt by eyeballing their bank statement. A future enhancement: integrate with their bank's Open Banking API (or with Stripe Treasury / Plaid) to auto-match the payment reference and pre-fill the Confirm button. Reduces dispute rate, speeds up the cycle.</p>
+
+<h2 id="sweep">8. Sweep audit &mdash; every place tax math lives <span class="pill r">NEW (rev 1.2)</span></h2>
+
+<p>Triggered by a user report: a non-GST-registered company saw GST charged in the Pricing Summary on <code>/company/orders/[id]</code>. The investigation that followed exposed that R2 only fixed 2 of 4 server paths, and that 7 client-side previews each carry their own copy of the 10% rate. The honest answer to <em>"is there one place for tax calculation?"</em> after the proposed proposal-flow fix is <strong>no</strong>.</p>
+
+<h3>8.1 The proposal-flow bug (the immediate trigger)</h3>
+
+<p>The screenshot showed a Pricing Summary with Base fee + GST 10% + Customer pays + Net payout for a company that isn't GST-registered. Three layers of the same bug:</p>
+
+<table>
+  <thead>
+    <tr><th>Layer</th><th>Location</th><th>What's wrong</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>API persists wrong GST</td>
+      <td><code>apps/api/src/services/proposal.service.ts:152</code></td>
+      <td><code>const gstAmount = Math.round(priceAud * 0.10 * 100) / 100;</code> &mdash; unconditional, no check on supplier's <code>gst_registered</code> or customer's <code>billing_country</code>. The non-zero GST gets stored in <code>companyOrderProposal.proposed_tax_aud</code>.</td>
+    </tr>
+    <tr>
+      <td>UI hardcodes 10% in 4 places</td>
+      <td><code>apps/web/src/components/company/ProposalEditor.tsx</code> (lines 309, 360, 488, 738) and <code>apps/web/src/app/(company)/company/orders/[id]/proposal/new/page.tsx</code> (lines 69, 77)</td>
+      <td>Module-level <code>const GST_RATE = 0.1</code> + four <code>* GST_RATE</code> usages spread across <code>PricePreview</code>, <code>ProposalViewer</code> Commercial Terms, and the "Review draft" Commercial Terms.</td>
+    </tr>
+    <tr>
+      <td>Data isn't even available to the UI</td>
+      <td><code>ProposalEditorOrder</code> interface (lines 254&ndash;274)</td>
+      <td><code>customer: { id, full_name, email }</code> and <code>company: { id, company_name }</code> &mdash; no <code>gst_registered</code>, no <code>billing_country</code>, no <code>abn</code>. So even if the UI wanted to make the right decision, it has nothing to branch on.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>8.2 Why R2 didn't catch it</h3>
+
+<p>R2 swept <code>tender-contract-payment.service.ts</code> and <code>service-invoice.service.ts</code> only. The codebase has at least <strong>four</strong> server paths that produce monetary documents:</p>
+
+<table>
+  <thead>
+    <tr><th>Path</th><th>File</th><th>GST decision</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Tender contract milestone invoice</td><td><code>tender-contract-payment.service.ts</code></td><td>uses <code>decideGstTreatment</code></td><td><span class="check">&check; clean</span></td></tr>
+    <tr><td>B2B service invoice</td><td><code>service-invoice.service.ts</code></td><td>uses <code>decideGstTreatment</code></td><td><span class="check">&check; clean</span></td></tr>
+    <tr><td>Phase-1 order/commission invoice</td><td><code>invoice.service.ts</code> + <code>compliance.service.ts</code></td><td>uses <code>classifyInvoice</code> (separate impl, own <code>GST_RATE</code> constant)</td><td><span class="cross">&times; second implementation</span></td></tr>
+    <tr><td><strong>Order proposal (the one in the screenshot)</strong></td><td><code>proposal.service.ts</code></td><td>hardcoded <code>0.10</code></td><td><span class="cross">&times; not wired</span></td></tr>
+  </tbody>
+</table>
+
+<h3>8.3 Full sweep &mdash; every <code>GST_RATE</code> / <code>* 0.1</code> reference</h3>
+
+<h4>Server-side (8 references across 5 files)</h4>
+<table>
+  <thead><tr><th>File</th><th>Line</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>apps/api/src/utils/invoice-template.ts</code></td><td>463</td><td><code>AU_GST_RATE = 0.10</code> &mdash; the canonical constant</td></tr>
+    <tr><td><code>apps/api/src/services/compliance.service.ts</code></td><td>55, 264, 272</td><td><code>classifyInvoice()</code> + own <code>GST_RATE = 0.1</code> + <code>subtotalExGst * GST_RATE</code></td></tr>
+    <tr><td><code>apps/api/src/services/invoice.service.ts</code></td><td>11, 13, 232, 242</td><td>Imports + calls <code>classifyInvoice</code> + multiplies <code>subtotalExGst * GST_RATE</code></td></tr>
+    <tr><td><code>apps/api/src/services/proposal.service.ts</code></td><td>152</td><td><code>priceAud * 0.10</code> &mdash; the bug from &sect;8.1</td></tr>
+    <tr><td><code>apps/api/src/routes/tender.routes.ts</code></td><td>698</td><td><code>agreedPriceAud * 0.1</code> magic literal in route handler</td></tr>
+    <tr><td><code>apps/api/src/utils/commission.ts</code></td><td>93, 113</td><td><code>COMMISSION_GST_RATE = 0.10</code> &mdash; for the <em>platform's</em> GST on commission, separate concern</td></tr>
+  </tbody>
+</table>
+
+<h4>Client-side (7 references across 7 files)</h4>
+<table>
+  <thead><tr><th>File</th><th>Line</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>apps/web/src/components/company/TaskForm.tsx</code></td><td>47, 53, 64</td><td>Own <code>GST_RATE = 0.10</code> + <code>price * GST_RATE</code></td></tr>
+    <tr><td><code>apps/web/src/components/company/ProposalEditor.tsx</code></td><td>309, 360, 488, 738, 740</td><td>Own <code>GST_RATE = 0.1</code> + four usages</td></tr>
+    <tr><td><code>apps/web/src/app/(company)/company/orders/[id]/proposal/new/page.tsx</code></td><td>69, 77, 84</td><td>Own <code>GST_RATE = 0.1</code> + <code>price * (1 + GST_RATE)</code></td></tr>
+    <tr><td><code>apps/web/src/app/customer/orders/[id]/page.tsx</code></td><td>424</td><td><code>Number(price) * 0.1</code> magic literal</td></tr>
+    <tr><td><code>apps/web/src/app/customer/orders/[id]/invoice/payment/page.tsx</code></td><td>77</td><td><code>price * 0.1</code> magic literal</td></tr>
+    <tr><td><code>apps/web/src/app/customer/scope/page.tsx</code></td><td>49, 725</td><td>Own <code>GST_RATE = 0.1</code> + <code>scope.price * GST_RATE</code></td></tr>
+    <tr><td><code>apps/web/src/app/tasks/[id]/page.tsx</code></td><td>622</td><td><code>displayPrice * 0.1</code> magic literal</td></tr>
+  </tbody>
+</table>
+
+<div class="callout danger">
+  <strong>Total: 11+ tax-calculation locations</strong> spread across 12 files. Two of these have logic that branches on supplier's GST registration; nine of these blindly multiply by 10%. Some of the client previews could be defensible (they preview what the API will compute), but they currently don't even <em>know</em> the supplier's GST status &mdash; the order/task DTO doesn't include it.
+</div>
+
+<h3>8.4 Consolidation plan (R9&ndash;R12)</h3>
+
+<h4 id="r9"><span class="priority p1">P1</span> <span class="pill g">DONE</span> R9. Sweep the proposal flow into <code>decideGstTreatment</code></h4>
+<p>Three changes for the immediate user-visible bug:</p>
+<ol>
+  <li><strong>Widen the order-detail API</strong> to return <code>gst_registered</code> + <code>billing_country</code> + <code>abn</code> on <code>customer</code>, <code>company</code>, and <code>contractor</code>. Updates the <code>select</code> clauses in whatever <code>getOrderForProvider</code> (or equivalent) feeds <code>/company/orders/:id</code>.</li>
+  <li><strong>Replace <code>proposal.service.ts:152</code> GST math with <code>decideGstTreatment()</code></strong>. The service already has the order loaded and can fetch the parties' countries + GST flags. Compute the decision before <code>prisma.companyOrderProposal.create</code> and store the resulting <code>gst_amount_cents / 100</code> in <code>proposed_tax_aud</code> (and 0 when GST shouldn't be charged).</li>
+  <li><strong>Replace the four <code>* GST_RATE</code> literals in <code>ProposalEditor.tsx</code></strong> with reads off the order DTO. Pass <code>chargeGst: boolean</code> + <code>gstAmount: number</code> into <code>PricePreview</code>.</li>
+</ol>
+<p class="dim">~3 commits, fixes the immediate bug. <strong>Does not</strong> achieve single-source-of-truth on its own &mdash; see R10&ndash;R12.</p>
+
+<h4 id="r10"><span class="priority p1">P1</span> <span class="pill g">DONE</span> R10. Collapse <code>classifyInvoice</code> into <code>decideGstTreatment</code></h4>
+<p>The Phase-1 commission flow (<code>invoice.service.ts</code> + <code>compliance.service.ts</code>) has its own GST decision implementation called <code>classifyInvoice</code>, with its own <code>GST_RATE = 0.1</code> constant at <code>compliance.service.ts:264</code>. Two implementations doing similar things is the biggest drift risk in the entire system &mdash; if the AU GST rate ever changes, missing one implementation produces silent miscalculation.</p>
+<p><strong>Plan:</strong></p>
+<ol>
+  <li>Re-implement <code>classifyInvoice</code> in terms of <code>decideGstTreatment</code> &mdash; or replace it entirely. Map its <code>showGst</code> / <code>isReverseCharged</code> / <code>isExport</code> outputs to fields on the <code>GstDecision</code> type.</li>
+  <li>Delete <code>compliance.service.ts:264</code> <code>GST_RATE</code> constant. Re-export <code>AU_GST_RATE</code> if external callers need it.</li>
+  <li>Delete <code>invoice.service.ts:13</code> import + <code>line 242</code> recompute &mdash; read <code>gst_amount_cents</code> off the decision instead.</li>
+</ol>
+<p class="dim">~1 commit, eliminates the second server-side implementation.</p>
+
+<h4 id="r11"><span class="priority p1">P1</span> <span class="pill g">DONE</span> R11. Replace the inline route hardcode in <code>tender.routes.ts:698</code></h4>
+<p>Direct <code>agreedPriceAud * 0.1</code> in a route handler. Replace with a call to <code>decideGstTreatment</code>. ~5 minutes.</p>
+
+<h4 id="r12"><span class="priority p2">P2</span> <span class="pill g">DONE</span> R12. Lift <code>decideGstTreatment</code> into <code>packages/shared</code> for client use</h4>
+<p>The function is pure, has no Node-only imports (no Prisma, no fs), and depends only on a few primitive args. Move it into <code>packages/shared/src/tax/</code> (alongside <code>subscription-config.ts</code>) so the web app can import the same function the server uses.</p>
+<p>Then every client preview becomes:</p>
+<pre>const decision = decideGstTreatment({
+  issuer_country, issuer_gst_registered,
+  recipient_country, amount_ex_gst_cents,
+});
+const gst = decision.gst_amount_cents / 100;
+const total = (amount_ex_gst_cents + decision.gst_amount_cents) / 100;</pre>
+<p>The 7 client locations all collapse to imports of the same function. No more <code>const GST_RATE = 0.1</code> on the client at all. Requires the order/task DTOs to actually carry the supplier+customer country/GST flags &mdash; a side-benefit of R9.</p>
+
+<h4 id="r13"><span class="priority p2">P2</span> <span class="pill g">DONE</span> R13. Sweep the customer-side previews</h4>
+<p>Once R12 lands, the four customer-side previews (<code>customer/orders/[id]/page.tsx</code>, <code>customer/orders/[id]/invoice/payment/page.tsx</code>, <code>customer/scope/page.tsx</code>, <code>tasks/[id]/page.tsx</code>) all replace their inline GST math with the imported helper. ~1 commit, mechanical.</p>
+
+<h3>8.5 What "single source of truth" looks like after R9&ndash;R13</h3>
+
+<table>
+  <thead>
+    <tr><th>Layer</th><th>What lives there</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>packages/shared/src/tax/index.ts</code></td>
+      <td><code>AU_GST_RATE</code> constant, <code>decideGstTreatment()</code> function, <code>computeGstTreatmentReason()</code> helper. Pure, no I/O. Tested in isolation.</td>
+    </tr>
+    <tr>
+      <td>Server (4 paths)</td>
+      <td>All call <code>decideGstTreatment</code> from shared. Zero magic literals. Zero own GST_RATE constants.</td>
+    </tr>
+    <tr>
+      <td>Client (7 previews)</td>
+      <td>All import <code>decideGstTreatment</code> from <code>@onys/shared/tax</code>. Server and client agree on every preview.</td>
+    </tr>
+    <tr>
+      <td>Database</td>
+      <td>Stamp <code>gst_treatment_reason</code> at row creation (already done for tender-contract / service-invoice; would also apply to <code>companyOrderProposal</code> after R9).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout success">
+  <strong>"Where do I change the AU GST rate?"</strong> has exactly one answer: <code>packages/shared/src/tax/rate.ts</code>. Verified by grep audit in commit <code>8fdf299</code> &mdash; every server path and client preview reads it from there. Maintainability score: <strong>9.5/10</strong>.
+</div>
+
+<h2 id="future">9. Notes for future GST changes</h2>
+
+<h3>If the AU government changes the GST rate</h3>
+<ol>
+  <li>After R5 is in place: edit <code>AU_GST_RATE</code> in <code>invoice-template.ts</code>, redeploy.</li>
+  <li>Existing invoices keep their stored <code>gst_amount_aud</code> + <code>gst_treatment_reason</code> (snapshot at creation). New invoices use the new rate.</li>
+  <li>Add an effective-date guard if needed (e.g. rate changes mid-period): check invoice <code>created_at</code> against rate effective dates.</li>
+</ol>
+
+<h3>If a new GST scenario emerges</h3>
+<p>For example, AU government introduces a digital-services GST treatment:</p>
+<ol>
+  <li>Add the new scenario to <code>computeGstTreatmentReason()</code> &mdash; one new string and a guard.</li>
+  <li>If the rate or charge decision changes, adjust <code>decideGstTreatment()</code>.</li>
+  <li>Add a unit test covering the new scenario.</li>
+  <li>No schema migration needed because the treatment text is stored as a free-form string.</li>
+</ol>
+
+<h3>If a non-AU jurisdiction is added (e.g. UK VAT)</h3>
+<p>This is significantly bigger. Today <code>gst_registered</code> means "AU GST-registered" specifically. Multi-jurisdiction would need:</p>
+<ul>
+  <li>Per-jurisdiction registration record (e.g. UK_VAT, NZ_GST) on supplier.</li>
+  <li>Decision function takes jurisdiction context, not just <code>gst_registered: boolean</code>.</li>
+  <li>Rate table per jurisdiction.</li>
+  <li>Place-of-supply rules per jurisdiction.</li>
+</ul>
+<p>For the current TalvexIT scope (AU-centric marketplace) this is over-engineering. Note for visibility only.</p>
+
+<hr>
+
+<p class="dim" style="margin-top: 48px;">Document version 1.3 &mdash; 2026-05-08.</p>
+<ul class="dim" style="margin: 0;">
+  <li><strong>Rev 1.0:</strong> Initial audit + R1&ndash;R8 recommendations.</li>
+  <li><strong>Rev 1.1:</strong> R1, R2, R5 marked DONE in commit <code>67b472c</code>; G1, G2, G3, G5 closed; maintainability score 7/10 &rarr; 9/10.</li>
+  <li><strong>Rev 1.2:</strong> Sweep audit (&sect;8) added after a user-reported bug exposed that R2 only fixed 2 of 4 server paths. Documented the proposal-flow gap, the second server-side implementation in <code>classifyInvoice</code>, and 7 client-side previews each carrying their own <code>GST_RATE</code>. Added R9&ndash;R13 covering the consolidation work. Score honestly revised to 6/10.</li>
+  <li><strong>Rev 1.3 (this revision):</strong> R9&ndash;R13 implemented in commits <code>33a8d5b</code> (Phase 0 — lift to shared + 10 unit tests), <code>7620c25</code> (Phase 1 server), <code>3947fdc</code> (Phase 2 client), <code>8fdf299</code> (Phase 3 final sweep). All five recommendations marked DONE. Definition-of-done verified: single <code>AU_GST_RATE</code> at <code>packages/shared/src/tax/rate.ts</code>, zero <code>* 0.1</code> magic literals in active code, zero <code>* GST_RATE</code> math anywhere. Score: <strong>9.5/10</strong>.</li>
+</ul>
+<p class="dim">Companion: <code>docs/customer-subscription-plan.html</code>, <code>docs/supplier-subscription-plan.html</code>.</p>
+
+</main>
+</body>
+</html>
