@@ -12,7 +12,9 @@ import {
   Briefcase,
   Shield,
   Video,
-  CreditCard,
+  // CreditCard — restore alongside the "Stripe Connect" nav entry below
+  // when the Stripe Connect / payout-methods UX is unified.
+  // CreditCard,
   Settings,
   Menu,
   X,
@@ -106,7 +108,14 @@ const NAV: { section: string; items: NavItem[] }[] = [
     items: [
       { href: '/contractor/insurance', label: 'Insurance',      icon: Shield },
       { href: '/contractor/kyc',       label: 'KYC Status',     icon: Video },
-      { href: '/contractor/payment-methods', label: 'Stripe Connect', icon: CreditCard },
+      // Temporarily hidden — the "Stripe Connect" sidebar entry pointed at
+      // /contractor/payment-methods (the payout-verification surface),
+      // which is the wrong destination for that label and overlapped
+      // confusingly with /contractor/payment-instructions (the
+      // invoice/PO payment-rail config that actually feeds PDFs).
+      // Restore when the payout-methods surface is renamed and the
+      // two pages are properly disambiguated.
+      // { href: '/contractor/payment-methods', label: 'Stripe Connect', icon: CreditCard },
       { href: '/contractor/settings',  label: 'Settings',       icon: Settings },
     ],
   },

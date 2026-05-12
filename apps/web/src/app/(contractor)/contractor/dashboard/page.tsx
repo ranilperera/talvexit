@@ -206,7 +206,9 @@ export default function ContractorDashboard() {
             {[
               { href: '/contractor/insurance', label: '🛡 Manage Insurance' },
               { href: '/contractor/tasks/new', label: '➕ Create Task' },
-              { href: '/contractor/stripe',    label: '💳 Stripe Connect' },
+              // Temporarily hidden alongside the sidebar entry — restore
+              // when the Stripe Connect / payout-methods UX is unified.
+              // { href: '/contractor/stripe',    label: '💳 Stripe Connect' },
             ].map(({ href, label }) => (
               <Link
                 key={href}
