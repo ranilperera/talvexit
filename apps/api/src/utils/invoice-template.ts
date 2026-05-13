@@ -429,7 +429,7 @@ export function buildInvoicePdf(data: InvoiceRenderInput): Promise<Buffer> {
 
     // ── FOOTER ────────────────────────────────────────────────────────────
     const footerText = data.footer_text ??
-      'TalvexIT (operated by Onsys Pty Ltd) is a technology platform. ' +
+      'TalvexIT (operated by Waveful Digital Platforms) is a technology platform. ' +
       'Payments are made directly between clients and service providers. ' +
       'TalvexIT is not a party to this transaction.';
 

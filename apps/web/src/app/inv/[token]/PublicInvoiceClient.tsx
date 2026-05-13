@@ -359,7 +359,7 @@ export default function PublicInvoiceClient() {
 
         {/* ── Footer disclaimer ───────────────────────────────────────────── */}
         <p className="text-[11px] text-slate-600 text-center max-w-xl mx-auto leading-relaxed">
-          TalvexIT (operated by Onsys Pty Ltd) is a technology platform. Payments
+          TalvexIT (operated by Waveful Digital Platforms) is a technology platform. Payments
           on this invoice are made directly between you and {invoice.issuer.name}.
           TalvexIT is not a party to this transaction.
         </p>

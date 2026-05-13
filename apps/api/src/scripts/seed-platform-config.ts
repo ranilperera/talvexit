@@ -22,11 +22,11 @@ const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 const CONFIG: Array<{ key: string; value: unknown; description: string }> = [
   // ── Platform identity ──────────────────────────────────────────────────────
-  // Brand is TalvexIT, operated by Onsys Pty Ltd. Update platform_abn here
-  // once the legal entity has its ABN issued — every PO/invoice reads from
-  // this row, no code change needed.
+  // Brand is TalvexIT, operated by Waveful Digital Platforms. Update
+  // platform_abn here once the legal entity has its ABN issued — every
+  // PO/invoice reads from this row, no code change needed.
   { key: 'platform_name', value: 'TalvexIT', description: 'Platform display name (brand)' },
-  { key: 'platform_legal_name', value: 'Onsys Pty Ltd', description: 'Legal entity name (operator)' },
+  { key: 'platform_legal_name', value: 'Waveful Digital Platforms', description: 'Legal entity name (operator)' },
   { key: 'platform_abn', value: 'TBA', description: 'Platform ABN — replace with real ABN once issued' },
   { key: 'platform_acn', value: 'TBA', description: 'Platform ACN' },
   { key: 'platform_address', value: 'Melbourne, Victoria, Australia', description: 'Registered address' },

@@ -261,9 +261,10 @@ When false:
 - No tax line shown
 - Footer states the issuing entity is not GST-registered
 
-The footer disclaimer always appears: *"TalvexIT (operated by Onsys Pty
-Ltd) is a technology platform. Payments are made directly between clients
-and service providers. TalvexIT is not a party to this transaction."*
+The footer disclaimer always appears: *"TalvexIT (operated by Waveful
+Digital Platforms) is a technology platform. Payments are made directly
+between clients and service providers. TalvexIT is not a party to this
+transaction."*
 
 ---
 

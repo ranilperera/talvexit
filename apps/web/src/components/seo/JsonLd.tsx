@@ -25,7 +25,7 @@ export function OrganizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
-    legalName: 'Onsys Pty Ltd',
+    legalName: 'Waveful Digital Platforms',
     url: SITE_URL,
     logo: siteUrl('/icon.svg'),
     description:
@@ -230,7 +230,7 @@ export function ArticleJsonLd({ headline, description, url, datePublished, dateM
     author: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
     publisher: {
       '@type': 'Organization',
-      name: 'Onsys Pty Ltd',
+      name: 'Waveful Digital Platforms',
       url: SITE_URL,
       logo: { '@type': 'ImageObject', url: siteUrl('/icon.svg') },
     },
@@ -263,7 +263,7 @@ export function SoftwareApplicationJsonLd() {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Onsys Pty Ltd',
+      name: 'Waveful Digital Platforms',
       url: SITE_URL,
     },
   });

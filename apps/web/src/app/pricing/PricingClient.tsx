@@ -139,7 +139,7 @@ const FAQS_SHARED: { q: string; a: string }[] = [
   },
   {
     q: 'Are subscription prices inclusive of GST?',
-    a: 'Australian customers receive a tax invoice with 10% GST itemised. TalvexIT (operated by Onsys Pty Ltd) is the GST-registered entity for subscription billing — ABN appears on every invoice. International subscribers are billed GST-free as a non-resident export.',
+    a: 'Australian customers receive a tax invoice with 10% GST itemised. TalvexIT (operated by Waveful Digital Platforms) is the GST-registered entity for subscription billing — ABN appears on every invoice. International subscribers are billed GST-free as a non-resident export.',
   },
 ];
 

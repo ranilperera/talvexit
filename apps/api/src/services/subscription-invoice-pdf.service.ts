@@ -32,7 +32,7 @@ interface InvoicePdfData {
   tax_cents: number;
   total_cents: number;
   amount_paid_cents: number;
-  // Issuer (Onsys / TalvexIT)
+  // Issuer (Waveful Digital Platforms / TalvexIT)
   issuer_name: string;
   issuer_abn: string;
   issuer_address: string;
@@ -389,7 +389,7 @@ export async function generateAndStoreInvoicePdf(
     tax_cents: invoice.tax_cents,
     total_cents: invoice.total_cents,
     amount_paid_cents: invoice.amount_paid_cents,
-    issuer_name: process.env.COMPANY_NAME ?? 'Onsys Pty Ltd',
+    issuer_name: process.env.COMPANY_NAME ?? 'Waveful Digital Platforms',
     issuer_abn: process.env.COMPANY_ABN ?? '',
     issuer_address: process.env.COMPANY_ADDRESS ?? 'Australia',
     issuer_gst_registered:

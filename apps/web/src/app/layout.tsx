@@ -61,7 +61,7 @@ export const metadata: Metadata = {
 
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,
-  publisher: 'Onsys Pty Ltd',
+  publisher: 'Waveful Digital Platforms',
 
   alternates: { canonical: SITE_URL },
 

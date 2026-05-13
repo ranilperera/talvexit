@@ -192,7 +192,7 @@ export function generatePOHtml(data: POTemplateData): string {
 
   const vars: Record<string, string> = {
     platform_name: cfg.platform_name ?? 'TalvexIT',
-    platform_legal_name: cfg.platform_legal_name ?? 'Onsys Pty Ltd',
+    platform_legal_name: cfg.platform_legal_name ?? 'Waveful Digital Platforms',
     platform_abn: cfg.platform_abn ?? 'TBA',
     platform_address: cfg.platform_address ?? '',
     platform_support_email: cfg.platform_support_email ?? 'support@onsys.com.au',

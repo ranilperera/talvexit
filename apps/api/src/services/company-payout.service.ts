@@ -743,7 +743,7 @@ async function generateCommissionPdf(data: CommissionPdfData): Promise<Buffer> {
     const col1 = 50, col2 = 320;
 
     // Header
-    doc.fontSize(22).font('Helvetica-Bold').fillColor('#0f172a').text('Onsys Pty Ltd', col1, 50);
+    doc.fontSize(22).font('Helvetica-Bold').fillColor('#0f172a').text('Waveful Digital Platforms', col1, 50);
     doc.fontSize(10).font('Helvetica').fillColor('#64748b')
       .text('Platform Commission Invoice', col1, 78)
       .text('ABN: 00 000 000 000  ·  admin@onys.online', col1, 91);
@@ -807,7 +807,7 @@ async function generateCommissionPdf(data: CommissionPdfData): Promise<Buffer> {
 
     // Footer
     doc.fontSize(8).font('Helvetica').fillColor('#94a3b8')
-      .text('This is a tax invoice from Onsys Pty Ltd (billing agent). GST is applicable to the commission component only.', 50, 720, { width: 495 })
+      .text('This is a tax invoice from Waveful Digital Platforms (billing agent). GST is applicable to the commission component only.', 50, 720, { width: 495 })
       .text('Questions? Contact admin@onys.online', 50, 734, { width: 495 });
 
     doc.end();

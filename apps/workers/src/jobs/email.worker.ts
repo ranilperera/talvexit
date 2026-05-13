@@ -760,7 +760,7 @@ function buildDisputeDetermination(p: { to: string; outcome: string; written_rea
 // ─── Service-invoice templates ───────────────────────────────────────────────
 
 const PLATFORM_DISCLAIMER =
-  'TalvexIT (operated by Onsys Pty Ltd) is a technology platform. Payments are made directly between clients and service providers. TalvexIT is not a party to this transaction.';
+  'TalvexIT (operated by Waveful Digital Platforms) is a technology platform. Payments are made directly between clients and service providers. TalvexIT is not a party to this transaction.';
 
 function fmtMoneyCents(cents: number, currency: string): string {
   return `${currency} ${(cents / 100).toFixed(2)}`;
@@ -943,7 +943,7 @@ function subShell(title: string, intro: string, body: string, ctaUrl?: string, c
           : ''
       }
       <p style="color:#5C6B85;font-size:11px;margin:24px 0 0;line-height:1.5">
-        TalvexIT is operated by Onsys Pty Ltd. Manage your subscription, change plans, or cancel any time from your billing dashboard.
+        TalvexIT is operated by Waveful Digital Platforms. Manage your subscription, change plans, or cancel any time from your billing dashboard.
       </p>
     </div>
   `;

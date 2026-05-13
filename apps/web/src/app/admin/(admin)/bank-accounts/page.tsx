@@ -209,7 +209,7 @@ export default function BankAccountsPage() {
             <Info size={15} className="text-blue-400 shrink-0 mt-0.5" />
             <p className="text-xs text-slate-400">
               Enable at least one payment method below. Customers will only see methods that are individually enabled.
-              Onsys Pty Ltd is authorised to collect payments on behalf of the service provider — these are platform receiving accounts.
+              Waveful Digital Platforms is authorised to collect payments on behalf of the service provider — these are platform receiving accounts.
             </p>
           </div>
 
@@ -228,7 +228,7 @@ export default function BankAccountsPage() {
                 <Field label="BSB" value={au.bsb} onChange={(v) => setAu((s) => ({ ...s, bsb: v }))} placeholder="123-456" mono />
                 <Field label="Account Number" value={au.account_number} onChange={(v) => setAu((s) => ({ ...s, account_number: v }))} placeholder="12345678" mono />
               </div>
-              <Field label="Account Name" value={au.account_name} onChange={(v) => setAu((s) => ({ ...s, account_name: v }))} placeholder="Onsys Pty Ltd" />
+              <Field label="Account Name" value={au.account_name} onChange={(v) => setAu((s) => ({ ...s, account_name: v }))} placeholder="Waveful Digital Platforms" />
               <Field label="Bank Name" value={au.bank_name} onChange={(v) => setAu((s) => ({ ...s, bank_name: v }))} placeholder="Commonwealth Bank of Australia" />
             </SectionCard>
 
@@ -241,7 +241,7 @@ export default function BankAccountsPage() {
               hint="Instant transfers via PayID email"
             >
               <Field label="PayID Email" value={payid.email} onChange={(v) => setPayid((s) => ({ ...s, email: v }))} placeholder="payments@onsys.com.au" mono />
-              <Field label="Account Name (shown to customer)" value={payid.name} onChange={(v) => setPayid((s) => ({ ...s, name: v }))} placeholder="Onsys Pty Ltd" />
+              <Field label="Account Name (shown to customer)" value={payid.name} onChange={(v) => setPayid((s) => ({ ...s, name: v }))} placeholder="Waveful Digital Platforms" />
             </SectionCard>
 
             {/* SWIFT — wider, span 2 cols on lg since it has more fields */}
@@ -258,7 +258,7 @@ export default function BankAccountsPage() {
                   <Field label="Currency" value={swift.currency} onChange={(v) => setSwift((s) => ({ ...s, currency: v }))} placeholder="AUD" />
                 </div>
                 <Field label="IBAN / Account Number" value={swift.iban} onChange={(v) => setSwift((s) => ({ ...s, iban: v }))} placeholder="AU00 0000 0000 0000 0000 00" mono />
-                <Field label="Account Name" value={swift.account_name} onChange={(v) => setSwift((s) => ({ ...s, account_name: v }))} placeholder="Onsys Pty Ltd" />
+                <Field label="Account Name" value={swift.account_name} onChange={(v) => setSwift((s) => ({ ...s, account_name: v }))} placeholder="Waveful Digital Platforms" />
                 <Field label="Bank Name" value={swift.bank_name} onChange={(v) => setSwift((s) => ({ ...s, bank_name: v }))} placeholder="Commonwealth Bank of Australia" />
                 <Field label="Bank Address" value={swift.bank_address} onChange={(v) => setSwift((s) => ({ ...s, bank_address: v }))} placeholder="48 Martin Place, Sydney NSW 2000" />
               </SectionCard>

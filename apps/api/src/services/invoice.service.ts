@@ -253,7 +253,11 @@ export class InvoiceService {
     const due_date =
       data.due_date_override ?? new Date(Date.now() + DEFAULT_TERMS_DAYS * 24 * 60 * 60 * 1000);
 
-    const ONSYS_ABN = process.env['ONSYS_ABN'] ?? 'TBA';
+    // Read the operator ABN from env. Falls back to the legacy ONSYS_ABN
+    // var name so existing prod/staging deployments keep working through
+    // the rename to Waveful Digital Platforms. Move the value to
+    // WAVEFUL_ABN at convenience, ONSYS_ABN can be retired after that.
+    const OPERATOR_ABN = process.env['WAVEFUL_ABN'] ?? process.env['ONSYS_ABN'] ?? 'TBA';
 
     // 8. Create invoice with full compliance/agent billing fields
     const providerIds = getProviderIds(order);
@@ -275,7 +279,7 @@ export class InvoiceService {
         // ── Agent billing compliance fields ────────────────────────────────
         invoice_type_label: classification.label,
         is_tax_invoice: classification.isTaxInvoice,
-        billing_agent_name: `Onsys Pty Ltd (ABN: ${ONSYS_ABN})`,
+        billing_agent_name: `Waveful Digital Platforms (ABN: ${OPERATOR_ABN})`,
         provider_legal_name: providerData.legal_name,
         provider_abn: providerData.abn,
         provider_gst_registered: providerData.gst_registered,
@@ -314,7 +318,7 @@ export class InvoiceService {
       issued_date: new Date(),
       due_date,
       payment_terms_days: DEFAULT_TERMS_DAYS,
-      billing_agent_name: `Onsys Pty Ltd (ABN: ${ONSYS_ABN})`,
+      billing_agent_name: `Waveful Digital Platforms (ABN: ${OPERATOR_ABN})`,
       provider_legal_name: providerData.legal_name,
       provider_abn: providerData.abn,
       provider_gst_registered: providerData.gst_registered,
@@ -654,7 +658,7 @@ export class InvoiceService {
 
 // ─── HELPER: generateCompanyInvoicePdf ────────────────────────────────────────
 // Generates an agent billing invoice PDF.
-// Onsys Pty Ltd issues as non-exclusive billing agent for the provider.
+// Waveful Digital Platforms issues as non-exclusive billing agent for the provider.
 
 async function generateCompanyInvoicePdf(data: CompanyInvoicePdfData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -867,10 +871,10 @@ async function generateCompanyInvoicePdf(data: CompanyInvoicePdfData): Promise<B
     doc
       .fontSize(6.5).font('Helvetica').fillColor('#94a3b8')
       .text(
-        `This ${data.invoice_type_label} is issued by Onsys Pty Ltd as non-exclusive commercial and billing agent ` +
+        `This ${data.invoice_type_label} is issued by Waveful Digital Platforms as non-exclusive commercial and billing agent ` +
         `for ${data.provider_legal_name}${data.provider_abn ? ` (ABN: ${data.provider_abn})` : ''}. ` +
-        `Onsys Pty Ltd does not supply the underlying services. Payment obligations are to Onsys Pty Ltd as ` +
-        `collecting agent only. Onsys will remit net proceeds to the provider after deducting its agreed commission. ` +
+        `Waveful Digital Platforms does not supply the underlying services. Payment obligations are to Waveful Digital Platforms as ` +
+        `collecting agent only. Waveful will remit net proceeds to the provider after deducting its agreed commission. ` +
         `GST registered in Australia. All amounts in AUD.`,
         60, FOOTER_Y + 8, { width: CONTENT_WIDTH, lineGap: 1.5 },
       );

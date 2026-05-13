@@ -19,8 +19,8 @@ export default function AboutPage() {
         ]}
       />
       <ArticleJsonLd
-        headline="About TalvexIT — operated by Onsys Pty Ltd"
-        description="TalvexIT is Australia's enterprise IT specialist marketplace, operated by Onsys Pty Ltd. Built for procurement teams that need senior, verified IT talent on fixed-scope contracts."
+        headline="About TalvexIT — operated by Waveful Digital Platforms"
+        description="TalvexIT is Australia's enterprise IT specialist marketplace, operated by Waveful Digital Platforms. Built for procurement teams that need senior, verified IT talent on fixed-scope contracts."
         url={siteUrl('/about')}
         dateModified={new Date().toISOString()}
       />

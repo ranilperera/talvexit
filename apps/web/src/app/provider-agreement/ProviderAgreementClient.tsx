@@ -10,37 +10,37 @@ const clauses = [
     number: '1',
     title: 'Appointment as Non-Exclusive Billing Agent',
     body: [
-      'The Provider ("you", "your") appoints Onsys Pty Ltd ABN TBA ("Onsys", "we", "us") as your non-exclusive commercial and billing agent for the purposes of:',
+      'The Provider ("you", "your") appoints Waveful Digital Platforms ABN TBA ("Waveful", "we", "us") as your non-exclusive commercial and billing agent for the purposes of:',
       '(a) issuing tax invoices, invoices, and commercial invoices to customers on your behalf;',
       '(b) receiving payment from customers in satisfaction of your invoices;',
-      '(c) deducting the Onsys Commission (as defined in clause 2); and',
+      '(c) deducting the Waveful Commission (as defined in clause 2); and',
       '(d) remitting net proceeds to you in accordance with clause 3.',
-      'This appointment is NON-EXCLUSIVE. You remain free to provide services and issue invoices outside the platform. Onsys does not supply the underlying services. All services are supplied by you, the Provider. Onsys acts solely as billing and collection agent.',
+      'This appointment is NON-EXCLUSIVE. You remain free to provide services and issue invoices outside the platform. Waveful does not supply the underlying services. All services are supplied by you, the Provider. Waveful acts solely as billing and collection agent.',
     ],
   },
   {
     number: '2',
     title: 'Commission Schedule',
     body: [
-      'In consideration for the platform services provided by Onsys, you agree to pay a commission on each completed order as follows:',
+      'In consideration for the platform services provided by Waveful, you agree to pay a commission on each completed order as follows:',
       '• First AUD $10,000 cumulative platform earnings: 20%',
       '• AUD $10,001 – $50,000 cumulative: 15%',
       '• AUD $50,001 – $100,000 cumulative: 10%',
       '• AUD $100,001 – $500,000 cumulative: 7%',
       '• Above AUD $500,000 cumulative: 5%',
-      'Commission is calculated on the subtotal excluding GST. Onsys deducts commission before remitting net proceeds. Commission rates are subject to change with 30 days written notice.',
+      'Commission is calculated on the subtotal excluding GST. Waveful deducts commission before remitting net proceeds. Commission rates are subject to change with 30 days written notice.',
     ],
   },
   {
     number: '3',
     title: 'Payout Timing and Method',
     body: [
-      'Onsys will remit net proceeds (invoice total less commission) to you within 3 business days of confirmed payment receipt from the customer, subject to:',
+      'Waveful will remit net proceeds (invoice total less commission) to you within 3 business days of confirmed payment receipt from the customer, subject to:',
       '(a) no outstanding disputes on the order;',
       '(b) your bank account or Stripe Connect account being correctly configured;',
       '(c) no fraud or AML hold being in place.',
       'Payout methods supported: Australian bank transfer (BSB/Account), and Stripe Connect (international).',
-      'Onsys is not liable for delays caused by banking systems, incorrect account details provided by the Provider, or regulatory holds.',
+      'Waveful is not liable for delays caused by banking systems, incorrect account details provided by the Provider, or regulatory holds.',
     ],
   },
   {
@@ -49,18 +49,18 @@ const clauses = [
     body: [
       'You declare that:',
       '(a) all information provided about your ABN, GST registration, and tax residency is accurate and up to date;',
-      '(b) you will notify Onsys immediately of any change to your ABN or GST registration status;',
-      '(c) where you are GST registered, Onsys will issue Tax Invoices (as defined in A New Tax System (Goods and Services Tax) Act 1999) on your behalf, and GST collected is held and remitted by you or Onsys as agreed;',
-      '(d) where you are not GST registered, Onsys will issue Invoices (not Tax Invoices) and no GST will be charged.',
-      'Onsys will use reasonable efforts to correctly classify invoices in accordance with Australian tax law, but ultimate compliance responsibility for your tax obligations remains with you.',
+      '(b) you will notify Waveful immediately of any change to your ABN or GST registration status;',
+      '(c) where you are GST registered, Waveful will issue Tax Invoices (as defined in A New Tax System (Goods and Services Tax) Act 1999) on your behalf, and GST collected is held and remitted by you or Waveful as agreed;',
+      '(d) where you are not GST registered, Waveful will issue Invoices (not Tax Invoices) and no GST will be charged.',
+      'Waveful will use reasonable efforts to correctly classify invoices in accordance with Australian tax law, but ultimate compliance responsibility for your tax obligations remains with you.',
     ],
   },
   {
     number: '5',
     title: 'Withholding Tax (No ABN)',
     body: [
-      'If you do not provide a valid ABN, Onsys is required by Australian law to withhold tax at the top marginal rate (currently 47%) from payments to you. This withholding is remitted to the ATO on your behalf.',
-      'To avoid withholding, you must provide a valid ABN that passes ATO validation. Onsys will not refund amounts already withheld and remitted to the ATO; you must seek recovery directly from the ATO.',
+      'If you do not provide a valid ABN, Waveful is required by Australian law to withhold tax at the top marginal rate (currently 47%) from payments to you. This withholding is remitted to the ATO on your behalf.',
+      'To avoid withholding, you must provide a valid ABN that passes ATO validation. Waveful will not refund amounts already withheld and remitted to the ATO; you must seek recovery directly from the ATO.',
       'Withholding does not apply to foreign providers where a valid supplier statement or appropriate tax treaty declaration is on file.',
     ],
   },
@@ -68,12 +68,12 @@ const clauses = [
     number: '6',
     title: 'Chargebacks, Disputes, and Reversals',
     body: [
-      'If a customer initiates a payment reversal (chargeback) through their bank or card provider, and the reversal is upheld, Onsys may:',
+      'If a customer initiates a payment reversal (chargeback) through their bank or card provider, and the reversal is upheld, Waveful may:',
       '(a) reverse or reduce a pending payout by the disputed amount;',
       '(b) recover the disputed amount from a future payout; or',
       '(c) issue a formal demand if no future payouts are available.',
       'Platform disputes (raised through the talvex.com.au dispute resolution process) are resolved separately. If a platform dispute results in a partial or full refund, payouts will be adjusted accordingly.',
-      'You indemnify Onsys against third-party claims arising from the services you supply.',
+      'You indemnify Waveful against third-party claims arising from the services you supply.',
     ],
   },
   {
@@ -94,7 +94,7 @@ const clauses = [
       '(a) you have read and understood this entire Agreement;',
       '(b) you have the authority to enter into this Agreement on behalf of your business (if applicable);',
       '(c) you accept all terms without modification.',
-      'Onsys may vary this Agreement by providing 30 days written notice via the email address on your account. Continued use of the platform after the notice period constitutes acceptance of the varied terms.',
+      'Waveful may vary this Agreement by providing 30 days written notice via the email address on your account. Continued use of the platform after the notice period constitutes acceptance of the varied terms.',
       'Your acceptance is recorded with your IP address, user agent, and timestamp. This record constitutes a valid electronic signature under the Electronic Transactions Act 1999 (Cth).',
     ],
   },
@@ -116,7 +116,7 @@ export default function ProviderAgreementClient() {
             Provider Agreement
           </h1>
           <p className="text-base leading-relaxed mb-6" style={{ color: t.bodyColor }}>
-            This Agreement governs the relationship between <strong style={{ color: t.headlineColor }}>Onsys Pty Ltd</strong>{' '}
+            This Agreement governs the relationship between <strong style={{ color: t.headlineColor }}>Waveful Digital Platforms</strong>{' '}
             and each individual contractor or IT company (&quot;Provider&quot;) who delivers services through the talvex.com.au platform.
           </p>
           <div
@@ -125,7 +125,7 @@ export default function ProviderAgreementClient() {
           >
             <span><strong style={{ color: t.headlineColor }}>Version:</strong> {AGREEMENT_VERSION}</span>
             <span><strong style={{ color: t.headlineColor }}>Effective:</strong> {EFFECTIVE_DATE}</span>
-            <span><strong style={{ color: t.headlineColor }}>Issuer:</strong> Onsys Pty Ltd (ABN TBA)</span>
+            <span><strong style={{ color: t.headlineColor }}>Issuer:</strong> Waveful Digital Platforms (ABN TBA)</span>
             <span><strong style={{ color: t.headlineColor }}>Jurisdiction:</strong> New South Wales, Australia</span>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function ProviderAgreementClient() {
             </h3>
             <p className="text-sm leading-relaxed" style={{ color: t.bodyColor }}>
               When you check the &quot;I accept the Provider Agreement&quot; checkbox during onboarding or in your account settings,
-              you are entering into a binding legal agreement with Onsys Pty Ltd on the terms set out above.
+              you are entering into a binding legal agreement with Waveful Digital Platforms on the terms set out above.
               This constitutes an electronic signature under the{' '}
               <em>Electronic Transactions Act 1999</em> (Cth).
             </p>

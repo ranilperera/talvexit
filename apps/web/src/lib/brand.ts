@@ -11,7 +11,7 @@ export const BRAND = {
   name:        'TalvexIT',
   tagline:     'Senior IT. Delivered.',
   fullTagline: 'Senior IT expertise marketplace.',
-  legalName:   'Onsys Pty Ltd',
+  legalName:   'Waveful Digital Platforms',
   tradingAs:   'TalvexIT',
   domain:      'talvexIT.com',
   email: {

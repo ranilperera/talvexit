@@ -1127,7 +1127,7 @@ async function generateCommissionPdf(data: CommissionPdfData): Promise<Buffer> {
     const fmt = (n: number) => `AUD ${n.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const fmtDate = (d: Date) => d.toLocaleDateString('en-AU', { year: 'numeric', month: 'long', day: 'numeric' });
 
-    doc.fontSize(22).font('Helvetica-Bold').fillColor('#0f172a').text('Onsys Pty Ltd', 50, 50);
+    doc.fontSize(22).font('Helvetica-Bold').fillColor('#0f172a').text('Waveful Digital Platforms', 50, 50);
     doc.fontSize(10).font('Helvetica').fillColor('#64748b')
       .text('Platform Commission Invoice (Tender Contract)', 50, 78)
       .text('ABN: 00 000 000 000  ·  admin@onys.online', 50, 91);

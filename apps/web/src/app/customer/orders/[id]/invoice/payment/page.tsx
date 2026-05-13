@@ -307,7 +307,7 @@ function BankTransferFlow({
         </div>
 
         <div className="text-xs text-slate-500 bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3">
-          Onsys Pty Ltd is authorised to issue tax invoices and collect payments on behalf of the service provider.
+          Waveful Digital Platforms is authorised to issue tax invoices and collect payments on behalf of the service provider.
           Once your transfer is received and confirmed by our team, this invoice will be marked as paid.
         </div>
 
