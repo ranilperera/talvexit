@@ -631,10 +631,15 @@ function CustomerProposalPageContent() {
   async function handleDownloadPo() {
     if (!purchaseOrder) return;
     try {
-      const res = await customerApi.get<{ success: boolean; data: { url: string; expires_at: string } }>(
+      // Stream the PO PDF through the API and open via a local Object
+      // URL — replaces the prior SAS-URL flow.
+      const res = await customerApi.get(
         `/api/v1/purchase-orders/${purchaseOrder.id}/document`,
+        { responseType: 'blob' },
       );
-      window.open(res.data.data.url, '_blank');
+      const url = URL.createObjectURL(res.data as Blob);
+      window.open(url, '_blank');
+      setTimeout(() => { URL.revokeObjectURL(url); }, 60_000);
     } catch {
       toast.error('Could not generate PO download. Please try again.');
     }

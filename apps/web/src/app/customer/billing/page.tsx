@@ -149,24 +149,31 @@ function InvoiceDownloadButton({ order }: { order: BillingOrder }) {
   async function handleDownload() {
     setLoading(true);
     try {
-      // Try company invoice endpoint first
+      // Try the company invoice endpoint first. The endpoint now streams
+      // the PDF rather than returning a SAS URL — fetch as blob and open
+      // via a local Object URL.
       if (order.company_invoice?.id) {
-        const res = await customerApi.get<{ success: boolean; data: { url?: string } }>(
+        const res = await customerApi.get(
           `/api/v1/invoices/${order.company_invoice.id}/document`,
+          { responseType: 'blob' },
         );
-        if (res.data.data.url) {
-          window.open(res.data.data.url, '_blank');
+        const blob = res.data as Blob;
+        if (blob.size > 0) {
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          setTimeout(() => { URL.revokeObjectURL(url); }, 60_000);
           return;
         }
       }
-      // Fall back to order-level invoice endpoint
+      // Fall back to order-level invoice endpoint (legacy — may still
+      // return a JSON shape with a message; tolerate that for now).
       const res = await customerApi.get<{ success: boolean; data: { url?: string; message?: string } }>(
         `/api/v1/orders/${order.id}/invoice`,
       );
-      if (res.data.data.url) {
-        window.open(res.data.data.url, '_blank');
+      if (res.data.data.message) {
+        toast.info(res.data.data.message);
       } else {
-        toast.info(res.data.data.message ?? 'Invoice not yet available');
+        toast.info('Invoice not yet available');
       }
     } catch {
       toast.error('Invoice not available yet');

@@ -29,10 +29,8 @@ interface OrderResponse {
   };
 }
 
-interface SasResponse {
-  success: boolean;
-  data: { url: string; expires_at: string };
-}
+// SasResponse interface removed — the document endpoint now streams the
+// PDF instead of returning a SAS URL.
 
 export default function InvoicePage() {
   const { id } = useParams<{ id: string }>();
@@ -76,12 +74,16 @@ export default function InvoicePage() {
     if (!invoice) return;
     setDownloading(true);
     try {
-      const res = await customerApi.get<SasResponse>(
+      // Stream the PDF blob through the API and open via a local Object
+      // URL — replaces the prior SAS-URL flow which exposed Azure URLs
+      // to the browser. See lib/download.ts for the rationale.
+      const res = await customerApi.get(
         `/api/v1/company-invoices/${invoice.id}/document`,
+        { responseType: 'blob' },
       );
-      const url = res.data.data.url;
-      // Open in new tab — browser will prompt download for PDF blob URLs
+      const url = URL.createObjectURL(res.data as Blob);
       window.open(url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => { URL.revokeObjectURL(url); }, 60_000);
     } catch {
       toast.error('Could not retrieve PDF. Please try again.');
     } finally {

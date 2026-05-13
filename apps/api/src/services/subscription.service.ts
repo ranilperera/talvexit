@@ -10,7 +10,8 @@ import { resolvePlanFromStripePrice } from './subscription-webhook.service.js';
 import { AppError } from '../lib/errors.js';
 import { writeAudit } from '../utils/audit.js';
 import { buildEmailUrl } from '../utils/urls.js';
-import { generateSasUrl } from '../utils/blob-storage.js';
+// generateSasUrl was removed in the security cleanup — subscription
+// invoice download now streams through the API.
 import type {
   CreatePlanInput,
   UpdatePlanInput,
@@ -1280,16 +1281,18 @@ export class SubscriptionService {
     return invoice;
   }
 
-  async getInvoicePdfDownloadUrl(
+  // Returns the blob path of the subscription-invoice PDF so the route
+  // handler can stream it. Previously returned a SAS URL — that pattern
+  // was removed because it exposed the Azure URL to the client.
+  async getInvoicePdfBlobPath(
     invoiceId: string,
     subject: SubscriptionSubject,
-  ): Promise<string> {
+  ): Promise<{ blob_path: string; invoice_number: string | null }> {
     const invoice = await this.getInvoiceForSubject(invoiceId, subject);
     if (!invoice.pdf_storage_url) {
       throw new AppError('PDF_NOT_GENERATED', 404, 'Invoice PDF not yet generated.');
     }
-    // pdf_storage_url stores the blob path
-    return generateSasUrl(invoice.pdf_storage_url, 60);
+    return { blob_path: invoice.pdf_storage_url, invoice_number: invoice.invoice_number };
   }
 
   // ─── Admin: list & metrics ────────────────────────────────────────────────

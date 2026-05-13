@@ -17,7 +17,7 @@ import { authenticate } from '../middleware/authenticate.js';
 import { requireAdmin } from '../middleware/admin-guards.js';
 import { prisma } from '../lib/prisma.js';
 import { sha256Hash } from '../utils/tokens.js';
-import { uploadToBlob, generateSasUrl } from '../utils/blob-storage.js';
+import { uploadToBlob } from '../utils/blob-storage.js';
 import { lookupAbn } from '../services/abr.service.js';
 import { writeAudit } from '../utils/audit.js';
 
@@ -1115,17 +1115,26 @@ export async function companyRoutes(
     },
   );
 
-  // ─── PLATFORM ADMIN: GET COMPANY AUTH DOC SAS URL ───────────────────────
-  // GET /admin/companies/:id/document-url
+  // ─── PLATFORM ADMIN: STREAM COMPANY AUTHORITY DOCUMENT ──────────────────
+  // GET /admin/companies/:id/authority-document
+  //
+  // SECURITY: streams the blob through the API instead of returning an
+  // Azure SAS URL. The previous SAS-URL endpoint exposed the storage
+  // account, container layout, and original filename; once leaked the
+  // URL was readable for an hour without re-authentication. With this
+  // streaming endpoint every download goes through the JWT auth check
+  // and writes an audit row, and Azure credentials never leave the
+  // server.
   app.get(
-    '/admin/companies/:id/document-url',
+    '/admin/companies/:id/authority-document',
     { preHandler: [authenticate, requireAdmin] },
     async (req, reply) => {
       const { id } = req.params as { id: string };
+      const { dl } = req.query as { dl?: string };
       try {
         const company = await prisma.consultingCompany.findUnique({
           where: { id },
-          select: { id: true, authorization_doc_blob_path: true },
+          select: { id: true, company_name: true, authorization_doc_blob_path: true },
         });
         if (!company) {
           return reply.status(404).send({
@@ -1139,10 +1148,37 @@ export async function companyRoutes(
             error: { code: 'NO_DOCUMENT', message: 'No authority document uploaded' },
           });
         }
-        const expiryMinutes = 60;
-        const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
-        const url = await generateSasUrl(company.authorization_doc_blob_path, expiryMinutes);
-        return reply.status(200).send({ success: true, data: { url, expires_at: expiresAt } });
+
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(
+          company.authorization_doc_blob_path,
+        );
+        const fileName = company.authorization_doc_blob_path.split('/').pop() ?? 'authority-doc';
+
+        // Authority docs are PDFs/images; inline by default so admins can
+        // view in-tab. Pass ?dl=1 to force a download.
+        const resolvedType = contentType ?? 'application/octet-stream';
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', resolvedType);
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+
+        // Audit log every authority-doc view. Governance documents like
+        // Board Resolutions are sensitive; tracking who looked, when,
+        // and from where is part of the compliance posture.
+        await writeAudit(prisma, {
+          actorId: req.user!.userId,
+          actionType: 'COMPANY_AUTHORITY_DOC_VIEWED',
+          entityType: 'ConsultingCompany',
+          entityId: company.id,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'] ?? 'unknown',
+          metadata: { company_name: company.company_name, disposition },
+        });
+
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }

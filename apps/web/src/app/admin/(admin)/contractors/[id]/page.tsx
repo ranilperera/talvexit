@@ -150,15 +150,31 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+// Fetch the document as a blob (Bearer-authed) and open it in a new tab
+// via a local Object URL. Replaces the prior flow that opened a SAS URL
+// directly — see lib/download.ts + utils/blob-storage.ts for the
+// rationale.
+async function openStreamedDoc(endpoint: string): Promise<void> {
+  const res = await api.get(endpoint, { responseType: 'blob' });
+  const url = URL.createObjectURL(res.data as Blob);
+  const w = window.open(url, '_blank');
+  if (!w) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+  setTimeout(() => { URL.revokeObjectURL(url); }, 60_000);
+}
+
 function InsuranceSasButton({ certId, label }: { certId: string; label?: string }) {
   const [loading, setLoading] = useState(false);
   async function open() {
     setLoading(true);
     try {
-      const res = await api.get<{ success: boolean; data: { url: string } }>(
-        `/api/v1/admin/certifications/${certId}/document-url`,
-      );
-      window.open(res.data.data.url, '_blank');
+      await openStreamedDoc(`/api/v1/admin/certifications/${certId}/document`);
     } finally {
       setLoading(false);
     }
@@ -179,10 +195,7 @@ function IdentityDocButton({ profileId }: { profileId: string }) {
   async function open() {
     setLoading(true);
     try {
-      const res = await api.get<{ success: boolean; data: { url: string } }>(
-        `/api/v1/admin/contractors/${profileId}/identity-document-url`,
-      );
-      window.open(res.data.data.url, '_blank');
+      await openStreamedDoc(`/api/v1/admin/contractors/${profileId}/identity-document`);
     } finally {
       setLoading(false);
     }

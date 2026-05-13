@@ -1467,12 +1467,26 @@ function DocumentsTabContent({
 }) {
   const [downloading, setDownloading] = useState<string | null>(null);
 
-  // Opens a SAS-URL document (PO, invoice) — GET returns { data: { url } }
+  // Streams a document (PO, invoice) through the API and opens it in a
+  // new tab via a local Object URL. Replaces the prior pattern that
+  // opened a SAS URL directly — see lib/download.ts + utils/blob-
+  // storage.ts for the security rationale.
   const openDoc = async (key: string, endpoint: string, filename: string) => {
     setDownloading(key);
     try {
-      const res = await customerApi.get<{ success: boolean; data: { url: string } }>(endpoint);
-      window.open(res.data.data.url, '_blank');
+      const res = await customerApi.get(endpoint, { responseType: 'blob' });
+      const url = URL.createObjectURL(res.data as Blob);
+      const w = window.open(url, '_blank');
+      if (!w) {
+        // Popup blocked — fall back to direct download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      setTimeout(() => { URL.revokeObjectURL(url); }, 60_000);
     } catch {
       toast.error(`Could not load ${filename}. PDF may not be generated yet.`);
     } finally {

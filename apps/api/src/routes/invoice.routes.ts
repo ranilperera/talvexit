@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { authenticate } from '../middleware/authenticate.js';
 import type { InvoiceService } from '../services/invoice.service.js';
 import { prisma } from '../lib/prisma.js';
-import { generateSasUrl, uploadToBlob } from '../utils/blob-storage.js';
+import { uploadToBlob } from '../utils/blob-storage.js';
 import { writeAudit } from '../utils/audit.js';
 
 // ─── Zod schemas ──────────────────────────────────────────────────────────────
@@ -152,6 +152,7 @@ export async function invoiceRoutes(app: FastifyInstance, opts: InvoiceRouteOpti
           where: { id: invoiceId },
           select: {
             id: true,
+            invoice_number: true,
             pdf_blob_path: true,
             order: {
               select: { customer_id: true, company_id: true, executing_member_id: true },
@@ -191,10 +192,20 @@ export async function invoiceRoutes(app: FastifyInstance, opts: InvoiceRouteOpti
           });
         }
 
-        const expiryMinutes = 60;
-        const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
-        const url = await generateSasUrl(invoice.pdf_blob_path, expiryMinutes);
-        return reply.status(200).send({ success: true, data: { url, expires_at: expiresAt } });
+        // Stream the invoice PDF through the API rather than returning a
+        // SAS URL — keeps the Azure URL out of the browser and ensures
+        // every download stays gated by the platform auth check.
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(invoice.pdf_blob_path);
+        const fileName = invoice.pdf_blob_path.split('/').pop() ?? `invoice-${invoice.invoice_number ?? 'document'}.pdf`;
+        const { dl } = req.query as { dl?: string };
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', contentType ?? 'application/pdf');
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }

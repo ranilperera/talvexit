@@ -201,19 +201,33 @@ export async function subscriptionRoutes(
     },
   );
 
-  // ─── AUTH: download invoice PDF (returns time-limited SAS URL) ─────────────
+  // ─── AUTH: stream the subscription invoice PDF ────────────────────────────
+  // Streams through the API rather than returning a SAS URL. Auth is
+  // checked via resolveSubject (caller must own the subscription / be
+  // a company admin etc.).
 
   app.get(
     '/subscriptions/invoices/:id/pdf',
     { preHandler: [authenticate] },
     async (req, reply) => {
       const { id } = req.params as { id: string };
+      const { dl } = req.query as { dl?: string };
       try {
         const subject = await subscriptionService.resolveSubject(req.user!.userId, {
           as: pickSubjectKind(req),
         });
-        const url = await subscriptionService.getInvoicePdfDownloadUrl(id, subject);
-        return reply.status(200).send({ success: true, data: { download_url: url } });
+        const { blob_path, invoice_number } = await subscriptionService.getInvoicePdfBlobPath(id, subject);
+
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(blob_path);
+        const fileName = `${invoice_number ?? 'subscription-invoice'}.pdf`;
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', contentType ?? 'application/pdf');
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }

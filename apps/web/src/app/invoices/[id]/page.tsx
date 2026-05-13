@@ -211,11 +211,15 @@ export default function InvoiceDetailPage() {
     if (!invoice) return;
     setDownloading(true);
     try {
-      const res = await customerApi.get<{
-        success: boolean;
-        data: { download_url: string };
-      }>(`/api/v1/service-invoices/${invoice.id}/pdf`);
-      window.open(res.data.data.download_url, '_blank', 'noopener,noreferrer');
+      // Stream the service-invoice PDF through the API and open via a
+      // local Object URL.
+      const res = await customerApi.get(
+        `/api/v1/service-invoices/${invoice.id}/pdf`,
+        { responseType: 'blob' },
+      );
+      const url = URL.createObjectURL(res.data as Blob);
+      window.open(url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => { URL.revokeObjectURL(url); }, 60_000);
     } catch {
       // toast handled
     } finally {
@@ -241,13 +245,17 @@ export default function InvoiceDetailPage() {
     if (!invoice) return;
     setDownloadingEvidenceId(evidenceId);
     try {
-      const res = await customerApi.get<{
-        success: boolean;
-        data: { download_url: string; file_name: string | null };
-      }>(
+      // Payment-evidence files (bank statements etc.) — stream through
+      // the API. The previous SAS-URL flow exposed an Azure URL that
+      // could leak via Referer/logs/history. This flow keeps the URL
+      // local to the tab and is audit-logged server-side.
+      const res = await customerApi.get(
         `/api/v1/service-invoices/${invoice.id}/evidence/${evidenceId}/download`,
+        { responseType: 'blob' },
       );
-      window.open(res.data.data.download_url, '_blank', 'noopener,noreferrer');
+      const url = URL.createObjectURL(res.data as Blob);
+      window.open(url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => { URL.revokeObjectURL(url); }, 60_000);
     } catch {
       // toast handled
     } finally {

@@ -7,7 +7,10 @@ import { AdminContractorService } from '../services/admin-contractor.service.js'
 import { AmlService } from '../services/aml.service.js';
 import { InsuranceService } from '../services/insurance.service.js';
 import { getSystemHealth } from '../services/health.service.js';
-import { generateSasUrl } from '../utils/blob-storage.js';
+import { writeAudit } from '../utils/audit.js';
+// downloadBlobStream is imported per-handler via dynamic import below to
+// keep the top-of-file imports tidy. SAS-URL generation has been removed
+// from this file — all document downloads stream through the API.
 import type { PrismaClient, OrderStatus, CompanyPayoutStatus, CompanyPayoutMethod } from '@prisma/client';
 import type { CompanyPayoutService } from '../services/company-payout.service.js';
 import { invalidateConfigCache } from '../services/platform-config.service.js';
@@ -193,17 +196,22 @@ export async function adminRoutes(app: FastifyInstance, opts: AdminRouteOptions)
     },
   );
 
-  // ─── GET /contractors/:id/identity-document-url ──────────────────────────
+  // ─── GET /contractors/:id/identity-document ──────────────────────────────
+  // Streams the KYC identity document through the API. Replaces the
+  // previous SAS-URL endpoint which exposed the Azure URL to the client.
+  // Each access is audit-logged (KYC_DOCUMENT_VIEWED) because identity
+  // documents are the most sensitive payload in the system.
 
   app.get(
-    '/contractors/:id/identity-document-url',
+    '/contractors/:id/identity-document',
     { preHandler: [authenticate, requireAdmin] },
     async (req, reply) => {
       const { id } = req.params as { id: string };
+      const { dl } = req.query as { dl?: string };
       try {
         const profile = await prisma.contractorProfile.findUnique({
           where: { id },
-          select: { identity_document_blob_path: true },
+          select: { id: true, user_id: true, identity_document_blob_path: true },
         });
         if (!profile) {
           return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND' } });
@@ -211,8 +219,31 @@ export async function adminRoutes(app: FastifyInstance, opts: AdminRouteOptions)
         if (!profile.identity_document_blob_path) {
           return reply.status(404).send({ success: false, error: { code: 'NO_DOCUMENT', message: 'No identity document on file.' } });
         }
-        const url = await generateSasUrl(profile.identity_document_blob_path, 60);
-        return reply.status(200).send({ success: true, data: { url, expires_at: new Date(Date.now() + 60 * 60 * 1000) } });
+
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(
+          profile.identity_document_blob_path,
+        );
+        const fileName = profile.identity_document_blob_path.split('/').pop() ?? 'identity-document';
+
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', contentType ?? 'application/octet-stream');
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+
+        await writeAudit(prisma, {
+          actorId: req.user!.userId,
+          actionType: 'KYC_DOCUMENT_VIEWED',
+          entityType: 'ContractorProfile',
+          entityId: profile.id,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'] ?? 'unknown',
+          metadata: { target_user_id: profile.user_id, disposition },
+        });
+
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }
@@ -628,11 +659,16 @@ export async function adminRoutes(app: FastifyInstance, opts: AdminRouteOptions)
 
   // ─── GET /certifications/:id/document-url ────────────────────────────────
 
+  // ─── GET /certifications/:id/document ────────────────────────────────────
+  // Streams the insurance certificate. Replaces the previous SAS-URL
+  // endpoint which exposed the Azure URL to the client.
+
   app.get(
-    '/certifications/:id/document-url',
+    '/certifications/:id/document',
     { preHandler: [authenticate, requirePermission('verify_insurance')] },
     async (req, reply) => {
       const { id } = req.params as { id: string };
+      const { dl } = req.query as { dl?: string };
       try {
         const cert = await prisma.insuranceCertificate.findUnique({
           where: { id },
@@ -644,10 +680,37 @@ export async function adminRoutes(app: FastifyInstance, opts: AdminRouteOptions)
             error: { code: 'CERTIFICATE_NOT_FOUND', message: 'Certificate not found' },
           });
         }
-        const expiryMinutes = 60;
-        const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
-        const url = await generateSasUrl(cert.certificate_blob_path, expiryMinutes);
-        return reply.status(200).send({ success: true, data: { url, expires_at: expiresAt } });
+        if (!cert.certificate_blob_path) {
+          return reply.status(404).send({
+            success: false,
+            error: { code: 'NO_DOCUMENT', message: 'No certificate file on this record' },
+          });
+        }
+
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(
+          cert.certificate_blob_path,
+        );
+        const fileName = cert.certificate_blob_path.split('/').pop() ?? 'certificate';
+
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', contentType ?? 'application/octet-stream');
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+
+        await writeAudit(prisma, {
+          actorId: req.user!.userId,
+          actionType: 'INSURANCE_CERTIFICATE_VIEWED',
+          entityType: 'InsuranceCertificate',
+          entityId: cert.id,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'] ?? 'unknown',
+          metadata: { disposition },
+        });
+
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }
@@ -1804,17 +1867,21 @@ export async function adminRoutes(app: FastifyInstance, opts: AdminRouteOptions)
   );
 
   // ─── GET /admin/bank-transfers/:id/receipt ────────────────────────────────
-  // Returns a 60-min SAS URL for the uploaded receipt.
+  // Streams the uploaded bank-transfer receipt. Previously returned a
+  // SAS URL — converted to streaming for consistency with the rest of
+  // the admin document surfaces, even though no current client consumes
+  // this endpoint (defensive in case it's added later).
 
   app.get(
     '/bank-transfers/:id/receipt',
     { preHandler: [authenticate, requireAdmin] },
     async (req, reply) => {
       const { id } = req.params as { id: string };
+      const { dl } = req.query as { dl?: string };
       try {
         const record = await prisma.bankTransferPayment.findUnique({
           where: { id },
-          select: { receipt_blob_path: true },
+          select: { id: true, receipt_blob_path: true },
         });
         if (!record) {
           return reply.status(404).send({ success: false, error: { code: 'NOT_FOUND' } });
@@ -1822,8 +1889,31 @@ export async function adminRoutes(app: FastifyInstance, opts: AdminRouteOptions)
         if (!record.receipt_blob_path) {
           return reply.status(404).send({ success: false, error: { code: 'NO_RECEIPT', message: 'No receipt uploaded.' } });
         }
-        const url = await generateSasUrl(record.receipt_blob_path, 60);
-        return reply.status(200).send({ success: true, data: { url } });
+
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(
+          record.receipt_blob_path,
+        );
+        const fileName = record.receipt_blob_path.split('/').pop() ?? 'bank-transfer-receipt';
+
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', contentType ?? 'application/octet-stream');
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+
+        await writeAudit(prisma, {
+          actorId: req.user!.userId,
+          actionType: 'BANK_TRANSFER_RECEIPT_VIEWED',
+          entityType: 'BankTransferPayment',
+          entityId: record.id,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'] ?? 'unknown',
+          metadata: { disposition },
+        });
+
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }

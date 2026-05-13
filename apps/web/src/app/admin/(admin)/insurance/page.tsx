@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import StatusBadge from '@/components/admin/StatusBadge';
@@ -77,17 +77,34 @@ function ReviewModal({
   const [adminNotes, setAdminNotes] = useState('');
   const [toast, setToast] = useState<{ message: string; ok: boolean } | null>(null);
 
-  // Fetch SAS URL for the document
-  const { data: docUrl, isLoading: docLoading } = useQuery({
-    queryKey: ['cert-doc-url', cert.id],
-    queryFn: () =>
-      api
-        .get<{ success: boolean; data: { url: string; expires_at: string } }>(
-          '/api/v1/admin/certifications/' + cert.id + '/document-url',
-        )
-        .then((r) => r.data.data.url),
-    staleTime: 50 * 60 * 1000, // 50 min (SAS is 60 min)
-  });
+  // Fetch the certificate as a blob (Bearer-authed) and expose it via a
+  // local Object URL. Replaces the prior flow that fetched a SAS URL —
+  // the Object URL never reaches the network and is scoped to the
+  // lifetime of this component instance.
+  const [docUrl, setDocUrl] = useState<string | null>(null);
+  const [docLoading, setDocLoading] = useState(true);
+  useEffect(() => {
+    let createdUrl: string | null = null;
+    let cancelled = false;
+    setDocLoading(true);
+    api
+      .get('/api/v1/admin/certifications/' + cert.id + '/document', { responseType: 'blob' })
+      .then((res) => {
+        if (cancelled) return;
+        createdUrl = URL.createObjectURL(res.data as Blob);
+        setDocUrl(createdUrl);
+      })
+      .catch(() => {
+        if (!cancelled) setDocUrl(null);
+      })
+      .finally(() => {
+        if (!cancelled) setDocLoading(false);
+      });
+    return () => {
+      cancelled = true;
+      if (createdUrl) URL.revokeObjectURL(createdUrl);
+    };
+  }, [cert.id]);
 
   const mutation = useMutation({
     mutationFn: () =>

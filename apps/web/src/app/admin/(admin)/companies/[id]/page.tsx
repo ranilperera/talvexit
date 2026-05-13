@@ -312,11 +312,24 @@ export default function AdminCompanyDetailPage() {
     if (!company?.authorization_doc_blob_path) return;
     setDocUrlLoading(true);
     setDocUrlError('');
+    let createdObjectUrl: string | null = null;
+    // Fetch the blob through the API (Bearer auth on the GET) and
+    // create a local Object URL. This replaces the previous flow which
+    // exposed an Azure SAS URL to the browser — see utils/blob-storage.ts
+    // on the API side for the security rationale.
     api
-      .get<{ success: boolean; data: { url: string } }>(`/api/v1/admin/companies/${id}/document-url`)
-      .then((res) => setDocUrl(res.data.data.url))
-      .catch(() => setDocUrlError('Could not load document. Check Azure Blob config.'))
+      .get(`/api/v1/admin/companies/${id}/authority-document`, { responseType: 'blob' })
+      .then((res) => {
+        createdObjectUrl = URL.createObjectURL(res.data as Blob);
+        setDocUrl(createdObjectUrl);
+      })
+      .catch(() => setDocUrlError('Could not load document.'))
       .finally(() => setDocUrlLoading(false));
+    return () => {
+      // Release the Object URL when the document changes or component
+      // unmounts so the browser can garbage-collect the blob.
+      if (createdObjectUrl) URL.revokeObjectURL(createdObjectUrl);
+    };
   }, [company?.authorization_doc_blob_path, id]);
 
   async function handleVerify() {

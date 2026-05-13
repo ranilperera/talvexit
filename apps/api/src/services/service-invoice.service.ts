@@ -14,7 +14,9 @@ import type {
 } from '@onys/shared';
 import { AppError } from '../lib/errors.js';
 import { writeAudit } from '../utils/audit.js';
-import { generateSasUrl } from '../utils/blob-storage.js';
+// generateSasUrl was removed in the security cleanup — service-invoice
+// download routes now stream blobs through the API rather than handing
+// the client an Azure SAS URL.
 import { sha256Hash } from '../utils/tokens.js';
 import { buildEmailUrl } from '../utils/urls.js';
 import { generateAndStoreServiceInvoicePdf } from './service-invoice-pdf.service.js';
@@ -474,7 +476,10 @@ export class ServiceInvoiceService {
     return invoice;
   }
 
-  async getInvoicePdfDownloadUrl(invoiceId: string, userId: string): Promise<string> {
+  // Returns the blob path the route handler should stream. Previously
+  // returned a SAS URL that the client opened directly; that pattern
+  // exposed the Azure URL and was removed in the security cleanup.
+  async getInvoicePdfBlobPath(invoiceId: string, userId: string): Promise<{ blob_path: string; invoice_number: string | null }> {
     const invoice = await this.getInvoiceForUser(invoiceId, userId);
     if (!invoice.pdf_storage_url) {
       // Generate on demand if missing (e.g. send happened before PDF gen)
@@ -485,9 +490,9 @@ export class ServiceInvoiceService {
       if (!refreshed.pdf_storage_url) {
         throw new AppError('PDF_NOT_GENERATED', 500);
       }
-      return generateSasUrl(refreshed.pdf_storage_url, 60);
+      return { blob_path: refreshed.pdf_storage_url, invoice_number: refreshed.invoice_number };
     }
-    return generateSasUrl(invoice.pdf_storage_url, 60);
+    return { blob_path: invoice.pdf_storage_url, invoice_number: invoice.invoice_number };
   }
 
   // ── submitPaymentEvidence (client) ───────────────────────────────────────
@@ -883,12 +888,12 @@ export class ServiceInvoiceService {
 
   // ── Evidence file download ───────────────────────────────────────────────
 
-  /** Returns a 60-min SAS URL for the evidence file. Either party may fetch. */
-  async getEvidenceFileDownloadUrl(
+  /** Returns the blob path for the evidence file. Either party may fetch. */
+  async getEvidenceFileBlobPath(
     invoiceId: string,
     evidenceId: string,
     callerId: string,
-  ): Promise<{ download_url: string; file_name: string | null }> {
+  ): Promise<{ blob_path: string; file_name: string | null }> {
     const evidence = await this.prisma.paymentEvidence.findUnique({
       where: { id: evidenceId },
       include: {
@@ -923,8 +928,10 @@ export class ServiceInvoiceService {
     if (!evidence.evidence_file_url) {
       throw new AppError('NO_FILE', 404, 'No file attached to this evidence.');
     }
-    const url = await generateSasUrl(evidence.evidence_file_url, 60);
-    return { download_url: url, file_name: evidence.evidence_file_name };
+    // Returns the blob path the route handler should stream — payment
+    // evidence files contain bank statements and other PII, so they
+    // must never reach the client as a SAS URL.
+    return { blob_path: evidence.evidence_file_url, file_name: evidence.evidence_file_name };
   }
 
   // ── Stripe Payment via Connect ───────────────────────────────────────────

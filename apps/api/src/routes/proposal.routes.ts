@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { authenticate } from '../middleware/authenticate.js';
 import type { ProposalService } from '../services/proposal.service.js';
 import { prisma } from '../lib/prisma.js';
-import { generateSasUrl } from '../utils/blob-storage.js';
+// downloadBlobStream is dynamically imported in the document handler.
 
 // ─── Zod schemas ──────────────────────────────────────────────────────────────
 
@@ -312,6 +312,7 @@ export async function proposalRoutes(app: FastifyInstance, opts: ProposalRouteOp
           where: { id: poId },
           select: {
             id: true,
+            po_number: true,
             pdf_blob_path: true,
             order: {
               select: { customer_id: true, company_id: true, executing_member_id: true },
@@ -351,10 +352,20 @@ export async function proposalRoutes(app: FastifyInstance, opts: ProposalRouteOp
           });
         }
 
-        const expiryMinutes = 60;
-        const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
-        const url = await generateSasUrl(po.pdf_blob_path, expiryMinutes);
-        return reply.status(200).send({ success: true, data: { url, expires_at: expiresAt } });
+        // Stream the PO PDF through the API rather than returning a SAS
+        // URL — keeps the Azure URL out of the browser and keeps every
+        // download gated by the platform auth check.
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(po.pdf_blob_path);
+        const fileName = po.pdf_blob_path.split('/').pop() ?? `${po.po_number ?? 'purchase-order'}.pdf`;
+        const { dl } = req.query as { dl?: string };
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', contentType ?? 'application/pdf');
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }

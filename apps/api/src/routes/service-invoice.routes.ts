@@ -186,22 +186,32 @@ export async function serviceInvoiceRoutes(
     },
   );
 
-  // ─── ANY (party): get PDF download URL ─────────────────────────────────
+  // ─── ANY (party): stream the invoice PDF ──────────────────────────────
+  // Streams the PDF through the API rather than returning a SAS URL.
+  // Auth is checked by service.getInvoicePdfBlobPath() (party-of-the-
+  // engagement guard) so every download stays gated by JWT cookie/header.
 
   app.get(
     '/service-invoices/:id/pdf',
     { preHandler: [authenticate] },
     async (req, reply) => {
       const { id } = req.params as { id: string };
+      const { dl } = req.query as { dl?: string };
       try {
-        const url = await serviceInvoiceService.getInvoicePdfDownloadUrl(
+        const { blob_path, invoice_number } = await serviceInvoiceService.getInvoicePdfBlobPath(
           id,
           req.user!.userId,
         );
-        return reply.status(200).send({
-          success: true,
-          data: { download_url: url },
-        });
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(blob_path);
+        const fileName = `${invoice_number ?? 'service-invoice'}.pdf`;
+        const disposition = dl === '1' ? 'attachment' : 'inline';
+        reply.header('Content-Type', contentType ?? 'application/pdf');
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }
@@ -307,7 +317,12 @@ export async function serviceInvoiceRoutes(
     },
   );
 
-  // ─── ANY (party): download evidence file (SAS URL) ─────────────────────
+  // ─── ANY (party): stream evidence file ─────────────────────────────────
+  // CRITICAL: payment-evidence files are typically bank statements with
+  // full account numbers visible — streaming through the API instead of
+  // handing out a SAS URL keeps these documents out of intermediate
+  // caches, server logs, and browser histories. Every access writes an
+  // audit row (PAYMENT_EVIDENCE_VIEWED).
 
   app.get(
     '/service-invoices/:id/evidence/:evidenceId/download',
@@ -317,13 +332,47 @@ export async function serviceInvoiceRoutes(
         id: string;
         evidenceId: string;
       };
+      const { dl } = req.query as { dl?: string };
       try {
-        const result = await serviceInvoiceService.getEvidenceFileDownloadUrl(
+        const { blob_path, file_name } = await serviceInvoiceService.getEvidenceFileBlobPath(
           id,
           evidenceId,
           req.user!.userId,
         );
-        return reply.status(200).send({ success: true, data: result });
+        const { downloadBlobStream } = await import('../utils/blob-storage.js');
+        const { stream, contentType, contentLength } = await downloadBlobStream(blob_path);
+        const fileName = file_name ?? blob_path.split('/').pop() ?? 'payment-evidence';
+
+        // PDF/image inline (auditor needs to view); anything else forced
+        // to attachment to avoid the browser rendering unknown user-
+        // uploaded content as first-party.
+        const SAFE_INLINE_MIME = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        const resolvedType = contentType ?? 'application/octet-stream';
+        const wantInline = dl !== '1' && SAFE_INLINE_MIME.includes(resolvedType);
+        const disposition = wantInline ? 'inline' : 'attachment';
+
+        reply.header('Content-Type', resolvedType);
+        if (contentLength) reply.header('Content-Length', contentLength);
+        reply.header('Content-Disposition', `${disposition}; filename="${fileName}"`);
+        reply.header('X-Content-Type-Options', 'nosniff');
+        reply.header('Cache-Control', 'private, no-store');
+
+        // Audit log every payment-evidence view. Bank statements etc.
+        // are sensitive enough that "who looked, when, from where" is
+        // part of the compliance posture.
+        const { writeAudit } = await import('../utils/audit.js');
+        const { prisma } = await import('../lib/prisma.js');
+        await writeAudit(prisma, {
+          actorId: req.user!.userId,
+          actionType: 'PAYMENT_EVIDENCE_VIEWED',
+          entityType: 'ServiceInvoicePaymentEvidence',
+          entityId: evidenceId,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'] ?? 'unknown',
+          metadata: { service_invoice_id: id, disposition },
+        });
+
+        return reply.send(stream);
       } catch (err) {
         return handleError(reply, err);
       }
