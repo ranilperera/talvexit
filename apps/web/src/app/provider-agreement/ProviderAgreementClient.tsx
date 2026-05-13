@@ -10,7 +10,7 @@ const clauses = [
     number: '1',
     title: 'Platform Terms and Provider Status',
     body: [
-      'Waveful Digital Platforms ABN TBA ("Waveful", "we", "us") operates TalvexIT, an online marketplace and workflow platform that connects IT service providers ("you", "your", the "Provider") with customers.',
+      'Waveful Digital Platforms ABN 49 602 081 005 ("Waveful", "we", "us") operates TalvexIT, an online marketplace and workflow platform that connects IT service providers ("you", "your", the "Provider") with customers.',
       'Under this Agreement:',
       '(a) you supply your IT services to customers in your own name, on your own ABN, and on your own commercial terms;',
       '(b) Waveful provides the platform, the matching tools, the proposal and Purchase Order workflow, dispute mediation, and supporting compliance facilities;',
@@ -114,7 +114,7 @@ export default function ProviderAgreementClient() {
           >
             <span><strong style={{ color: t.headlineColor }}>Version:</strong> {AGREEMENT_VERSION}</span>
             <span><strong style={{ color: t.headlineColor }}>Effective:</strong> {EFFECTIVE_DATE}</span>
-            <span><strong style={{ color: t.headlineColor }}>Issuer:</strong> Waveful Digital Platforms (ABN TBA)</span>
+            <span><strong style={{ color: t.headlineColor }}>Issuer:</strong> Waveful Digital Platforms (ABN 49 602 081 005)</span>
             <span><strong style={{ color: t.headlineColor }}>Jurisdiction:</strong> New South Wales, Australia</span>
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function ProviderAgreementClient() {
           {/* Footer note */}
           <div className="text-xs leading-relaxed pt-4 border-t" style={{ borderColor: t.sectionBorder, color: t.mutedColor }}>
             <p>
-              <strong style={{ color: t.headlineColor }}>Waveful Digital Platforms</strong> · ABN TBA · Sydney, NSW, Australia
+              <strong style={{ color: t.headlineColor }}>Waveful Digital Platforms</strong> · ABN 49 602 081 005 · Sydney, NSW, Australia
             </p>
             <p className="mt-1">
               For legal enquiries: <span style={{ color: t.accentText }}>legal@talvex.com.au</span>

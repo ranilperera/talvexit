@@ -27,7 +27,7 @@ const CONFIG: Array<{ key: string; value: unknown; description: string }> = [
   // PO/invoice reads from this row, no code change needed.
   { key: 'platform_name', value: 'TalvexIT', description: 'Platform display name (brand)' },
   { key: 'platform_legal_name', value: 'Waveful Digital Platforms', description: 'Legal entity name (operator)' },
-  { key: 'platform_abn', value: 'TBA', description: 'Platform ABN — replace with real ABN once issued' },
+  { key: 'platform_abn', value: '49 602 081 005', description: 'Platform ABN (Waveful Digital Platforms)' },
   { key: 'platform_acn', value: 'TBA', description: 'Platform ACN' },
   { key: 'platform_address', value: 'Melbourne, Victoria, Australia', description: 'Registered address' },
   { key: 'platform_support_email', value: 'support@onsys.com.au', description: 'Support contact email' },

@@ -257,7 +257,7 @@ export class InvoiceService {
     // var name so existing prod/staging deployments keep working through
     // the rename to Waveful Digital Platforms. Move the value to
     // WAVEFUL_ABN at convenience, ONSYS_ABN can be retired after that.
-    const OPERATOR_ABN = process.env['WAVEFUL_ABN'] ?? process.env['ONSYS_ABN'] ?? 'TBA';
+    const OPERATOR_ABN = process.env['WAVEFUL_ABN'] ?? process.env['ONSYS_ABN'] ?? '49 602 081 005';
 
     // 8. Create invoice with full compliance/agent billing fields
     const providerIds = getProviderIds(order);

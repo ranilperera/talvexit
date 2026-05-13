@@ -436,7 +436,7 @@ export default function BillingPage() {
       </section>
 
       <p className="text-xs text-slate-600">
-        All amounts shown include 10% GST. talvex.com.au (ABN TBA) · Invoices are generated automatically on order completion.
+        All amounts shown include 10% GST. TalvexIT — operated by Waveful Digital Platforms (ABN 49 602 081 005) · Invoices are generated automatically on order completion.
       </p>
     </div>
   );

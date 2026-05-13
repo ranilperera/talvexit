@@ -85,7 +85,7 @@ export function PublicFooter() {
         <span>
           © {new Date().getFullYear()} TalvexIT. All rights reserved.
           <p className="text-[11px]" style={{ color: `${t.footerText}80` }}>
-            Operated by {BRAND.legalName}. ABN 68 611 123 552 · GST registered in Australia.
+            Operated by {BRAND.legalName}. ABN 49 602 081 005 · GST registered in Australia.
           </p>
         </span>
         <span>Verified IT Experts. Enterprise procurement.</span>

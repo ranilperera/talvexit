@@ -746,7 +746,7 @@ async function generateCommissionPdf(data: CommissionPdfData): Promise<Buffer> {
     doc.fontSize(22).font('Helvetica-Bold').fillColor('#0f172a').text('Waveful Digital Platforms', col1, 50);
     doc.fontSize(10).font('Helvetica').fillColor('#64748b')
       .text('Platform Commission Invoice', col1, 78)
-      .text('ABN: 00 000 000 000  ·  admin@onys.online', col1, 91);
+      .text('ABN: 49 602 081 005  ·  admin@onys.online', col1, 91);
 
     // Invoice meta (top right)
     doc.fontSize(10).font('Helvetica-Bold').fillColor('#0f172a')
