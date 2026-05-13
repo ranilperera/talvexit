@@ -484,7 +484,7 @@ export default function AdminCompliancePage() {
       <div>
         <h1 className="font-display font-bold text-2xl text-slate-100">Compliance Dashboard</h1>
         <p className="text-sm text-slate-400 mt-1">
-          Australian tax, GST, and agent billing compliance — Waveful Digital Platforms as non-exclusive billing agent
+          Australian tax + GST compliance surface — supplier-issued invoicing flows through the platform; Waveful Digital Platforms does not act as a billing or collection agent
         </p>
       </div>
 
@@ -572,10 +572,7 @@ export default function AdminCompliancePage() {
 
       {/* Legal note */}
       <div className="bg-slate-800/50 border border-slate-700 rounded-xl px-5 py-4 text-xs text-slate-500 leading-relaxed">
-        <strong className="text-slate-400">Legal basis:</strong> Waveful Digital Platforms acts as non-exclusive commercial
-        and billing agent for providers. ABN withholding under s.12-190 of Schedule 1, TAA 1953.
-        SGC obligations under Superannuation Guarantee (Administration) Act 1992.
-        Sanctions screening obligations under DFAT Consolidated List.
+        <strong className="text-slate-400">Legal basis:</strong> TalvexIT (operated by Waveful Digital Platforms) is a technology platform; it is not a billing agent, payment processor, or principal supplier. Providers issue their own invoices and customers pay providers directly. Surfaces below track GST classification, ABN verification, and no-ABN withholding flags so the parties can comply with s.12-190 of Schedule 1, TAA 1953 directly. SGC obligations under Superannuation Guarantee (Administration) Act 1992 and sanctions screening under DFAT Consolidated List are surfaced for awareness; compliance remains with the relevant party.
       </div>
     </div>
   );

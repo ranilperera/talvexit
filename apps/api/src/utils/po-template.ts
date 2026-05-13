@@ -311,7 +311,7 @@ export function generatePOHtml(data: POTemplateData): string {
         <div style="font-size:10px;color:#64748b;margin-top:2px;">
           ${esc(vars.platform_legal_name)} · ABN: ${esc(vars.platform_abn)}
         </div>
-        <div style="font-size:10px;color:#94a3b8;">Billing and collection agent</div>
+        <div style="font-size:10px;color:#94a3b8;">Platform operator — not a billing or payment agent</div>
       </td>
       <td style="text-align:right;vertical-align:top;">
         <div style="font-size:24px;font-weight:700;color:${darkColor};

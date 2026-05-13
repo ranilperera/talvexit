@@ -54,31 +54,36 @@ const CONFIG: Array<{ key: string; value: unknown; description: string }> = [
   { key: 'po_gst_rate', value: '0.10', description: 'GST rate (0.10 = 10%)' },
 
   // ── PO text content (editable without redeploy) ────────────────────────────
+  // The platform is subscription-only with zero commission on engagements,
+  // and is NOT a billing agent, payment processor, or collection agent.
+  // Customers pay suppliers directly via the supplier's nominated rail.
+  // PO copy must reflect this — never claim the platform issues invoices,
+  // collects funds, or remits proceeds.
   {
     key: 'po_agent_notice',
     value:
-      'This Purchase Order is issued through {{platform_legal_name}} (ABN: {{platform_abn}}) acting as non-exclusive billing and collection agent for the Supplier named below. {{platform_legal_name}} is not the principal supplier of services. Payment made under this PO constitutes acceptance of deliverables per the agreed proposal.',
-    description: 'Agent notice shown at top of every PO. Supports {{platform_legal_name}}, {{platform_abn}}, {{platform_name}}.',
+      'This Purchase Order is generated through the {{platform_name}} platform (operated by {{platform_legal_name}}, ABN {{platform_abn}}) between the Customer and the Supplier. {{platform_legal_name}} provides the workflow and recordkeeping; it is not a party to the engagement, is not the supplier of services, and does not collect or hold payment. The Supplier invoices the Customer directly and the Customer pays the Supplier directly on the rail agreed between them.',
+    description: 'Platform notice shown at top of every PO. Supports {{platform_legal_name}}, {{platform_abn}}, {{platform_name}}.',
   },
   {
     key: 'po_terms',
     value: [
       'This Purchase Order constitutes a binding agreement between the Customer and the Supplier upon electronic approval.',
-      '{{platform_legal_name}} (ABN: {{platform_abn}}) acts as non-exclusive billing and collection agent only. {{platform_legal_name}} is not the principal supplier of the services described herein.',
+      'The {{platform_name}} platform (operated by {{platform_legal_name}}, ABN {{platform_abn}}) provides the matching, proposal, PO, invoicing-PDF and dispute-mediation workflow but is not a party to this engagement. {{platform_legal_name}} does not supply the services described herein, does not act as a billing or collection agent, and does not hold or process customer funds at any stage.',
+      'The Supplier issues invoices to the Customer in its own legal name and registration. The Customer pays the Supplier directly via the payment rail the Supplier nominates (Stripe payment link, AU bank transfer, PayID, SWIFT, PayPal, Wise, or other).',
       'The Supplier warrants that services will be delivered in accordance with the approved proposal, on time and to a professional standard consistent with L2/L3 IT engineering standards.',
-      'Payment is due within {{payment_terms_days}} days of the invoice date. Late payments may incur interest at 2% per month on the outstanding balance.',
+      'Payment is due within {{payment_terms_days}} days of the invoice date unless the parties agreed otherwise in the approved proposal. Late payments may incur interest at 2% per month on the outstanding balance.',
       'Intellectual property created specifically and exclusively for the Customer under this PO vests in the Customer upon full payment, unless otherwise agreed in writing.',
-      'Either party may raise a dispute within 7 days of deliverable submission. Disputes are resolved via the {{platform_name}} platform dispute resolution process prior to external legal proceedings.',
+      'Either party may raise a dispute within 7 days of deliverable submission. Disputes are resolved via the {{platform_name}} dispute mediation process prior to external legal proceedings; any payment or refund required by a determination is effected directly between the parties.',
       'This agreement is governed by the laws of Victoria, Australia. Both parties submit to the non-exclusive jurisdiction of the courts of Victoria.',
       'Electronic acceptance of this Purchase Order is legally equivalent to a written signature under the Electronic Transactions Act 1999 (Cth).',
-      'The Customer authorises {{platform_legal_name}} to issue an invoice on behalf of the Supplier upon acceptance of deliverables as described in this PO.',
     ],
     description: 'JSON array of T&C clauses. Each clause is numbered automatically.',
   },
   {
     key: 'po_approval_statement',
     value:
-      'This electronic approval is recorded on the {{platform_name}} platform with a timestamp and IP address. By approving this Purchase Order, the Customer confirms agreement to all terms above and authorises {{platform_legal_name}} to collect payment and remit net proceeds to the Supplier.',
+      'This electronic approval is recorded on the {{platform_name}} platform with a timestamp and IP address. By approving this Purchase Order, the Customer confirms agreement to all terms above and undertakes to pay the Supplier directly in accordance with the invoice the Supplier issues.',
     description: 'Text shown in the approval record box.',
   },
   {

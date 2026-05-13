@@ -3,77 +3,66 @@
 import PublicPageShell, { theme as t } from '@/components/public/PublicPageShell';
 
 const EFFECTIVE_DATE = '1 March 2026';
-const AGREEMENT_VERSION = 'v1.0-2026';
+const AGREEMENT_VERSION = 'v2.0-2026';
 
 const clauses = [
   {
     number: '1',
-    title: 'Appointment as Non-Exclusive Billing Agent',
+    title: 'Platform Terms and Provider Status',
     body: [
-      'The Provider ("you", "your") appoints Waveful Digital Platforms ABN TBA ("Waveful", "we", "us") as your non-exclusive commercial and billing agent for the purposes of:',
-      '(a) issuing tax invoices, invoices, and commercial invoices to customers on your behalf;',
-      '(b) receiving payment from customers in satisfaction of your invoices;',
-      '(c) deducting the Waveful Commission (as defined in clause 2); and',
-      '(d) remitting net proceeds to you in accordance with clause 3.',
-      'This appointment is NON-EXCLUSIVE. You remain free to provide services and issue invoices outside the platform. Waveful does not supply the underlying services. All services are supplied by you, the Provider. Waveful acts solely as billing and collection agent.',
+      'Waveful Digital Platforms ABN TBA ("Waveful", "we", "us") operates TalvexIT, an online marketplace and workflow platform that connects IT service providers ("you", "your", the "Provider") with customers.',
+      'Under this Agreement:',
+      '(a) you supply your IT services to customers in your own name, on your own ABN, and on your own commercial terms;',
+      '(b) Waveful provides the platform, the matching tools, the proposal and Purchase Order workflow, dispute mediation, and supporting compliance facilities;',
+      '(c) Waveful is NOT a party to any service contract between you and a customer. Waveful is NOT a billing agent, not a collection agent, not a payment processor, and does not hold customer or supplier funds at any stage.',
+      'You acknowledge that all invoices you issue through the platform are issued by you in your own legal name and registration. Waveful pre-populates PDF templates from the engagement data you and the customer agreed, but you remain the issuing party.',
     ],
   },
   {
     number: '2',
-    title: 'Commission Schedule',
+    title: 'Subscription Fees · Zero Commission on Engagements',
     body: [
-      'In consideration for the platform services provided by Waveful, you agree to pay a commission on each completed order as follows:',
-      '• First AUD $10,000 cumulative platform earnings: 20%',
-      '• AUD $10,001 – $50,000 cumulative: 15%',
-      '• AUD $50,001 – $100,000 cumulative: 10%',
-      '• AUD $100,001 – $500,000 cumulative: 7%',
-      '• Above AUD $500,000 cumulative: 5%',
-      'Commission is calculated on the subtotal excluding GST. Waveful deducts commission before remitting net proceeds. Commission rates are subject to change with 30 days written notice.',
+      'Access to the platform is provided on a subscription basis. You select a subscription tier from those published at /pricing and pay the corresponding monthly or annual fee directly to Waveful through the platform billing system.',
+      'Waveful does NOT take a commission, a percentage cut, or any per-engagement fee from amounts paid by your customers to you. The subscription is the only consideration payable to Waveful for use of the platform.',
+      'Subscription tiers, included features, and prices may change with 30 days written notice. Continued use after the notice period constitutes acceptance.',
     ],
   },
   {
     number: '3',
-    title: 'Payout Timing and Method',
+    title: 'Payment Direct from Customer to Provider',
     body: [
-      'Waveful will remit net proceeds (invoice total less commission) to you within 3 business days of confirmed payment receipt from the customer, subject to:',
-      '(a) no outstanding disputes on the order;',
-      '(b) your bank account or Stripe Connect account being correctly configured;',
-      '(c) no fraud or AML hold being in place.',
-      'Payout methods supported: Australian bank transfer (BSB/Account), and Stripe Connect (international).',
-      'Waveful is not liable for delays caused by banking systems, incorrect account details provided by the Provider, or regulatory holds.',
+      'Customers pay you directly using a payment rail you nominate — for example Stripe payment link, Australian bank transfer, PayID, SWIFT, PayPal, Wise, or any custom rail you support. Payment funds flow directly from the customer to your nominated account; they do not pass through Waveful at any stage.',
+      'The platform supports the workflow around the payment — customers upload payment evidence (receipt, reference) and you confirm receipt against your invoice through the platform interface. The platform records the transaction state but does not move money.',
+      'You are responsible for keeping your nominated payment instructions accurate and for any banking, foreign-exchange, or processor fees levied on transfers to your account. Waveful is not liable for delays, errors, or losses caused by your nominated rail or by banking systems.',
     ],
   },
   {
     number: '4',
-    title: 'Tax Declarations and GST',
+    title: 'Tax Invoicing and GST',
     body: [
-      'You declare that:',
-      '(a) all information provided about your ABN, GST registration, and tax residency is accurate and up to date;',
-      '(b) you will notify Waveful immediately of any change to your ABN or GST registration status;',
-      '(c) where you are GST registered, Waveful will issue Tax Invoices (as defined in A New Tax System (Goods and Services Tax) Act 1999) on your behalf, and GST collected is held and remitted by you or Waveful as agreed;',
-      '(d) where you are not GST registered, Waveful will issue Invoices (not Tax Invoices) and no GST will be charged.',
-      'Waveful will use reasonable efforts to correctly classify invoices in accordance with Australian tax law, but ultimate compliance responsibility for your tax obligations remains with you.',
+      'You issue all invoices to customers in your own legal name and registration. Where you are registered for GST in Australia, the document you issue is a Tax Invoice within the meaning of A New Tax System (Goods and Services Tax) Act 1999. Where you are not GST-registered, the document is an Invoice (not a Tax Invoice) and no GST is charged.',
+      'The platform classifies engagements (domestic, GST-free export under s38-190, reverse-charge eligible under Division 84, etc.) and pre-populates the PDF accordingly. You are responsible for verifying that the classification is correct for your particular supply before sending or relying on the PDF.',
+      'GST collected from a customer is collected by you, not by Waveful. You are responsible for remitting GST to the ATO through your own BAS process.',
+      'You declare that the ABN, GST registration, and tax residency information you provide to the platform is accurate, and you will update the platform promptly if any of these change.',
     ],
   },
   {
     number: '5',
-    title: 'Withholding Tax (No ABN)',
+    title: 'Withholding for Customers Engaging Providers Without an ABN',
     body: [
-      'If you do not provide a valid ABN, Waveful is required by Australian law to withhold tax at the top marginal rate (currently 47%) from payments to you. This withholding is remitted to the ATO on your behalf.',
-      'To avoid withholding, you must provide a valid ABN that passes ATO validation. Waveful will not refund amounts already withheld and remitted to the ATO; you must seek recovery directly from the ATO.',
-      'Withholding does not apply to foreign providers where a valid supplier statement or appropriate tax treaty declaration is on file.',
+      'Where you do not provide a valid ABN, an Australian customer is generally required by law to withhold tax at the top marginal rate (currently 47%) from the amount they pay you. This withholding is a matter directly between the customer and the ATO; Waveful does not collect, hold, or remit the withheld amount.',
+      'The platform may surface a withholding-warning notice on invoices and PO PDFs to alert both parties to this obligation. The notice does not constitute tax advice. You and the customer remain responsible for handling the withholding correctly under Australian law.',
+      'To avoid the withholding entirely, supply a valid ABN that passes ATO validation, or supply an appropriate supplier-statement or tax-treaty declaration where applicable.',
     ],
   },
   {
     number: '6',
-    title: 'Chargebacks, Disputes, and Reversals',
+    title: 'Disputes, Chargebacks, and Refunds',
     body: [
-      'If a customer initiates a payment reversal (chargeback) through their bank or card provider, and the reversal is upheld, Waveful may:',
-      '(a) reverse or reduce a pending payout by the disputed amount;',
-      '(b) recover the disputed amount from a future payout; or',
-      '(c) issue a formal demand if no future payouts are available.',
-      'Platform disputes (raised through the talvex.com.au dispute resolution process) are resolved separately. If a platform dispute results in a partial or full refund, payouts will be adjusted accordingly.',
-      'You indemnify Waveful against third-party claims arising from the services you supply.',
+      'Disputes between you and a customer arising from an engagement (scope, deliverables, payment evidence) may be raised through the platform\'s structured dispute mediation process. A platform compliance reviewer will assess submissions from both sides and issue a determination — full payment, full refund, partial split, or remediation required. The determination is binding between you and the customer as a matter of this Agreement and the customer\'s acceptance terms.',
+      'Because Waveful is not a payment processor and does not hold funds, any refund or partial payment required by a determination is effected directly between you and the customer through the same payment rail used for the original transaction. The platform records the action but does not execute the transfer.',
+      'If a customer initiates a chargeback through their bank or card provider, that chargeback proceeds entirely outside the platform and is a matter between you and the customer\'s issuing institution. Waveful has no funds to claw back and is not liable for chargeback losses.',
+      'You indemnify Waveful against third-party claims arising from your services.',
     ],
   },
   {
@@ -180,7 +169,7 @@ export default function ProviderAgreementClient() {
           {/* Footer note */}
           <div className="text-xs leading-relaxed pt-4 border-t" style={{ borderColor: t.sectionBorder, color: t.mutedColor }}>
             <p>
-              <strong style={{ color: t.headlineColor }}>talvex.com.au Pty Ltd</strong> · ABN TBA · Sydney, NSW, Australia
+              <strong style={{ color: t.headlineColor }}>Waveful Digital Platforms</strong> · ABN TBA · Sydney, NSW, Australia
             </p>
             <p className="mt-1">
               For legal enquiries: <span style={{ color: t.accentText }}>legal@talvex.com.au</span>

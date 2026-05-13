@@ -13,7 +13,7 @@ const LEGAL_NOTICES = {
     'This document is a Tax Invoice for GST purposes under the A New Tax System (Goods and Services Tax) Act 1999 (Cth). Please retain for your records.',
 
   standardNote:
-    'This document is an invoice issued by the platform billing agent on behalf of the service provider. GST is not applicable.',
+    'This document is an invoice issued by the service provider in their own legal name and registration. The provider is not registered for GST so GST is not applicable.',
 
   crossBorderNote:
     'This is a cross-border supply. GST may not apply pursuant to Division 38 of the GST Act. Customers outside Australia should check their local tax obligations.',
@@ -28,7 +28,7 @@ const LEGAL_NOTICES = {
     'Disputes regarding this invoice must be raised in writing within 14 days of the invoice date by contacting support via the platform.',
 
   platformAgent: (name: string) =>
-    `${name} operates as a billing agent and technology platform facilitating the engagement. The underlying service is provided by the contracting party named above.`,
+    `Generated via ${name}, a technology platform that facilitates the engagement workflow. The platform is not a billing or collection agent, does not process payments, and is not a party to this invoice. The service is supplied by the contracting party named above and payment is made directly to them.`,
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────

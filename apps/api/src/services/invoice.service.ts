@@ -657,8 +657,11 @@ export class InvoiceService {
 }
 
 // ─── HELPER: generateCompanyInvoicePdf ────────────────────────────────────────
-// Generates an agent billing invoice PDF.
-// Waveful Digital Platforms issues as non-exclusive billing agent for the provider.
+// Generates the engagement invoice PDF. The Provider is the issuing party
+// — the platform pre-populates the PDF from the agreed scope and the
+// Provider's registered details, but the invoice is in the Provider's
+// own legal name and registration. The platform is NOT a billing agent
+// or payment processor; payment flows directly from Customer to Provider.
 
 async function generateCompanyInvoicePdf(data: CompanyInvoicePdfData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
@@ -677,24 +680,27 @@ async function generateCompanyInvoicePdf(data: CompanyInvoicePdfData): Promise<B
     const COL2_X = 340;
     const RIGHT_WIDTH = PAGE_WIDTH - COL2_X - 60; // 195.28
 
-    // ─── HEADER LEFT: billing agent block ─────────────────────────────────────
+    // ─── HEADER LEFT: issuer (Provider) block ──────────────────────────────
+    // The Provider is the issuing party in their own legal name and
+    // registration. The platform line below the Provider name is a
+    // workflow-only attribution — not a billing-agent statement.
     doc
       .fontSize(7).font('Helvetica').fillColor('#94a3b8')
       .text('ISSUED BY', 60, 50);
 
     doc
       .fontSize(11).font('Helvetica-Bold').fillColor('#0f172a')
-      .text(data.billing_agent_name, 60, 62);
+      .text(data.provider_legal_name, 60, 62);
 
     doc
       .fontSize(7.5).font('Helvetica').fillColor('#64748b')
-      .text('as non-exclusive billing and collection agent for:', 60, 78);
+      .text(`Generated via ${data.billing_agent_name} (platform — not a payment processor)`, 60, 78);
 
-    doc
-      .fontSize(10).font('Helvetica-Bold').fillColor('#0f172a')
-      .text(data.provider_legal_name, 60, 92);
-
-    let agentY = 108;
+    // Provider details (ABN / address) sit immediately under the platform
+    // attribution line. agentY starts at 92 (right under the platform line)
+    // instead of the legacy 108 since the provider-name row is no longer
+    // a separate line in the header.
+    let agentY = 92;
     if (data.provider_abn) {
       doc.fontSize(8).font('Helvetica').fillColor('#64748b')
         .text(`ABN: ${data.provider_abn}`, 60, agentY);
@@ -871,11 +877,11 @@ async function generateCompanyInvoicePdf(data: CompanyInvoicePdfData): Promise<B
     doc
       .fontSize(6.5).font('Helvetica').fillColor('#94a3b8')
       .text(
-        `This ${data.invoice_type_label} is issued by Waveful Digital Platforms as non-exclusive commercial and billing agent ` +
-        `for ${data.provider_legal_name}${data.provider_abn ? ` (ABN: ${data.provider_abn})` : ''}. ` +
-        `Waveful Digital Platforms does not supply the underlying services. Payment obligations are to Waveful Digital Platforms as ` +
-        `collecting agent only. Waveful will remit net proceeds to the provider after deducting its agreed commission. ` +
-        `GST registered in Australia. All amounts in AUD.`,
+        `This ${data.invoice_type_label} is issued by ${data.provider_legal_name}` +
+        `${data.provider_abn ? ` (ABN: ${data.provider_abn})` : ''}, the supplier of the services described above. ` +
+        `Generated via the TalvexIT platform (operated by Waveful Digital Platforms). ` +
+        `TalvexIT / Waveful is not a party to this engagement, not a billing or collection agent, and does not process or hold payment. ` +
+        `Payment is due directly to the supplier on the rail nominated above. All amounts in AUD.`,
         60, FOOTER_Y + 8, { width: CONTENT_WIDTH, lineGap: 1.5 },
       );
 

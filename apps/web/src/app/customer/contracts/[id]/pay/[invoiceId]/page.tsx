@@ -303,8 +303,8 @@ function BankTransferFlow({
         </div>
 
         <div className="text-xs text-slate-500 bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3">
-          Waveful Digital Platforms is authorised to collect payments on behalf of the service provider.
-          Once your transfer is received and confirmed by our team, this invoice will be marked as paid.
+          You pay the service provider directly on the rail shown above — TalvexIT (operated by Waveful Digital Platforms) is not a payment processor or collection agent and does not handle funds.
+          Once the provider confirms receipt against this invoice, the platform will mark it as paid.
         </div>
 
         <Button size="lg" fullWidth onClick={() => setStep('receipt')}>

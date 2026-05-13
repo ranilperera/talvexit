@@ -806,9 +806,14 @@ async function generateCommissionPdf(data: CommissionPdfData): Promise<Buffer> {
       .text(fmt(data.net), 490, rowY + 10, { align: 'right', width: 50 });
 
     // Footer
+    // NOTE: This commission-invoice PDF path is legacy — under the
+    // current platform model (subscription-only, zero commission on
+    // engagements) it should not be invoked for new engagements. The
+    // disclaimer below is kept honest in case the path is still
+    // reachable for legacy data.
     doc.fontSize(8).font('Helvetica').fillColor('#94a3b8')
-      .text('This is a tax invoice from Waveful Digital Platforms (billing agent). GST is applicable to the commission component only.', 50, 720, { width: 495 })
-      .text('Questions? Contact admin@onys.online', 50, 734, { width: 495 });
+      .text('Issued by Waveful Digital Platforms for legacy platform-fee accounting only. The current TalvexIT platform is subscription-only with zero commission on engagements and does not act as a billing or collection agent. GST applies to platform-fee components where the issuer is GST-registered.', 50, 720, { width: 495 })
+      .text('Questions? Contact admin@onys.online', 50, 740, { width: 495 });
 
     doc.end();
   });

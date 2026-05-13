@@ -709,8 +709,8 @@ function Step5TaxUI({ data, onChange }: { data: Step6TaxData; onChange: (d: Step
           <a href="/provider-agreement" target="_blank" rel="noreferrer" className="text-teal-400 underline underline-offset-2">
             Provider Agreement v1.0
           </a>{' '}
-          which governs Waveful Digital Platforms acting as your non-exclusive billing and collection agent.
-          Waveful will issue invoices on your behalf, collect payment, deduct commission, and remit net proceeds.
+          which sets out the terms for providers using the TalvexIT platform.
+          TalvexIT is subscription-only with zero commission on engagements — you invoice your customer directly in your own name and they pay you direct on your nominated rail.
         </p>
         <label className="flex items-start gap-3 cursor-pointer">
           <input
@@ -720,7 +720,7 @@ function Step5TaxUI({ data, onChange }: { data: Step6TaxData; onChange: (d: Step
             className="mt-0.5 rounded border-slate-600 bg-slate-800 accent-teal-500"
           />
           <span className="text-sm text-slate-300">
-            I accept the Provider Agreement and appoint Waveful Digital Platforms as my billing agent
+            I accept the Provider Agreement
           </span>
         </label>
       </div>
