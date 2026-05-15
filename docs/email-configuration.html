@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TalvexIT — Email configuration &amp; customisation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #0b1220; --panel: #111c2e; --panel-2: #16243b;
+    --text: #e2e8f0; --muted: #94a3b8; --line: #1f2d44;
+    --teal: #5eead4; --teal-soft: rgba(94, 234, 212, 0.12);
+    --amber: #fbbf24; --amber-soft: rgba(251, 191, 36, 0.10);
+    --red: #f87171; --red-soft: rgba(248, 113, 113, 0.12);
+    --green: #4ade80; --green-soft: rgba(74, 222, 128, 0.12);
+    --blue: #60a5fa; --blue-soft: rgba(96, 165, 250, 0.12);
+    --code: #0f1a2c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 48px 24px 96px;
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    color: var(--text); background: var(--bg);
+  }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h1 .sub { color: var(--teal); font-weight: 600; }
+  h2 {
+    margin: 56px 0 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    font-size: 22px; letter-spacing: -0.01em;
+  }
+  h3 { margin: 32px 0 8px; font-size: 17px; color: var(--teal); font-weight: 600; }
+  h4 { margin: 20px 0 6px; font-size: 14px; font-weight: 600; }
+  p { margin: 8px 0 14px; }
+  small.dim, .dim { color: var(--muted); }
+  code, kbd, pre {
+    font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    font-size: 13px;
+  }
+  code:not(pre code) {
+    background: var(--code); padding: 1px 6px; border-radius: 4px;
+    color: #cbd5e1; border: 1px solid var(--line);
+  }
+  pre {
+    background: var(--code); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; color: #cbd5e1; line-height: 1.5;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 12px 0 18px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden;
+  }
+  th, td {
+    padding: 10px 12px; text-align: left;
+    border-bottom: 1px solid var(--line); vertical-align: top;
+    font-size: 14px;
+  }
+  th {
+    background: var(--panel-2); font-weight: 600; color: var(--text);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.center, th.center { text-align: center; }
+  .callout {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; margin: 16px 0; background: var(--panel);
+  }
+  .callout.warn { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+  .callout.info { border-left: 4px solid var(--blue); background: var(--blue-soft); }
+  .callout.success { border-left: 4px solid var(--green); background: var(--green-soft); }
+  .callout.danger { border-left: 4px solid var(--red); background: var(--red-soft); }
+  ul, ol { padding-left: 22px; }
+  li { margin: 4px 0; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+  .pill {
+    display: inline-block; font-size: 11px; padding: 2px 8px;
+    border-radius: 999px; background: rgba(148,163,184,0.10);
+    color: var(--muted); border: 1px solid rgba(148,163,184,0.20);
+    margin-right: 4px; font-weight: 600;
+  }
+  .pill.t { background: var(--teal-soft); color: var(--teal); border-color: rgba(94, 234, 212, 0.25); }
+  .pill.b { background: var(--blue-soft); color: var(--blue); border-color: rgba(96, 165, 250, 0.25); }
+  .pill.a { background: var(--amber-soft); color: var(--amber); border-color: rgba(251, 191, 36, 0.25); }
+  .pill.r { background: var(--red-soft); color: var(--red); border-color: rgba(248, 113, 113, 0.25); }
+  .pill.g { background: var(--green-soft); color: var(--green); border-color: rgba(74, 222, 128, 0.25); }
+  .toc {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px 20px; margin: 24px 0 32px;
+  }
+  .toc h3 { margin-top: 0; }
+  .flow-step {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 14px 16px; margin: 12px 0;
+    display: grid; grid-template-columns: 48px 1fr; gap: 14px; align-items: start;
+  }
+  .flow-step .num {
+    background: var(--teal-soft); color: var(--teal);
+    border: 1px solid rgba(94, 234, 212, 0.25);
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  .flow-step h4 { margin: 0 0 4px; }
+  .flow-step p { margin: 0; color: var(--muted); font-size: 13px; }
+  .pill.path { font-family: "JetBrains Mono", Consolas, monospace; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>TalvexIT — <span class="sub">Email configuration &amp; customisation</span></h1>
+  <div class="dim">v1.0 · 2026-05-15 · How the platform sends every system email — transport, queue, templates, links</div>
+</header>
+
+<div class="callout info">
+  <strong>TL;DR.</strong> Every system email is sent through <strong>Microsoft Graph</strong>
+  (no SMTP, no SendGrid). The API enqueues a typed job onto a BullMQ queue named
+  <code>email</code>; the workers process consumes it, picks the matching <code>build*</code>
+  template function in <code>apps/workers/src/jobs/email.worker.ts</code>, and posts to Graph.
+  To change copy: edit the <code>build*</code> function. To add a new email: add a variant
+  to <code>EmailJobPayload</code> + a builder + a case in the worker switch. Sender identity
+  (<code>EMAIL_FROM</code>, Azure tenant + client + secret) lives in <code>apps/workers/.env</code>.
+</div>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <ol>
+    <li><a href="#flow">The data flow (one page)</a></li>
+    <li><a href="#transport">Transport &mdash; Microsoft Graph API</a></li>
+    <li><a href="#env">Environment variables</a></li>
+    <li><a href="#queue">Queue layer &mdash; BullMQ <code>email</code> queue</a></li>
+    <li><a href="#templates">Templates &mdash; the single source file</a></li>
+    <li><a href="#urls">URL builder &mdash; links inside emails</a></li>
+    <li><a href="#otp">Special case &mdash; login OTP</a></li>
+    <li><a href="#recipes">Common customisation recipes</a></li>
+    <li><a href="#testing">Testing emails locally</a></li>
+    <li><a href="#operations">Operations &mdash; monitoring, retries, failures</a></li>
+    <li><a href="#rebrand">Rebrand &amp; follow-ups</a></li>
+    <li><a href="#anti">Anti-patterns &mdash; don't do these</a></li>
+  </ol>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="flow">§1 The data flow</h2>
+
+<p>Top to bottom, where email-related code lives and who reads it:</p>
+
+<div class="flow-step">
+  <div class="num">1</div>
+  <div>
+    <h4>Trigger &mdash; service-layer code in <code>apps/api/src/services/*</code></h4>
+    <p>Any business event that should notify a user calls <code>emailQueue.add(type, payload)</code>.
+       Examples: <code>auth.service.ts</code> registers a user and enqueues <code>verify-email</code>;
+       <code>order.service.ts</code> queues <code>order-accepted</code> on acceptance.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">2</div>
+  <div>
+    <h4>Queue producer &mdash; BullMQ <code>'email'</code> Redis queue</h4>
+    <p>The API creates <code>new Queue('email', { connection: redisConnection() })</code> in
+       <code>apps/api/src/app.ts</code> (line 121) and injects it into every service that needs
+       to send mail. Worker-side schedulers (insurance expiry, order SLA, etc.) create their own
+       producers pointing at the same queue name.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">3</div>
+  <div>
+    <h4>Worker consumer &mdash; <code>apps/workers/src/jobs/email.worker.ts</code></h4>
+    <p>One <code>new Worker&lt;EmailJobPayload&gt;('email', …, { concurrency: 5 })</code> consumes
+       the queue. A big <code>switch (data.type)</code> routes each payload to the matching
+       <code>build*</code> function, which returns <code>{ to, subject, html }</code>.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">4</div>
+  <div>
+    <h4>Transport &mdash; <code>graphEmailService.sendEmail(...)</code></h4>
+    <p>Lives in <code>apps/workers/src/services/graph-email.service.ts</code>. Acquires an OAuth2
+       client-credentials token (cached, refreshed 60s before expiry), then POSTs to
+       <code>https://graph.microsoft.com/v1.0/users/{EMAIL_FROM}/sendMail</code>. Returns on
+       HTTP 202.</p>
+  </div>
+</div>
+
+<div class="flow-step">
+  <div class="num">5</div>
+  <div>
+    <h4>Recipient inbox</h4>
+    <p>Delivered from <code>EMAIL_FROM</code> (default <code>alerts@onsys.com.au</code>) with
+       display name <code>EMAIL_FROM_NAME</code>. Any link inside the body is an absolute URL
+       built from <code>FRONTEND_URL</code> via <code>apps/api/src/utils/urls.ts</code>.</p>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="transport">§2 Transport — Microsoft Graph API</h2>
+
+<p>
+  <strong>File:</strong> <code>apps/workers/src/services/graph-email.service.ts</code>
+  &nbsp;<span class="pill t">single sender</span> <span class="pill b">no SMTP</span>
+</p>
+
+<p>
+  The platform does not use nodemailer, SendGrid, Mailgun, SES, or SMTP. All email goes
+  through the Microsoft Graph API using OAuth2 client-credentials. The class is small
+  (~165 lines):
+</p>
+
+<ul>
+  <li><code>getAccessToken()</code> &mdash; POSTs to
+      <code>https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token</code> with scope
+      <code>https://graph.microsoft.com/.default</code>, caches the token, refreshes 60s
+      before expiry.</li>
+  <li><code>sendEmail({ to, subject, html, replyTo?, attachments? })</code> &mdash; builds
+      a Graph <code>message</code> body, POSTs to
+      <code>/v1.0/users/{EMAIL_FROM}/sendMail</code> with <code>saveToSentItems: true</code>.
+      Returns silently on 200/202, throws on anything else.</li>
+  <li>Exports a singleton <code>graphEmailService</code> + a convenience
+      <code>sendEmail(opts)</code> function the worker calls directly.</li>
+</ul>
+
+<div class="callout warn">
+  <strong>Implications of this choice.</strong>
+  <ul>
+    <li>The sending mailbox must be a real Azure AD user (or shared mailbox) the app
+        registration has been granted <code>Mail.Send</code> permission for.</li>
+    <li>There is no per-tenant rate limiter in the code &mdash; Graph itself enforces
+        ~10,000 messages / 24h per mailbox. Bulk sends will need throttling if we ever
+        approach that.</li>
+    <li>Attachments use base64 (<code>contentB64</code>) embedded in the JSON body &mdash;
+        Graph's hard limit is 4 MB per message including all attachments. Anything bigger
+        must use the upload-session pattern (not implemented).</li>
+    <li>HTML only. The <code>text</code> field on <code>SendEmailOptions</code> is unused
+        downstream &mdash; we don't currently send multipart/alternative.</li>
+  </ul>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="env">§3 Environment variables</h2>
+
+<p>All transport env vars are read in the <strong>workers</strong> process, not the API.
+   The API only needs Redis to enqueue.</p>
+
+<h3>Required &mdash; workers <code>apps/workers/.env</code></h3>
+
+<table>
+  <thead>
+    <tr><th>Variable</th><th>Purpose</th><th>Example</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>AZURE_EMAIL_TENANT_ID</code></td>
+      <td>Azure AD tenant the Graph app registration lives in</td>
+      <td><code>31c33937-…</code></td>
+    </tr>
+    <tr>
+      <td><code>AZURE_EMAIL_CLIENT_ID</code></td>
+      <td>App registration (client) ID</td>
+      <td><code>ea7c8afa-…</code></td>
+    </tr>
+    <tr>
+      <td><code>AZURE_EMAIL_CLIENT_SECRET</code></td>
+      <td>Client secret. <strong>Secret &mdash; rotate when leaked, never commit.</strong></td>
+      <td><code>xZf8Q~Yjd…</code></td>
+    </tr>
+    <tr>
+      <td><code>EMAIL_FROM</code></td>
+      <td>Mailbox to send from. Must be the UPN of an Azure AD user the app can send-as.</td>
+      <td><code>alerts@onsys.com.au</code></td>
+    </tr>
+    <tr>
+      <td><code>EMAIL_FROM_NAME</code></td>
+      <td>Display name in the inbox.</td>
+      <td><code>onys.online</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Required &mdash; API (and workers, for link generation)</h3>
+
+<table>
+  <thead><tr><th>Variable</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>FRONTEND_URL</code></td>
+      <td>Public frontend base. Used by <code>buildEmailUrl()</code> to make absolute links inside emails. <strong>Throws in production if unset.</strong> Falls back to <code>http://localhost:3000</code> in dev.</td>
+    </tr>
+    <tr>
+      <td><code>API_PUBLIC_URL</code></td>
+      <td>Optional. Defaults to <code>FRONTEND_URL</code>. Only set when the API is on a different domain from the web app.</td>
+    </tr>
+    <tr>
+      <td><code>REDIS_URL</code> / <code>REDIS_HOST</code> / <code>REDIS_PORT</code></td>
+      <td>BullMQ transport. Same Redis as the rest of the queues. The API and workers must point at the same instance.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Public-facing addresses &mdash; web</h3>
+
+<table>
+  <thead><tr><th>Variable</th><th>Used by</th></tr></thead>
+  <tbody>
+    <tr><td><code>NEXT_PUBLIC_SUPPORT_EMAIL</code></td><td>Contact / support links in the web UI</td></tr>
+    <tr><td><code>NEXT_PUBLIC_LEGAL_EMAIL</code></td><td>Legal pages footer</td></tr>
+    <tr><td><code>NEXT_PUBLIC_COMPLIANCE_EMAIL</code></td><td>Compliance &amp; KYC notices</td></tr>
+  </tbody>
+</table>
+
+<p class="dim">These three only appear in copy &mdash; they have no effect on outbound mail.
+   The transport sender is always <code>EMAIL_FROM</code>.</p>
+
+<div class="callout danger">
+  <strong>Secret hygiene.</strong> <code>AZURE_EMAIL_CLIENT_SECRET</code> is a write-capable
+  send-as credential for the company mailbox. Treat it like a password. It currently lives
+  in plaintext in <code>apps/workers/.env</code> on the VM &mdash; the long-term home is
+  Azure Key Vault (same pattern as the Stripe and database secrets).
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="queue">§4 Queue layer — BullMQ <code>email</code> queue</h2>
+
+<p>Queue name is the literal string <code>'email'</code> everywhere. There is one logical
+   queue with five concurrent consumers (workers, default concurrency).</p>
+
+<h3>Producers (services that enqueue jobs)</h3>
+
+<table>
+  <thead><tr><th>File</th><th>What it enqueues</th></tr></thead>
+  <tbody>
+    <tr><td><code>apps/api/src/app.ts:121</code></td><td>The main API producer &mdash; injected into every service constructor that needs to send mail</td></tr>
+    <tr><td><code>apps/workers/src/jobs/credential-purge.job.ts:24</code></td><td>Worker-side scheduled purge notifications</td></tr>
+    <tr><td><code>apps/workers/src/jobs/insurance-expiry.scheduler.ts:15</code></td><td>"Your insurance expires in N days" warnings</td></tr>
+    <tr><td><code>apps/workers/src/jobs/order-sla.scheduler.ts:15</code></td><td>Order SLA breach reminders</td></tr>
+    <tr><td><code>apps/workers/src/jobs/service-invoice-overdue.scheduler.ts:10</code></td><td>Service-invoice overdue reminders</td></tr>
+  </tbody>
+</table>
+
+<p>Service-layer call pattern (from <code>AuthService.register()</code>):</p>
+
+<pre>await this.emailQueue.add('verify-email', {
+  type:       'verify-email',
+  to:         user.email,
+  verify_url: emailUrls.verifyEmail(verificationToken),
+  userId:     user.id,
+});</pre>
+
+<p>The first argument is the BullMQ job name (used for metrics &amp; logs). The
+   <code>type</code> field on the payload is what the worker switches on &mdash; they're
+   conventionally the same string but only <code>type</code> is load-bearing.</p>
+
+<h3>Consumer</h3>
+
+<p>Single <code>Worker</code> in <code>apps/workers/src/jobs/email.worker.ts</code> (~1,470 lines).
+   Concurrency 5. On <code>failed</code> it logs the error; BullMQ then retries with the
+   queue's default backoff. There is no manual <code>removeOnComplete</code>/<code>removeOnFail</code>
+   config &mdash; failed jobs persist for inspection via BullMQ Board.</p>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="templates">§5 Templates — the single source file</h2>
+
+<p>
+  <strong>File:</strong> <code>apps/workers/src/jobs/email.worker.ts</code>
+  &nbsp;<span class="pill a">~1,470 lines</span>
+  &nbsp;<span class="pill t">44 templates</span>
+</p>
+
+<p>Every template lives in <em>this one file</em>. There is no templating engine
+   (Handlebars / MJML / EJS) and no external HTML files. Each template is an inline
+   tagged template literal returning <code>{ to, subject, html }</code>.</p>
+
+<h3>Anatomy of the file</h3>
+
+<ol>
+  <li><strong>Lines 7&ndash;217 &mdash; <code>EmailJobPayload</code> union.</strong>
+      The discriminated union typing every job payload. Each variant has a literal
+      <code>type</code> string + the fields that template needs. Adding a new template
+      starts here.</li>
+  <li><strong>Lines 219&ndash;1306 &mdash; <code>build*</code> functions.</strong>
+      One per template. Returns
+      <code>{ to: { email }, subject: string, html: string }</code>.
+      All use teal <code>#0d9488</code> branding and the brand name <code>talvexIT</code>
+      inline.</li>
+  <li><strong>Line 1307 &mdash; <code>escape()</code>.</strong>
+      Minimal HTML escaping. Use it on any user-supplied string that goes into the
+      template body to prevent injection.</li>
+  <li><strong>Lines 1315&ndash;1462 &mdash; the <code>switch (data.type)</code>.</strong>
+      Routes each payload to the right builder. The default branch logs an unknown-type
+      warning and silently drops the job &mdash; <strong>do not</strong> rely on this for
+      validation.</li>
+</ol>
+
+<h3>The 44 template types</h3>
+
+<table>
+  <thead><tr><th>Group</th><th>Types</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Auth</strong></td>
+      <td><code>verify-email</code>, <code>reset-password</code>, <code>login-otp</code></td>
+    </tr>
+    <tr>
+      <td><strong>Order lifecycle</strong></td>
+      <td><code>new-order-received</code>, <code>company-order-needs-assignment</code>,
+          <code>order-accepted</code>, <code>order-submitted</code>,
+          <code>order-revision-requested</code>, <code>order-completed</code>,
+          <code>order-cancelled</code></td>
+    </tr>
+    <tr>
+      <td><strong>KYC</strong></td>
+      <td><code>kyc-session-scheduled</code>, <code>kyc-session-rescheduled</code>,
+          <code>kyc-session-cancelled</code>, <code>kyc-approved</code>,
+          <code>kyc-rejected</code>, <code>kyc-reschedule-requested</code>,
+          <code>kyc-reschedule-decision</code></td>
+    </tr>
+    <tr>
+      <td><strong>Organisation / company</strong></td>
+      <td><code>org-member-invitation</code>, <code>org-membership-removed</code>,
+          <code>company-member-invitation</code>, <code>member-joined-notification</code></td>
+    </tr>
+    <tr>
+      <td><strong>Payments &amp; payouts</strong></td>
+      <td><code>payout-initiated</code>, <code>payment-method-approved</code>,
+          <code>payment-method-rejected</code>,
+          <code>tc-invoice-paid-customer-receipt</code>,
+          <code>tc-invoice-paid-supplier-receipt</code></td>
+    </tr>
+    <tr>
+      <td><strong>Tenders</strong></td>
+      <td><code>tender-invitation</code>, <code>tender-deadline-extended</code>,
+          <code>tender-proposal-received</code>, <code>tender-proposal-awarded</code>,
+          <code>tender-proposal-rejected</code></td>
+    </tr>
+    <tr>
+      <td><strong>Disputes</strong></td>
+      <td><code>dispute-filed-admin-alert</code>, <code>dispute-filed-notice</code>,
+          <code>dispute-admin-assigned</code>, <code>arbitrator-appointed</code>,
+          <code>dispute-determination-issued</code></td>
+    </tr>
+    <tr>
+      <td><strong>Service invoices (B2B)</strong></td>
+      <td><code>service-invoice-sent</code>, <code>service-invoice-evidence-submitted</code>,
+          <code>service-invoice-evidence-approved</code>,
+          <code>service-invoice-evidence-rejected</code>,
+          <code>service-invoice-overdue</code>, <code>service-invoice-paid</code></td>
+    </tr>
+    <tr>
+      <td><strong>Subscriptions</strong></td>
+      <td><code>subscription-payment-receipt</code>, <code>subscription-payment-failed</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>What a builder looks like</h3>
+
+<pre>function buildVerifyEmail(to: string, verify_url: string) {
+  return {
+    to:      { email: to },
+    subject: 'Verify your talvexIT account',
+    html: `
+      &lt;div style="font-family:sans-serif;max-width:480px;margin:auto"&gt;
+        &lt;h2 style="color:#0d9488"&gt;Welcome to talvexIT!&lt;/h2&gt;
+        &lt;p&gt;Click the button below to verify your email address.&lt;/p&gt;
+        &lt;a href="${verify_url}"
+           style="display:inline-block;padding:12px 24px;background:#0d9488;
+                  color:#fff;border-radius:6px;text-decoration:none;font-weight:bold"&gt;
+          Verify Email
+        &lt;/a&gt;
+        &lt;p style="color:#666;font-size:13px;margin-top:24px"&gt;
+          This link expires in 24 hours. If you didn't create an account, ignore this email.
+        &lt;/p&gt;
+      &lt;/div&gt;
+    `,
+  };
+}</pre>
+
+<div class="callout warn">
+  <strong>Inline CSS &mdash; on purpose.</strong> Email clients (Gmail, Outlook) strip
+  <code>&lt;style&gt;</code> blocks and external stylesheets unpredictably. Every visual
+  attribute lives inline. Don't try to factor styles into a shared CSS file &mdash; it will
+  silently break in Outlook.
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="urls">§6 URL builder — links inside emails</h2>
+
+<p>
+  <strong>File:</strong> <code>apps/api/src/utils/urls.ts</code>
+  &nbsp;<span class="pill b">env-driven</span>
+</p>
+
+<p>Never hard-code <code>http://localhost:3000</code> or production URLs in templates.
+   Always use the helpers:</p>
+
+<table>
+  <thead><tr><th>Helper</th><th>Returns</th></tr></thead>
+  <tbody>
+    <tr><td><code>emailUrls.verifyEmail(token)</code></td><td><code>{FRONTEND_URL}/verify-email?token=…</code></td></tr>
+    <tr><td><code>emailUrls.resetPassword(token)</code></td><td><code>{FRONTEND_URL}/reset-password?token=…</code></td></tr>
+    <tr><td><code>emailUrls.loginPage(params?)</code></td><td><code>{FRONTEND_URL}/login[?params]</code></td></tr>
+    <tr><td><code>emailUrls.joinCompany(token, existing?)</code></td><td><code>{FRONTEND_URL}/company/join?token=…</code></td></tr>
+    <tr><td><code>emailUrls.joinOrg(token)</code></td><td><code>{FRONTEND_URL}/organisations/join/{token}</code></td></tr>
+    <tr><td><code>emailUrls.customerOrder(orderId)</code></td><td><code>{FRONTEND_URL}/customer/orders/{id}</code></td></tr>
+    <tr><td><code>emailUrls.contractorOrder(orderId)</code></td><td><code>{FRONTEND_URL}/contractor/orders/{id}</code></td></tr>
+    <tr><td><code>emailUrls.companyOrder(orderId)</code></td><td><code>{FRONTEND_URL}/orders/{id}</code></td></tr>
+    <tr><td><code>emailUrls.companyMembers()</code></td><td><code>{FRONTEND_URL}/company/members</code></td></tr>
+    <tr><td><code>emailUrls.adminCompany(id)</code></td><td><code>{FRONTEND_URL}/admin/companies/{id}</code></td></tr>
+    <tr><td><code>emailUrls.adminDispute(id)</code></td><td><code>{FRONTEND_URL}/admin/disputes/{id}</code></td></tr>
+    <tr><td><code>emailUrls.adminPayout(id)</code></td><td><code>{FRONTEND_URL}/admin/payouts/{id}</code></td></tr>
+    <tr><td><code>emailUrls.contractorStripe(success)</code></td><td><code>{FRONTEND_URL}/contractor/stripe?success=true|refresh=true</code></td></tr>
+  </tbody>
+</table>
+
+<p>The URL is built once in the service when the job is enqueued (so the token is
+   formatted on the API side), then passed verbatim into the template payload. The worker
+   does not build URLs itself.</p>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="otp">§7 Special case — login OTP</h2>
+
+<p>
+  Login OTP is the one email type with state outside the queue payload. The 6-digit code
+  and its expiry / attempt counter live in the <code>EmailOtpChallenge</code> table,
+  managed by <code>apps/api/src/services/email-otp.service.ts</code>:
+</p>
+
+<ul>
+  <li><code>createOtpChallenge(prisma, userId, meta)</code> generates a random 6-digit code,
+      hashes it, persists the challenge, and returns the plaintext for one-time delivery.</li>
+  <li><code>verifyOtpChallenge(prisma, challengeToken, code)</code> validates with constant-time
+      comparison, increments attempt counter, marks the challenge VERIFIED on success.</li>
+  <li>Service-layer rate-limit: <strong>3 sends per 15 min per user</strong>. Route-layer
+      anti-spray-rate-limit: <strong>5 sends per 15 min per IP</strong> on
+      <code>/auth/resend-otp</code>.</li>
+  <li><code>TEST_BYPASS_OTP=true</code> env var skips the entire OTP step &mdash; <strong>never
+      set this in production</strong>. Used by automated E2E tests.</li>
+</ul>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="recipes">§8 Common customisation recipes</h2>
+
+<h3>Edit the copy of an existing email</h3>
+
+<ol>
+  <li>Open <code>apps/workers/src/jobs/email.worker.ts</code>.</li>
+  <li>Find the matching <code>build*</code> function (e.g. <code>buildVerifyEmail</code>).
+      Use Ctrl+F on the subject line to jump to it.</li>
+  <li>Edit the <code>subject</code> and/or the inline-HTML <code>html</code> template literal.
+      Keep CSS inline.</li>
+  <li>Restart the workers process. <strong>The API does not need a restart</strong> &mdash;
+      it only enqueues; the worker holds the template.</li>
+</ol>
+
+<h3>Change the sender name or address</h3>
+
+<ol>
+  <li>Pick a new mailbox in Azure AD (must be a real user the Graph app has
+      <code>Mail.Send</code> for).</li>
+  <li>Update <code>EMAIL_FROM</code> and <code>EMAIL_FROM_NAME</code> in
+      <code>apps/workers/.env</code> on the VM.</li>
+  <li>Restart the workers process.</li>
+  <li>Send a test (see <a href="#testing">§9</a>).</li>
+</ol>
+
+<h3>Rotate the Azure secret</h3>
+
+<ol>
+  <li>In the Azure portal, App Registrations &rarr; the email app &rarr;
+      Certificates &amp; secrets &rarr; <strong>New client secret</strong>.</li>
+  <li>Copy the new value <em>before navigating away</em> &mdash; it's only shown once.</li>
+  <li>Update <code>AZURE_EMAIL_CLIENT_SECRET</code> in <code>apps/workers/.env</code>.</li>
+  <li>Restart the workers process. The next <code>getAccessToken()</code> call will pick up
+      the new secret.</li>
+  <li>After verifying mail is flowing, delete the old secret in the portal.</li>
+</ol>
+
+<h3>Add a new email template</h3>
+
+<ol>
+  <li><strong>Define the payload variant.</strong> In <code>email.worker.ts</code>, add a
+      new branch to the <code>EmailJobPayload</code> union with a unique <code>type</code>
+      string and the fields you'll interpolate:
+      <pre>| { type: 'task-flagged-for-review'; to: string; task_title: string; reviewer_url: string }</pre>
+  </li>
+  <li><strong>Write the builder.</strong> Add a <code>buildTaskFlaggedForReview(...)</code>
+      function that returns <code>{ to, subject, html }</code>. Match the visual style of
+      neighbours (teal heading, button, expiry note). Use <code>escape(...)</code> on any
+      user-supplied string.</li>
+  <li><strong>Wire it into the switch.</strong> Add a <code>case 'task-flagged-for-review':</code>
+      branch that calls <code>buildTaskFlaggedForReview(data)</code> and breaks.</li>
+  <li><strong>Enqueue from a service.</strong> In the API service that triggers it:
+      <pre>await this.emailQueue.add('task-flagged-for-review', {
+  type:         'task-flagged-for-review',
+  to:           reviewer.email,
+  task_title:   task.title,
+  reviewer_url: emailUrls.companyMembers(),
+});</pre>
+  </li>
+  <li>Type-check both packages: <code>pnpm --filter @onys/api typecheck</code> +
+      <code>pnpm --filter @onys/workers typecheck</code>.</li>
+  <li>Restart the workers process and test.</li>
+</ol>
+
+<div class="callout info">
+  The <code>EmailJobPayload</code> union is duplicated in the API service code where each
+  service declares its <code>Queue&lt;EmailJobPayload&gt;</code> typing &mdash; the worker
+  has its own copy. Keep them in sync; a typo in the API-side type means the worker switch
+  won't know about your new type and will silently drop the job.
+</div>
+
+<h3>Stop a specific notification temporarily</h3>
+
+<p>Two options, in order of preference:</p>
+
+<ol>
+  <li><strong>Comment out the <code>emailQueue.add(...)</code> call</strong> in the service
+      that triggers it. The cleanest cutoff &mdash; no half-rendered jobs end up in Redis.</li>
+  <li><strong>Make the worker case a no-op.</strong> In the switch:
+      <pre>case 'order-cancelled':
+  // TEMPORARILY DISABLED — see ticket #XYZ
+  break;</pre>
+      Useful when you can't deploy the API but can deploy workers, or when the source is
+      external (e.g. a Stripe webhook).</li>
+</ol>
+
+<h3>Add a brand-wide change (logo, footer, palette)</h3>
+
+<p>There is no central layout helper. Every template embeds its own HTML wrapper. A
+   brand-wide change today means a find-and-replace across all 45 <code>build*</code>
+   functions. If we do a serious rebrand we should first extract a
+   <code>wrap(headerHtml, bodyHtml, footerHtml)</code> helper and refactor each builder
+   to call it &mdash; see <a href="#rebrand">§11</a>.</p>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="testing">§9 Testing emails locally</h2>
+
+<h3>Send a real email to your own inbox</h3>
+
+<ol>
+  <li>Make sure <code>apps/workers/.env</code> has the Azure creds + <code>EMAIL_FROM</code> set.</li>
+  <li>Make sure Redis is running (<code>docker-compose up redis</code>).</li>
+  <li>Start the workers: <code>pnpm --filter @onys/workers dev</code></li>
+  <li>Trigger the flow from the UI (e.g. register a new account to test
+      <code>verify-email</code>).</li>
+  <li>Watch the worker console &mdash; you'll see
+      <code>[email] Processing job type="verify-email" to="…"</code> then
+      <code>[graph-email] Sent to …</code> on success.</li>
+</ol>
+
+<h3>Inspect queue state</h3>
+
+<p>BullMQ jobs persist in Redis. Use <code>redis-cli</code> or BullMQ Board to inspect:</p>
+
+<pre># list queued
+redis-cli --raw KEYS 'bull:email:*' | head
+
+# completed / failed counts
+redis-cli LLEN 'bull:email:completed'
+redis-cli LLEN 'bull:email:failed'
+
+# requeue a failed job (BullMQ Board UI &mdash; preferred)</pre>
+
+<h3>Preview a template without sending</h3>
+
+<p>There is no built-in preview server. Quick approaches:</p>
+
+<ul>
+  <li>Copy the <code>html</code> string into an HTML file and open it in a browser.</li>
+  <li>Use a separate inbox-test service (<a href="https://litmus.com">Litmus</a>,
+      <a href="https://www.emailonacid.com">Email on Acid</a>) for Outlook / Gmail / Apple Mail
+      preview matrices.</li>
+  <li>Send to a Mailtrap / Mailpit sandbox inbox in dev by pointing
+      <code>EMAIL_FROM</code> at a tester address you control. (The Graph
+      transport itself can't be redirected to a local SMTP catcher.)</li>
+</ul>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="operations">§10 Operations — monitoring, retries, failures</h2>
+
+<table>
+  <thead><tr><th>Concern</th><th>How it's handled</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Retries on transient failures</td>
+      <td>BullMQ default retry policy (exponential backoff). No per-job retry config in the worker constructor &mdash; we rely on the queue defaults.</td>
+    </tr>
+    <tr>
+      <td>Unknown job type</td>
+      <td>Switch falls through to <code>default</code>, logs <code>[email] Unknown job type: X</code>, returns. The job is marked completed (not retried). Fix: add the missing case.</td>
+    </tr>
+    <tr>
+      <td>Graph 4xx (e.g. invalid recipient)</td>
+      <td><code>sendEmail</code> throws &rarr; the BullMQ job moves to <code>failed</code>. Will retry; permanent 4xx will eventually land in the failed list for manual inspection.</td>
+    </tr>
+    <tr>
+      <td>Graph 429 (rate-limited)</td>
+      <td>Currently bubbles up as a thrown error &mdash; retries follow. If we hit sustained rate limits we'll need an explicit backoff aware of the <code>Retry-After</code> header.</td>
+    </tr>
+    <tr>
+      <td>Bad sender mailbox</td>
+      <td>Graph returns 403 / 404 &mdash; the job lands in failed. Check <code>EMAIL_FROM</code> and the app registration's <code>Mail.Send</code> grant.</td>
+    </tr>
+    <tr>
+      <td>Token expiry</td>
+      <td>Cache auto-refreshes 60 s before expiry. No action needed.</td>
+    </tr>
+    <tr>
+      <td>Audit trail</td>
+      <td>The OAuth event and every send are logged to the workers stdout. The corresponding business event (e.g. <code>USER_REGISTERED</code>) is written to <code>AuditLog</code> by the API <em>before</em> the email is enqueued.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="rebrand">§11 Rebrand &amp; follow-ups</h2>
+
+<div class="callout warn">
+  <strong>Known follow-ups after the 2026-05 rebrand.</strong>
+  <ul>
+    <li><code>EMAIL_FROM=alerts@onsys.com.au</code> still uses the legacy <code>onsys.com.au</code>
+        domain. After the Onsys &rarr; Waveful operator rename, this should move to a Waveful or
+        TalvexIT-branded mailbox (e.g. <code>alerts@talvexit.com</code>) once the new mailbox
+        is provisioned in Azure AD and the app registration is granted <code>Mail.Send</code>
+        on it.</li>
+    <li>Templates hard-code the brand name <strong>"talvexIT"</strong> and the teal
+        <code>#0d9488</code> across all 45 builders. The default fallback in
+        <code>graph-email.service.ts</code> for <code>EMAIL_FROM_NAME</code> is still
+        <code>onys.online</code>.</li>
+    <li>There is no shared layout helper. Extract a <code>wrap()</code> helper before the
+        next visual refresh.</li>
+  </ul>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────────────── -->
+<h2 id="anti">§12 Anti-patterns — don't do these</h2>
+
+<ul>
+  <li><strong>Don't</strong> call <code>sendEmail(...)</code> directly from API code &mdash;
+      always go through the queue. The API process has no Graph credentials and shouldn't
+      block on outbound HTTP.</li>
+  <li><strong>Don't</strong> embed user-supplied strings into <code>html</code> without
+      passing through <code>escape()</code>. A name containing <code>&lt;script&gt;</code>
+      becomes a tracking pixel in Gmail.</li>
+  <li><strong>Don't</strong> hard-code <code>http://localhost:3000</code> in a template &mdash;
+      always use <code>emailUrls.*</code> so the link works in every environment.</li>
+  <li><strong>Don't</strong> add an <code>&lt;style&gt;</code> block or <code>&lt;link&gt;</code>
+      stylesheet &mdash; Gmail / Outlook strip them. Inline CSS only.</li>
+  <li><strong>Don't</strong> introduce a new transport library (nodemailer, SendGrid SDK,
+      AWS SES SDK) without a deliberate decision. The single-transport choice is what makes
+      auditing &amp; rate-limiting tractable.</li>
+  <li><strong>Don't</strong> commit <code>AZURE_EMAIL_CLIENT_SECRET</code> to git. It's a
+      send-as credential for the company mailbox.</li>
+  <li><strong>Don't</strong> set <code>TEST_BYPASS_OTP=true</code> in production. It disables
+      the OTP step entirely.</li>
+  <li><strong>Don't</strong> rely on the <code>default</code> branch in the worker switch as
+      validation &mdash; it silently drops jobs. Add an explicit case for every type you
+      enqueue.</li>
+</ul>
+
+<hr>
+<p class="dim">
+  Companion docs: <a href="customer-subscription-plan.html">customer-subscription-plan.html</a>,
+  <a href="supplier-subscription-plan.html">supplier-subscription-plan.html</a>,
+  <a href="changing-pricing.html">changing-pricing.html</a>.<br>
+  Source: <code>apps/workers/src/services/graph-email.service.ts</code>,
+  <code>apps/workers/src/jobs/email.worker.ts</code>,
+  <code>apps/api/src/utils/urls.ts</code>,
+  <code>apps/api/src/services/email-otp.service.ts</code>.
+</p>
+
+</main>
+</body>
+</html>

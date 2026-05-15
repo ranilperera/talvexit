@@ -66,6 +66,7 @@ type PlanSeed = {
   // Customer-side additions
   max_task_bookings_per_month?: number | null;
   max_contracts_per_month?: number | null;
+  max_manual_tenders_per_month?: number | null;
   // Feature flags
   flags?: Partial<Record<
     | 'allow_overseas_contractors'
@@ -115,6 +116,7 @@ const CUSTOMER_PLAN_SEEDS: PlanSeed[] = CUSTOMER_PLAN_LIST.map((p) => ({
   ...({
     max_task_bookings_per_month: p.limits.task_bookings,
     max_contracts_per_month: p.limits.contracts,
+    max_manual_tenders_per_month: p.limits.manual_tenders,
   } as Record<string, number | null>),
   badge_text: p.badge_text ?? null,
   cta_text: p.cta_text,
@@ -237,6 +239,7 @@ async function main() {
       max_active_contracts: p.max_active_contracts ?? null,
       max_task_bookings_per_month: p.max_task_bookings_per_month ?? null,
       max_contracts_per_month: p.max_contracts_per_month ?? null,
+      max_manual_tenders_per_month: p.max_manual_tenders_per_month ?? null,
       ...flagsResolved,
       custom_features: (p.custom_features ?? []) as Prisma.InputJsonValue,
       badge_text: p.badge_text ?? null,

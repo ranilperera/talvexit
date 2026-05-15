@@ -28,7 +28,8 @@ type UsageType =
   // Customer-side counters
   | 'ai_requests'
   | 'task_bookings'
-  | 'contracts';
+  | 'contracts'
+  | 'manual_tenders';
 
 // Add 1 calendar month to a Date with end-of-month clamping. Used to compute
 // anniversary period boundaries (Jan 31 → Feb 28, then Mar 31, then Apr 30…).
@@ -837,6 +838,14 @@ export class SubscriptionService {
           current: sub.current_contract_count,
           limit: sub.plan.max_contracts_per_month,
         };
+      case 'manual_tenders':
+        // Counter — each manual-tender publish increments. Customer Quota 7.
+        // Independent of ai_scopes; gates only POST /tenders/publish/*
+        // when the underlying PendingScope was authored manually.
+        return {
+          current: sub.current_manual_tender_count,
+          limit: sub.plan.max_manual_tenders_per_month,
+        };
       case 'active_tenders': {
         // Branches on plan_type — the same key has audience-specific semantics:
         //   - CUSTOMER_*: tenders the customer has currently open (buyer)
@@ -935,10 +944,12 @@ export class SubscriptionService {
           orders_used: cursor.current_order_count,
           ai_scopes_used: cursor.current_ai_request_count,
           contracts_used: cursor.current_contract_count,
+          manual_tenders_used: cursor.current_manual_tender_count,
           task_bookings_limit: cursor.plan.max_task_bookings_per_month,
           orders_limit: cursor.plan.max_orders_per_month,
           ai_scopes_limit: cursor.plan.max_ai_requests_per_month,
           contracts_limit: cursor.plan.max_contracts_per_month,
+          manual_tenders_limit: cursor.plan.max_manual_tenders_per_month,
         },
       });
 
@@ -954,6 +965,7 @@ export class SubscriptionService {
           current_order_count: 0,
           current_ai_request_count: 0,
           current_contract_count: 0,
+          current_manual_tender_count: 0,
           // Supplier-side counters (orders shares the same column)
           current_bid_count: 0,
           // Legacy columns (current_task_count, current_project_count,
@@ -1000,10 +1012,11 @@ export class SubscriptionService {
       period_start: string;
       period_end: string;
       plan_name: string;
-      task_bookings_used: number; task_bookings_limit: number | null;
-      orders_used: number;        orders_limit: number | null;
-      ai_scopes_used: number;     ai_scopes_limit: number | null;
-      contracts_used: number;     contracts_limit: number | null;
+      task_bookings_used: number;   task_bookings_limit: number | null;
+      orders_used: number;          orders_limit: number | null;
+      ai_scopes_used: number;       ai_scopes_limit: number | null;
+      contracts_used: number;       contracts_limit: number | null;
+      manual_tenders_used: number;  manual_tenders_limit: number | null;
     }>;
   }> {
     const { warningThresholdFor } = await import('@onys/shared');
@@ -1019,7 +1032,7 @@ export class SubscriptionService {
     const sub = await this.rolloverIfDue(sub0);
 
     const customerQuotas: LimitType[] = [
-      'task_bookings', 'active_orders', 'orders', 'ai_scopes', 'contracts', 'active_tenders',
+      'task_bookings', 'active_orders', 'orders', 'ai_scopes', 'contracts', 'active_tenders', 'manual_tenders',
     ];
     const quotas: Record<string, { used: number; limit: number | null; remaining: number | null; warn: boolean }> = {};
     for (const q of customerQuotas) {
@@ -1055,6 +1068,8 @@ export class SubscriptionService {
         ai_scopes_limit: h.ai_scopes_limit,
         contracts_used: h.contracts_used,
         contracts_limit: h.contracts_limit,
+        manual_tenders_used: h.manual_tenders_used,
+        manual_tenders_limit: h.manual_tenders_limit,
       })),
     };
   }
@@ -1175,6 +1190,7 @@ export class SubscriptionService {
       ai_requests: 'current_ai_request_count',
       task_bookings: 'current_task_booking_count',
       contracts: 'current_contract_count',
+      manual_tenders: 'current_manual_tender_count',
     };
 
     const updated = await this.prisma.subscription.update({
@@ -1209,6 +1225,7 @@ export class SubscriptionService {
         current_order_count: 0,
         current_task_booking_count: 0,
         current_contract_count: 0,
+        current_manual_tender_count: 0,
         usage_reset_at: new Date(),
       },
     });

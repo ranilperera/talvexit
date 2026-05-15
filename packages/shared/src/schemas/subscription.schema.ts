@@ -47,6 +47,7 @@ export const LIMIT_TYPES = [
   'task_bookings',
   'contracts',
   'ai_scopes',
+  'manual_tenders',  // counter — manually-authored tenders, monthly reset
 ] as const;
 export type LimitType = (typeof LIMIT_TYPES)[number];
 
@@ -104,6 +105,7 @@ export const createPlanSchema = z.object({
   // Customer-side limits added in the customer subscription rebuild.
   max_task_bookings_per_month: z.number().int().min(0).optional().nullable(),
   max_contracts_per_month: z.number().int().min(0).optional().nullable(),
+  max_manual_tenders_per_month: z.number().int().min(0).optional().nullable(),
 
   // Feature flags
   allow_overseas_contractors: z.boolean().default(false),

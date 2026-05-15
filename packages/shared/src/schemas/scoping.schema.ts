@@ -43,6 +43,31 @@ export const acceptScopeSchema = z.object({
   }),
 });
 
+// ─── manualScopeSchema ────────────────────────────────────────────────────────
+// Customer creates a tender scope manually, without burning AI quota. The
+// payload mirrors acceptScopeSchema (the JSON shape suppliers eventually see
+// as scope_snapshot must be identical between AI and manual origins).
+// Downstream: the publish-tender endpoint detects the manual origin via
+// ai_scope == null on PendingScope and gates on the manual_tenders quota.
+
+export const manualScopeSchema = z.object({
+  scope: z.object({
+    title: z.string().min(10).max(120),
+    domain: z.string(),
+    objective: z.string().min(50),
+    in_scope: z.array(z.string().min(10)).min(1),
+    out_of_scope: z.array(z.string().min(5)).min(1),
+    assumptions: z.array(z.string().min(5)).min(1),
+    prerequisites: z.array(z.string().min(5)),
+    deliverables: z.array(z.string().min(10)).min(1),
+    currency: z.string().default('AUD'),
+    price: z.number().positive().min(50),
+    hours_min: z.number().int().min(1).max(160),
+    hours_max: z.number().int().min(1).max(160),
+    milestone_count: z.number().int().min(1).max(5).default(1),
+  }),
+});
+
 // ─── regenerateSectionSchema ──────────────────────────────────────────────────
 // Partial section regeneration request
 
@@ -68,4 +93,5 @@ export const regenerateSectionSchema = z.object({
 
 export type GenerateScopeInput = z.infer<typeof generateScopeSchema>;
 export type AcceptScopeInput = z.infer<typeof acceptScopeSchema>;
+export type ManualScopeInput = z.infer<typeof manualScopeSchema>;
 export type RegenerateSectionInput = z.infer<typeof regenerateSectionSchema>;

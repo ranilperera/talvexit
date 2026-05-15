@@ -269,7 +269,7 @@ export function buildApp() {
   app.register(proposalRoutes, { prefix: '/api/v1', proposalService });
   app.register(chatRoutes, { prefix: '/api/v1', chatService });
   app.register(threadRoutes, { prefix: '/api/v1', threadService: taskThreadService });
-  app.register(tenderRoutes, { prefix: '/api/v1', tenderService, orderService, subscriptionGuards });
+  app.register(tenderRoutes, { prefix: '/api/v1', tenderService, orderService, subscriptionGuards, subscriptionService });
   app.register(tenderContractRoutes, {
     prefix: '/api/v1',
     contractService: tenderContractService,

@@ -1,6 +1,7 @@
 import { Queue } from 'bullmq';
-import type { PrismaClient, Prisma } from '@prisma/client';
-import type { GenerateScopeInput, AcceptScopeInput, RegenerateSectionInput } from '@onys/shared';
+import { Prisma } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
+import type { GenerateScopeInput, AcceptScopeInput, ManualScopeInput, RegenerateSectionInput } from '@onys/shared';
 import { writeAudit } from '../utils/audit.js';
 import { AppError } from '../lib/errors.js';
 
@@ -197,6 +198,59 @@ export class ScopingService {
       has_customer_edits: hasEdits,
       edited_fields: editedFields,
     };
+  }
+
+  // ─── METHOD 3b: createManualScope ─────────────────────────────────────────
+  // Customer authors the scope themselves (no AI call). Creates a PendingScope
+  // already in the COMPLETE + accepted state so the publish-tender endpoint
+  // can use it immediately. ai_scope stays null — that's how downstream code
+  // tells AI-origin from manual-origin scopes when deciding which quota to
+  // charge.
+
+  async createManualScope(
+    customerId: string,
+    data: ManualScopeInput,
+    meta: { ip: string; userAgent: string },
+  ): Promise<{ job_id: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: customerId },
+      select: { account_type: true },
+    });
+    if (!user || user.account_type !== 'CUSTOMER') {
+      throw new AppError('WRONG_ACCOUNT_TYPE', 403);
+    }
+
+    const pending = await this.prisma.pendingScope.create({
+      data: {
+        customer_id: customerId,
+        // requirement_text isn't used downstream once accepted_scope is set,
+        // but the column is non-null. Use the manual scope title as a
+        // human-readable trace so support/audit knows where it came from.
+        requirement_text: `[manual] ${data.scope.title}`,
+        domain_hint: data.scope.domain,
+        status: 'COMPLETE',
+        ai_scope: Prisma.JsonNull as never,
+        accepted_scope: data.scope as Prisma.InputJsonValue,
+        accepted_at: new Date(),
+        has_customer_edits: false,
+        edited_fields: [],
+      },
+    });
+
+    await writeAudit(this.prisma, {
+      actorId: customerId,
+      actionType: 'MANUAL_SCOPE_CREATED',
+      entityType: 'PendingScope',
+      entityId: pending.id,
+      ipAddress: meta.ip,
+      userAgent: meta.userAgent,
+      metadata: {
+        domain: data.scope.domain,
+        title: data.scope.title,
+      },
+    });
+
+    return { job_id: pending.id };
   }
 
   // ─── METHOD 4: queueSectionRegen ──────────────────────────────────────────

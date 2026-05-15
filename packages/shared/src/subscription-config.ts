@@ -16,12 +16,13 @@
 // in the customer-facing billing UI labels.
 
 export const CUSTOMER_QUOTA_KEYS = [
-  'task_bookings', // Quota 1 — counter, monthly reset
-  'active_orders', // Quota 2 — computed live (no counter)
-  'orders',        // Quota 3 — counter, monthly reset
-  'ai_scopes',     // Quota 4 — counter, monthly reset
-  'contracts',     // Quota 5 — counter, monthly reset
-  'active_tenders', // Quota 6 — computed live (no counter)
+  'task_bookings',   // Quota 1 — counter, monthly reset
+  'active_orders',   // Quota 2 — computed live (no counter)
+  'orders',          // Quota 3 — counter, monthly reset
+  'ai_scopes',       // Quota 4 — counter, monthly reset (AI-generated scopes)
+  'contracts',       // Quota 5 — counter, monthly reset
+  'active_tenders',  // Quota 6 — computed live (no counter)
+  'manual_tenders',  // Quota 7 — counter, monthly reset (manually-authored tenders)
 ] as const;
 
 export type CustomerQuotaKey = (typeof CUSTOMER_QUOTA_KEYS)[number];
@@ -34,6 +35,7 @@ export const COUNTER_QUOTAS: CustomerQuotaKey[] = [
   'orders',
   'ai_scopes',
   'contracts',
+  'manual_tenders',
 ];
 
 // ── Plan definitions ────────────────────────────────────────────────────────
@@ -48,6 +50,7 @@ export interface CustomerPlanLimits {
   ai_scopes: number | null;
   contracts: number | null;
   active_tenders: number | null;
+  manual_tenders: number | null;
 }
 
 export interface CustomerPlanDef {
@@ -91,6 +94,7 @@ export const CUSTOMER_PLANS: Readonly<Record<string, CustomerPlanDef>> = {
       ai_scopes: 0,
       contracts: 0,
       active_tenders: 0,
+      manual_tenders: 0,
     },
   },
   'customer-business': {
@@ -113,6 +117,7 @@ export const CUSTOMER_PLANS: Readonly<Record<string, CustomerPlanDef>> = {
       ai_scopes: 1,
       contracts: 1,
       active_tenders: 1,
+      manual_tenders: 2,
     },
   },
   'customer-professional': {
@@ -136,6 +141,7 @@ export const CUSTOMER_PLANS: Readonly<Record<string, CustomerPlanDef>> = {
       ai_scopes: 5,
       contracts: 5,
       active_tenders: 2,
+      manual_tenders: 8,
     },
   },
   'customer-enterprise': {
@@ -158,6 +164,7 @@ export const CUSTOMER_PLANS: Readonly<Record<string, CustomerPlanDef>> = {
       ai_scopes: 10,
       contracts: 10,
       active_tenders: 5,
+      manual_tenders: 20,
     },
   },
 };

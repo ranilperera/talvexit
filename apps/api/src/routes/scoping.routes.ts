@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   generateScopeSchema,
   acceptScopeSchema,
+  manualScopeSchema,
   regenerateSectionSchema,
 } from '@onys/shared';
 import type { ScopingService } from '../services/scoping.service.js';
@@ -181,6 +182,49 @@ export async function scopingRoutes(
           data: {
             ...result,
             order_hint: `POST /api/v1/orders with { "scoping_job_id": "${job_id}" } to place your order.`,
+          },
+        });
+      } catch (err) {
+        return handleError(reply, err);
+      }
+    },
+  );
+
+  // ─── POST /scoping/manual ──────────────────────────────────────────────────
+  // Customer authors a tender scope directly, without using AI. No ai_scopes
+  // quota is consumed here — the manual_tenders quota is gated at publish
+  // time (see tender.routes.ts) so customers can draft + discard freely.
+
+  app.post(
+    '/scoping/manual',
+    { preHandler: [authenticate, requireCustomer] },
+    async (req, reply) => {
+      const parsed = manualScopeSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return reply.status(400).send({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Validation failed',
+            fields: parsed.error.issues.map((i) => ({
+              field: i.path.join('.'),
+              message: i.message,
+            })),
+          },
+        });
+      }
+
+      try {
+        const result = await scopingService.createManualScope(
+          req.user!.userId,
+          parsed.data,
+          extractMeta(req),
+        );
+        return reply.status(201).send({
+          success: true,
+          data: {
+            ...result,
+            message: 'Manual scope created. Proceed to provider selection.',
           },
         });
       } catch (err) {

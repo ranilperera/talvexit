@@ -2604,8 +2604,11 @@ model SubscriptionPlan {
   max_active_orders           Int?
   max_active_contracts        Int?
   // Customer-side additions — see docs/customer-subscription-plan.html
-  max_task_bookings_per_month Int?
-  max_contracts_per_month     Int?
+  max_task_bookings_per_month   Int?
+  max_contracts_per_month       Int?
+  // Quota 7 — manually-authored tenders (no AI cost). Counter-backed,
+  // monthly reset. ai_scopes still gates AI-generated tenders & orders.
+  max_manual_tenders_per_month  Int?
 
   // Feature flags
   allow_overseas_contractors Boolean @default(false)
@@ -2697,9 +2700,10 @@ model Subscription {
   current_order_count        Int       @default(0)  // customer-side: total orders
   current_tender_count       Int       @default(0)  // legacy — kept for back-compat
   // Customer-side counters added with the customer subscription rebuild
-  current_task_booking_count Int       @default(0)  // customer Quota 1
-  current_contract_count     Int       @default(0)  // customer Quota 5
-  usage_reset_at             DateTime?
+  current_task_booking_count   Int       @default(0)  // customer Quota 1
+  current_contract_count       Int       @default(0)  // customer Quota 5
+  current_manual_tender_count  Int       @default(0)  // customer Quota 7 — manual tenders
+  usage_reset_at               DateTime?
 
   // Anniversary period boundaries — used by the lazy rollover. Set on
   // subscription creation; period_end is recalculated each rollover.
@@ -2746,15 +2750,17 @@ model SubscriptionUsageHistory {
   period_start    DateTime
   period_end      DateTime
   // Counters consumed during the closed period
-  task_bookings_used Int          @default(0)
-  orders_used        Int          @default(0)
-  ai_scopes_used     Int          @default(0)
-  contracts_used     Int          @default(0)
+  task_bookings_used   Int          @default(0)
+  orders_used          Int          @default(0)
+  ai_scopes_used       Int          @default(0)
+  contracts_used       Int          @default(0)
+  manual_tenders_used  Int          @default(0)
   // Limits as they were on the plan at the time (null = unlimited)
-  task_bookings_limit Int?
-  orders_limit        Int?
-  ai_scopes_limit     Int?
-  contracts_limit     Int?
+  task_bookings_limit   Int?
+  orders_limit          Int?
+  ai_scopes_limit       Int?
+  contracts_limit       Int?
+  manual_tenders_limit  Int?
   archived_at         DateTime    @default(now())
 
   @@index([subscription_id, period_end])

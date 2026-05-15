@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { TenderService } from '../services/tender.service.js';
 import type { OrderService } from '../services/order.service.js';
+import type { SubscriptionService } from '../services/subscription.service.js';
 import type { SubscriptionGuards } from '../middleware/subscription-limits.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { prisma } from '../lib/prisma.js';
@@ -124,9 +125,21 @@ export async function tenderRoutes(
     tenderService: TenderService;
     orderService: OrderService;
     subscriptionGuards: SubscriptionGuards;
+    subscriptionService: SubscriptionService;
   },
 ) {
-  const { tenderService, subscriptionGuards } = opts;
+  const { tenderService, subscriptionGuards, subscriptionService } = opts;
+
+  // Manually-authored scopes have ai_scope = null on PendingScope. The
+  // publish handlers below look this up and charge the manual_tenders
+  // quota instead of (or in addition to) the active_tenders cap.
+  async function isManualScope(pendingScopeId: string): Promise<boolean> {
+    const row = await prisma.pendingScope.findUnique({
+      where: { id: pendingScopeId },
+      select: { ai_scope: true },
+    });
+    return row !== null && row.ai_scope === null;
+  }
 
   // Binary body parsers for proposal file attachments
   const binaryParser = (_req: FastifyRequest, body: Buffer, done: (err: null, body: Buffer) => void) => done(null, body);
@@ -178,6 +191,13 @@ export async function tenderRoutes(
         });
       }
       try {
+        // Manual-tender quota gate. active_tenders (concurrent cap) is
+        // already enforced by the preHandler above; manual_tenders is the
+        // monthly counter that only fires when the scope was authored
+        // manually (ai_scope IS NULL).
+        if (await isManualScope(parsed.data.pending_scope_id)) {
+          await subscriptionService.incrementUsage(req.user!.userId, 'manual_tenders');
+        }
         const tender = await tenderService.publishDirectTender(req.user!.userId, parsed.data as never);
         return reply.status(201).send({ success: true, data: { tender } });
       } catch (err) {
@@ -212,6 +232,10 @@ export async function tenderRoutes(
         });
       }
       try {
+        // Manual-tender quota gate (see publish/direct handler above).
+        if (await isManualScope(parsed.data.pending_scope_id)) {
+          await subscriptionService.incrementUsage(req.user!.userId, 'manual_tenders');
+        }
         const tender = await tenderService.publishAutoMatchTender(req.user!.userId, parsed.data as never);
         return reply.status(201).send({ success: true, data: { tender } });
       } catch (err) {
