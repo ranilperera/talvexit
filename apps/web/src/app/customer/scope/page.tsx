@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { clsx } from 'clsx';
 import {
   CheckCircle2, ChevronDown, ChevronUp, Plus, X, RotateCcw, Bot,
@@ -1396,6 +1396,35 @@ function ScopeWizard() {
   const [tenderPath, setTenderPath] = useState<'A' | 'B'>('A');
   const [selectedProviders, setSelectedProviders] = useState<SelectedProvider[]>([]);
   const [eligibilityCriteria, setEligibilityCriteria] = useState<EligibilityCriteria | null>(null);
+
+  // Manual-tender entry path: /customer/scope?manual_job_id=<id> jumps straight
+  // into provider selection (step 3) using a PendingScope the customer already
+  // authored manually via /customer/tenders/new. This reuses the entire
+  // downstream wizard (provider pick → publish confirm) so we don't duplicate
+  // the tender publish UI.
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const manualJobId = searchParams?.get('manual_job_id');
+    if (!manualJobId || jobId === manualJobId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await customerApi.get<{
+          success: boolean;
+          data: { status: string; accepted_scope: EditableScope | null; origin: string };
+        }>(`/api/v1/scoping/${manualJobId}/status`);
+        const acc = res.data.data.accepted_scope;
+        if (cancelled || !acc) return;
+        setJobId(manualJobId);
+        setGeneratedScope(acc);
+        setStep('3-select');
+      } catch {
+        // Silently fall back to step 1 — the URL is bookmarkable, missing
+        // jobs / wrong customer just land on the AI input page.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [searchParams, jobId]);
 
   async function handleGenerate(payload: GeneratePayload) {
     const res = await customerApi.post<{ success: boolean; data: { job_id: string } }>(

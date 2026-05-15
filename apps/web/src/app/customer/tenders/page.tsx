@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { FileText, ChevronRight, Clock, Users } from 'lucide-react';
+import { FileText, ChevronRight, Clock, Users, Plus, Bot, Pencil } from 'lucide-react';
 import customerApi from '@/lib/customer-api';
 import { RefreshButton } from '@/components/shared/RefreshButton';
+import { Button } from '@/components/ui/Button';
 
 interface TenderSummary {
   id: string;
@@ -25,6 +27,60 @@ const STATUS_STYLE: Record<string, { label: string; bg: string; text: string; bo
   CANCELLED: { label: 'Cancelled', bg: 'bg-red-500/15',    text: 'text-red-400',    border: 'border-red-500/30' },
   EXPIRED:   { label: 'Expired',   bg: 'bg-amber-500/15',  text: 'text-amber-400',  border: 'border-amber-500/30' },
 };
+
+function CreateTenderMenu() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <Button size="sm" onClick={() => setOpen((o) => !o)}>
+        <Plus size={14} className="mr-1.5" />
+        Create Tender
+      </Button>
+      {open && (
+        <div className="absolute right-0 mt-2 w-72 z-30 rounded-xl border border-slate-700 bg-slate-900 shadow-xl shadow-black/40 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => { setOpen(false); router.push('/customer/scope'); }}
+            className="w-full text-left px-4 py-3 hover:bg-slate-800 transition-colors flex items-start gap-3"
+          >
+            <Bot size={16} className="text-teal-400 mt-0.5 shrink-0" />
+            <div>
+              <div className="text-sm font-medium text-slate-100">Use AI scope</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">
+                Describe your need in plain English — AI drafts the scope. Uses your AI quota.
+              </div>
+            </div>
+          </button>
+          <div className="border-t border-slate-800" />
+          <button
+            type="button"
+            onClick={() => { setOpen(false); router.push('/customer/tenders/new'); }}
+            className="w-full text-left px-4 py-3 hover:bg-slate-800 transition-colors flex items-start gap-3"
+          >
+            <Pencil size={16} className="text-slate-400 mt-0.5 shrink-0" />
+            <div>
+              <div className="text-sm font-medium text-slate-100">Enter manually</div>
+              <div className="text-[11px] text-slate-500 mt-0.5">
+                Fill in the scope yourself. No AI quota. Uses your monthly manual tender quota on publish.
+              </div>
+            </div>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function TenderCard({ tender }: { tender: TenderSummary }) {
   const router = useRouter();
@@ -80,15 +136,18 @@ export default function TendersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <div>
           <h1 className="font-display font-bold text-slate-100 text-2xl">My Tenders</h1>
           <p className="text-sm text-slate-400 mt-1">Track proposals from providers for your projects.</p>
         </div>
-        <RefreshButton
-          loading={isLoading}
-          onRefresh={() => queryClient.invalidateQueries({ queryKey: ['customer-tenders'] })}
-        />
+        <div className="flex items-center gap-2">
+          <CreateTenderMenu />
+          <RefreshButton
+            loading={isLoading}
+            onRefresh={() => queryClient.invalidateQueries({ queryKey: ['customer-tenders'] })}
+          />
+        </div>
       </div>
 
       {isLoading ? (
@@ -102,7 +161,8 @@ export default function TendersPage() {
           <FileText size={32} className="text-slate-600 mx-auto mb-3" />
           <p className="text-sm text-slate-400">No tenders yet.</p>
           <p className="text-xs text-slate-600 mt-1">
-            Use <a href="/customer/scope" className="text-teal-400 hover:underline">AI Scope</a> to generate a project scope and invite providers to propose.
+            Use <a href="/customer/scope" className="text-teal-400 hover:underline">AI Scope</a> to draft a scope, or{' '}
+            <a href="/customer/tenders/new" className="text-teal-400 hover:underline">enter it manually</a>, then invite providers to propose.
           </p>
         </div>
       ) : (

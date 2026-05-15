@@ -60,6 +60,7 @@ export interface PublicPlan {
   max_task_bookings_per_month: number | null;
   max_ai_requests_per_month: number | null;
   max_contracts_per_month: number | null;
+  max_manual_tenders_per_month: number | null;
   // Shared
   max_orders_per_month: number | null;
   max_active_orders: number | null;
@@ -809,6 +810,7 @@ function PlanCard({
     pushLimit(features, 'active tenders at once',         plan.max_active_tenders);
     pushLimit(features, 'contracts / month',              plan.max_contracts_per_month);
     pushLimit(features, 'AI scoping requests / month',    plan.max_ai_requests_per_month);
+    pushLimit(features, 'manual tenders / month',         plan.max_manual_tenders_per_month);
   }
 
   if (isSupplier) {

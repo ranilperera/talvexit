@@ -109,7 +109,15 @@ export class ScopingService {
 
     return {
       status: pending.status,
-      scope: pending.ai_scope,
+      // For AI scopes the client renders ai_scope. For manual scopes
+      // (ai_scope IS NULL) it should render accepted_scope — the
+      // wizard treats whichever non-null value as the scope draft.
+      scope: pending.ai_scope ?? pending.accepted_scope,
+      ai_scope: pending.ai_scope,
+      accepted_scope: pending.accepted_scope,
+      origin: pending.ai_scope === null && pending.accepted_scope !== null
+        ? 'MANUAL'
+        : 'AI',
       error: pending.last_error,
       attempts: pending.attempts,
       has_customer_edits: pending.has_customer_edits,

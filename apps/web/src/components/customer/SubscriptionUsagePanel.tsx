@@ -24,10 +24,11 @@ interface UsageResponse {
     period_start: string;
     period_end: string;
     plan_name: string;
-    task_bookings_used: number; task_bookings_limit: number | null;
-    orders_used: number;        orders_limit: number | null;
-    ai_scopes_used: number;     ai_scopes_limit: number | null;
-    contracts_used: number;     contracts_limit: number | null;
+    task_bookings_used: number;   task_bookings_limit: number | null;
+    orders_used: number;          orders_limit: number | null;
+    ai_scopes_used: number;       ai_scopes_limit: number | null;
+    contracts_used: number;       contracts_limit: number | null;
+    manual_tenders_used: number;  manual_tenders_limit: number | null;
   }>;
 }
 
@@ -38,10 +39,13 @@ const QUOTA_LABELS: Record<string, string> = {
   ai_scopes:      'AI scopes',
   contracts:      'Contracts',
   active_tenders: 'Active tenders',
+  manual_tenders: 'Manual tenders',
 };
 
 // Display order — matches the plan matrix in the design doc.
-const QUOTA_ORDER = ['task_bookings', 'active_orders', 'orders', 'ai_scopes', 'contracts', 'active_tenders'];
+const QUOTA_ORDER = [
+  'task_bookings', 'active_orders', 'orders', 'ai_scopes', 'contracts', 'active_tenders', 'manual_tenders',
+];
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -166,6 +170,7 @@ export default function SubscriptionUsagePanel() {
                     <th className="py-2 pr-3 font-medium text-right">Orders</th>
                     <th className="py-2 pr-3 font-medium text-right">AI scopes</th>
                     <th className="py-2 pr-3 font-medium text-right">Contracts</th>
+                    <th className="py-2 pr-3 font-medium text-right">Manual tenders</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -186,6 +191,9 @@ export default function SubscriptionUsagePanel() {
                       </td>
                       <td className="py-2 pr-3 text-right tabular-nums">
                         {h.contracts_used} / {h.contracts_limit ?? '∞'}
+                      </td>
+                      <td className="py-2 pr-3 text-right tabular-nums">
+                        {h.manual_tenders_used} / {h.manual_tenders_limit ?? '∞'}
                       </td>
                     </tr>
                   ))}
