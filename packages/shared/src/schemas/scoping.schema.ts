@@ -62,8 +62,11 @@ export const manualScopeSchema = z.object({
     deliverables: z.array(z.string().min(10)).min(1),
     currency: z.string().default('AUD'),
     price: z.number().positive().min(50),
-    hours_min: z.number().int().min(1).max(160),
-    hours_max: z.number().int().min(1).max(160),
+    // Effort hours are optional — many customers genuinely don't know
+    // ahead of time and want providers to estimate. When omitted, the
+    // tender_request.scope_snapshot simply has no hours range.
+    hours_min: z.number().int().min(1).max(160).optional(),
+    hours_max: z.number().int().min(1).max(160).optional(),
     milestone_count: z.number().int().min(1).max(5).default(1),
   }),
 });
