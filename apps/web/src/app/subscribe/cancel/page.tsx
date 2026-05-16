@@ -30,7 +30,7 @@ export default function SubscribeCancelPage() {
           </p>
           <ul className="mt-3 space-y-1.5 text-sm text-slate-400">
             <li>• Higher monthly action limits</li>
-            <li>• Priority listing and additional features</li>
+            <li>• Higher concurrent activity caps</li>
             <li>• Cancel any time — no long-term commitment</li>
           </ul>
         </div>

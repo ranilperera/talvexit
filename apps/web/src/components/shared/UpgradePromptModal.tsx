@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Sparkles, Zap } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
-import { plansRouteFor } from '@/lib/customer-auth';
+import { plansRouteFor, getUser } from '@/lib/customer-auth';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -61,6 +61,11 @@ export function UpgradePromptModal({ open, onClose, detail }: Props) {
 
   const limitLabel = formatLimitType(d.limit_type);
   const noActiveSub = d.current_plan == null;
+  // Audience picks the upgrade-benefit copy. Customer surfaces never get
+  // "priority listing" (supplier-only) — that was the bug reported by
+  // customers hitting active_tenders on the manual-tender flow.
+  const audience = getAudience();
+  const benefits = BENEFITS_BY_AUDIENCE[audience];
 
   return (
     <Modal open={isOpen} onClose={close} size="md" title="Upgrade required">
@@ -103,9 +108,7 @@ export function UpgradePromptModal({ open, onClose, detail }: Props) {
             What you get on a higher tier
           </p>
           <ul className="mt-3 space-y-1.5 text-sm text-slate-400">
-            <li>• Higher monthly action limits</li>
-            <li>• Priority listing and additional features</li>
-            <li>• Cancel anytime — no long-term commitment</li>
+            {benefits.map((b, i) => <li key={i}>• {b}</li>)}
           </ul>
         </div>
 
@@ -148,7 +151,46 @@ function formatLimitType(type?: string): string {
     case 'contracts':          return 'monthly contract';
     case 'ai_scopes':          return 'AI scope';
     case 'ai_requests':        return 'monthly AI request';
+    case 'manual_tenders':     return 'monthly manual tender';
     default:
       return type.replace(/_/g, ' ');
   }
+}
+
+type Audience = 'customer' | 'supplier' | 'generic';
+
+// Benefit bullets shown on the upgrade modal. Customer surfaces never
+// reference supplier-only features (priority listing, listing slots);
+// supplier surfaces don't reference AI scoping or tender authoring.
+const BENEFITS_BY_AUDIENCE: Record<Audience, readonly string[]> = {
+  customer: [
+    'Higher monthly limits for AI scopes, manual tenders, and orders',
+    'Run more tenders and active engagements concurrently',
+    'Cancel anytime — no long-term commitment',
+  ],
+  supplier: [
+    'More active listings, tender bids, and domain categories',
+    'Priority placement in customer search results',
+    'Cancel anytime — no long-term commitment',
+  ],
+  generic: [
+    'Higher monthly action limits',
+    'Higher concurrent activity caps',
+    'Cancel anytime — no long-term commitment',
+  ],
+};
+
+function getAudience(): Audience {
+  if (typeof window === 'undefined') return 'generic';
+  const u = getUser();
+  if (!u) return 'generic';
+  if (u.account_type === 'CUSTOMER') return 'customer';
+  if (
+    u.account_type === 'INDIVIDUAL_CONTRACTOR' ||
+    u.account_type === 'ORGANIZATION_ADMIN' ||
+    u.account_type === 'COMPANY_ADMIN' ||
+    u.account_type === 'COMPANY_MEMBER' ||
+    u.account_type === 'ORG_MEMBER'
+  ) return 'supplier';
+  return 'generic';
 }
