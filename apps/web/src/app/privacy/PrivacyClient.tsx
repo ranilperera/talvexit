@@ -2,7 +2,13 @@
 import PublicPageShell, { theme as t } from '@/components/public/PublicPageShell';
 
 const EFFECTIVE_DATE = '1 March 2026';
-const CONTACT_EMAIL = 'privacy@talvex.com.au';
+const LAST_UPDATED   = '16 May 2026';
+const CONTACT_EMAIL  = 'privacy@talvexit.com';
+const SECURITY_EMAIL = 'security@talvexit.com';
+const OPERATOR_LEGAL_NAME = 'Waveful Digital Platforms';
+const OPERATOR_ABN = '49 602 081 005';
+const PLATFORM_BRAND = 'TalvexIT';
+const PLATFORM_DOMAIN = 'talvexit.com';
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
@@ -44,11 +50,11 @@ export default function PrivacyClient() {
             Privacy Policy
           </h1>
           <p className="text-sm" style={{ color: t.mutedColor }}>
-            Effective date: {EFFECTIVE_DATE} · Last updated: {EFFECTIVE_DATE}
+            Effective date: {EFFECTIVE_DATE} · Last updated: {LAST_UPDATED}
           </p>
           <p className="text-sm mt-4" style={{ color: t.bodyColor }}>
-            This Privacy Policy explains how talvex.com.au Pty Ltd ("talvex.com.au", "we", "us", "our") collects, uses, stores, and discloses personal information when you use our platform at{' '}
-            <span style={{ color: t.accentBg }}>portal1.onsys.com.au</span> and related services.
+            This Privacy Policy explains how {OPERATOR_LEGAL_NAME} (ABN {OPERATOR_ABN}) — referred to in this policy as &ldquo;{OPERATOR_LEGAL_NAME.split(' ')[0]}&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo; — collects, uses, stores, and discloses personal information when you use the {PLATFORM_BRAND} platform at{' '}
+            <span style={{ color: t.accentBg }}>{PLATFORM_DOMAIN}</span> and related services.
           </p>
           <p className="text-sm mt-3" style={{ color: t.bodyColor }}>
             We are bound by the <strong style={{ color: t.headlineColor }}>Australian Privacy Act 1988</strong> and the 13 Australian Privacy Principles (APPs). For users in the European Economic Area, UK, or Switzerland, this policy also covers our obligations under the <strong style={{ color: t.headlineColor }}>General Data Protection Regulation (GDPR)</strong>.
@@ -76,7 +82,8 @@ export default function PrivacyClient() {
 
         {/* Sections */}
         <Section id="who-we-are" title="1. Who we are">
-          <p>talvex.com.au Pty Ltd is an Australian company that operates a platform connecting enterprise buyers with verified IT engineers and IT consulting companies. Our registered address and ABN will be published upon incorporation.</p>
+          <p>{OPERATOR_LEGAL_NAME} (ABN {OPERATOR_ABN}) is an Australian company that owns and operates the {PLATFORM_BRAND} platform — an online marketplace connecting customers with verified IT engineers and IT consulting companies.</p>
+          <p>{OPERATOR_LEGAL_NAME} provides only the technology platform that enables customers and providers to find each other, agree on scope, and exchange documents and messages. Contracts for IT services are formed directly between the customer and the provider — {OPERATOR_LEGAL_NAME.split(' ')[0]} is not a party to those contracts and does not act as a billing or collection agent.</p>
           <p>For privacy enquiries, contact our Privacy Officer at <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: t.accentBg }}>{CONTACT_EMAIL}</a>.</p>
         </Section>
 
@@ -127,7 +134,7 @@ export default function PrivacyClient() {
             <li><strong style={{ color: t.headlineColor }}>LiveKit:</strong> Video KYC session infrastructure</li>
             <li><strong style={{ color: t.headlineColor }}>Microsoft Graph / Exchange Online:</strong> Transactional email delivery</li>
           </ul>
-          <p>We may also disclose information where required by law, court order, or government request, or where necessary to protect the rights, property, or safety of talvex.com.au, our users, or others.</p>
+          <p>We may also disclose information where required by law, court order, or government request, or where necessary to protect the rights, property, or safety of {OPERATOR_LEGAL_NAME}, our users, or others.</p>
         </Section>
 
         <Section id="international" title="6. International transfers">
@@ -174,7 +181,7 @@ export default function PrivacyClient() {
             <li>Azure Key Vault for sensitive credential storage</li>
             <li>Role-based access control throughout</li>
           </ul>
-          <p>Despite these measures, no internet-based system is completely secure. If you believe your account has been compromised, contact <a href="mailto:security@talvex.com.au" style={{ color: t.accentBg }}>security@talvex.com.au</a> immediately.</p>
+          <p>Despite these measures, no internet-based system is completely secure. If you believe your account has been compromised, contact <a href={`mailto:${SECURITY_EMAIL}`} style={{ color: t.accentBg }}>{SECURITY_EMAIL}</a> immediately.</p>
         </Section>
 
         <Section id="children" title="11. Children">
@@ -190,7 +197,10 @@ export default function PrivacyClient() {
             For privacy enquiries, data access requests, or complaints:<br />
             Email: <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: t.accentBg }}>{CONTACT_EMAIL}</a>
           </p>
-          <p>talvex.com.au Pty Ltd · Australia</p>
+          <p>{OPERATOR_LEGAL_NAME} (ABN {OPERATOR_ABN}) · Australia</p>
+          <p className="text-xs" style={{ color: t.mutedColor }}>
+            {OPERATOR_LEGAL_NAME} is the legal entity that owns and operates the {PLATFORM_BRAND} platform.
+          </p>
         </Section>
       </div>
     </PublicPageShell>
