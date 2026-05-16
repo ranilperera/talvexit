@@ -79,7 +79,7 @@ const clauses = [
     number: '8',
     title: 'Electronic Acceptance and Variation',
     body: [
-      'By checking the acceptance box in the talvex.com.au platform, you confirm that:',
+      'By checking the acceptance box in the TalvexIT platform, you confirm that:',
       '(a) you have read and understood this entire Agreement;',
       '(b) you have the authority to enter into this Agreement on behalf of your business (if applicable);',
       '(c) you accept all terms without modification.',
