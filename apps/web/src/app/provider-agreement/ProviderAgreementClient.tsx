@@ -213,8 +213,8 @@ const clauses = [
     number: '16',
     title: 'Governing law and jurisdiction',
     body: [
-      'This Agreement is governed by the laws of New South Wales, Australia.',
-      'Each party irrevocably submits to the non-exclusive jurisdiction of the courts of New South Wales and the Federal Court of Australia. Nothing in this clause prevents either party from seeking urgent injunctive or other equitable relief from any court of competent jurisdiction.',
+      'This Agreement is governed by the laws of Victoria, Australia.',
+      'Each party irrevocably submits to the non-exclusive jurisdiction of the courts of Victoria and the Federal Court of Australia. Nothing in this clause prevents either party from seeking urgent injunctive or other equitable relief from any court of competent jurisdiction.',
       'If any provision of this Agreement is found to be unenforceable, the remaining provisions continue in full force and effect.',
     ],
   },
@@ -275,7 +275,7 @@ export default function ProviderAgreementClient() {
             <span><strong style={{ color: t.headlineColor }}>Effective:</strong> {EFFECTIVE_DATE}</span>
             <span><strong style={{ color: t.headlineColor }}>Last updated:</strong> {LAST_UPDATED}</span>
             <span><strong style={{ color: t.headlineColor }}>Issuer:</strong> {OPERATOR_LEGAL_NAME} (ABN {OPERATOR_ABN})</span>
-            <span><strong style={{ color: t.headlineColor }}>Jurisdiction:</strong> New South Wales, Australia</span>
+            <span><strong style={{ color: t.headlineColor }}>Jurisdiction:</strong> Victoria, Australia</span>
           </div>
           <p className="text-xs mt-4" style={{ color: t.mutedColor }}>
             Key points: {OPERATOR_SHORT} is the platform operator, not the supplier of your services and not a payment processor.
@@ -335,7 +335,7 @@ export default function ProviderAgreementClient() {
           {/* Footer note */}
           <div className="text-xs leading-relaxed pt-4 border-t" style={{ borderColor: t.sectionBorder, color: t.mutedColor }}>
             <p>
-              <strong style={{ color: t.headlineColor }}>{OPERATOR_LEGAL_NAME}</strong> · ABN {OPERATOR_ABN} · Sydney, NSW, Australia
+              <strong style={{ color: t.headlineColor }}>{OPERATOR_LEGAL_NAME}</strong> · ABN {OPERATOR_ABN} · Melbourne, VIC, Australia
             </p>
             <p className="mt-1">
               For legal enquiries: <span style={{ color: t.accentText }}>{LEGAL_EMAIL}</span>

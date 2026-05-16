@@ -408,9 +408,9 @@ export default function TermsClient() {
         </Section>
 
         <Section id="governing-law" title="16. Governing law and jurisdiction">
-          <p>These Terms are governed by the laws of New South Wales, Australia. Each
+          <p>These Terms are governed by the laws of Victoria, Australia. Each
             party irrevocably submits to the non-exclusive jurisdiction of the courts of
-            New South Wales and the Federal Court of Australia. Nothing in this clause
+            Victoria and the Federal Court of Australia. Nothing in this clause
             prevents either party from seeking urgent injunctive or other equitable
             relief from any court of competent jurisdiction.</p>
           <p>For Users in the European Economic Area or the United Kingdom, nothing in
