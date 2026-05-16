@@ -31,6 +31,8 @@ const NAV = [
       ['About Talvex', '/about'],
       ['Privacy policy', '/privacy'],
       ['Terms of service', '/terms'],
+      ['Customer agreement', '/customer-agreement'],
+      ['Provider agreement', '/provider-agreement'],
       ['Contact us', '/contact'],
     ],
   },

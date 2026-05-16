@@ -178,6 +178,13 @@ export default function TermsClient() {
             providers using the engagement data agreed by both parties. The Customer is
             responsible for verifying that the invoice corresponds to the agreed engagement
             before paying.</p>
+          <p>Customers using the Platform are bound by the additional terms set out in the{' '}
+            <a href="/customer-agreement" style={{ color: t.accentBg }}>Customer Agreement (v1.0)</a>{' '}
+            which is incorporated into these Terms by reference for Customer accounts. The
+            Customer Agreement covers payment obligations to Providers, ABN-withholding
+            obligations when engaging Providers without a valid ABN, GST input-credit
+            verification, and the limits on {OPERATOR_SHORT}&apos;s liability for any
+            Provider&apos;s services.</p>
         </Section>
 
         <Section id="provider-terms" title="6. Provider terms">
@@ -203,7 +210,7 @@ export default function TermsClient() {
             delivering the engagement.</p>
           <p>Providers acting as suppliers of services on the Platform are bound by the
             additional terms set out in the{' '}
-            <a href="/provider-agreement" style={{ color: t.accentBg }}>Provider Agreement (v2.0)</a>{' '}
+            <a href="/provider-agreement" style={{ color: t.accentBg }}>Provider Agreement (v2.1)</a>{' '}
             which is incorporated into these Terms by reference for Provider accounts.</p>
         </Section>
 
