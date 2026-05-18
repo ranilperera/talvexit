@@ -80,6 +80,7 @@ model User {
   aml_checks_received            AmlCheck[]                   @relation("AmlSubject")
   audit_logs                     AuditLog[]
   contact_enquiries_responded    ContactEnquiry[]             @relation("ContactEnquiryResponder")
+  contact_enquiry_notes_authored ContactEnquiryNote[]         @relation("ContactEnquiryNoteAuthor")
   contact_enquiry_responses_sent ContactEnquiryResponse[]     @relation("ContactEnquiryResponseAuthor")
   change_requests_decided        ChangeRequest[]              @relation("ChangeRequestDecider")
   change_requests_raised         ChangeRequest[]              @relation("ChangeRequestRaiser")
@@ -2969,7 +2970,9 @@ model ContactEnquiry {
   ip_address   String?
   user_agent   String?
 
-  // Triage state
+  // Triage state. admin_notes is the LEGACY single-string column —
+  // superseded by the threaded ContactEnquiryNote model below. Kept
+  // nullable so existing rows aren't lost; UI no longer writes to it.
   status               ContactEnquiryStatus @default(NEW)
   admin_notes          String?              @db.Text
   responded_at         DateTime?
@@ -2977,6 +2980,7 @@ model ContactEnquiry {
   responded_by         User?                @relation("ContactEnquiryResponder", fields: [responded_by_user_id], references: [id])
 
   responses ContactEnquiryResponse[]
+  notes     ContactEnquiryNote[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -2984,6 +2988,21 @@ model ContactEnquiry {
   @@index([status, created_at])
   @@index([email])
   @@map("contact_enquiries")
+}
+
+model ContactEnquiryNote {
+  id             String         @id @default(cuid())
+  enquiry        ContactEnquiry @relation(fields: [enquiry_id], references: [id], onDelete: Cascade)
+  enquiry_id     String
+  // Admin who authored the note. Required — notes are not anonymous.
+  author_user_id String
+  author         User           @relation("ContactEnquiryNoteAuthor", fields: [author_user_id], references: [id])
+
+  body       String   @db.Text
+  created_at DateTime @default(now())
+
+  @@index([enquiry_id, created_at])
+  @@map("contact_enquiry_notes")
 }
 
 model ContactEnquiryResponse {

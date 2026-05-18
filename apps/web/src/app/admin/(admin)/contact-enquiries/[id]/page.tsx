@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import {
-  ArrowLeft, Mail, Phone, Clock, Send, Save, AlertTriangle, CheckCircle2,
+  ArrowLeft, Mail, Phone, Clock, Send, AlertTriangle, CheckCircle2,
+  StickyNote, Trash2, Plus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import adminApi from '@/lib/api';
@@ -20,6 +21,13 @@ interface ResponseRow {
   sent_by: { id: string; full_name: string; email: string };
 }
 
+interface NoteRow {
+  id: string;
+  body: string;
+  created_at: string;
+  author: { id: string; full_name: string; email: string };
+}
+
 interface EnquiryDetail {
   id: string;
   name: string;
@@ -30,12 +38,13 @@ interface EnquiryDetail {
   ip_address: string | null;
   user_agent: string | null;
   status: Status;
-  admin_notes: string | null;
+  admin_notes: string | null; // legacy; not edited from this UI
   responded_at: string | null;
   responded_by: { id: string; full_name: string } | null;
   created_at: string;
   updated_at: string;
   responses: ResponseRow[];
+  notes: NoteRow[];
 }
 
 const STATUSES: Status[] = ['NEW', 'IN_PROGRESS', 'RESPONDED', 'CLOSED', 'SPAM'];
@@ -63,40 +72,73 @@ export default function ContactEnquiryDetailPage() {
     },
   });
 
-  const [notes, setNotes] = useState('');
   const [status, setStatus] = useState<Status>('NEW');
-  const [savingMeta, setSavingMeta] = useState(false);
+  const [savingStatus, setSavingStatus] = useState(false);
 
+  // Notes thread composer
+  const [noteDraft, setNoteDraft] = useState('');
+  const [addingNote, setAddingNote] = useState(false);
+
+  // Reply composer
   const [subject, setSubject] = useState('');
   const [bodyText, setBodyText] = useState('');
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (!data) return;
-    setNotes(data.admin_notes ?? '');
     setStatus(data.status);
-    // Default subject for the reply — admin can edit.
     if (!subject && data.enquiry_type) {
       setSubject(`Re: ${data.enquiry_type}`);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.id]);
 
-  async function saveMeta() {
-    if (!data) return;
-    setSavingMeta(true);
+  async function saveStatus(newStatus: Status) {
+    if (!data || newStatus === data.status) return;
+    setSavingStatus(true);
     try {
-      await adminApi.patch(`/api/v1/admin/contact-enquiries/${id}`, {
-        status,
-        admin_notes: notes,
-      });
-      toast.success('Saved');
+      await adminApi.patch(`/api/v1/admin/contact-enquiries/${id}`, { status: newStatus });
+      toast.success(`Status set to ${STATUS_STYLE[newStatus].label}`);
       await queryClient.invalidateQueries({ queryKey: ['admin-contact-enquiry', id] });
       await queryClient.invalidateQueries({ queryKey: ['admin-contact-enquiries'] });
     } catch {
-      toast.error('Could not save. Try again.');
+      toast.error('Could not update status. Try again.');
+      // Revert local state to last-known server value
+      if (data) setStatus(data.status);
     } finally {
-      setSavingMeta(false);
+      setSavingStatus(false);
+    }
+  }
+
+  async function addNote() {
+    const trimmed = noteDraft.trim();
+    if (trimmed.length < 1) {
+      toast.error('Add some text before saving.');
+      return;
+    }
+    setAddingNote(true);
+    try {
+      await adminApi.post(`/api/v1/admin/contact-enquiries/${id}/notes`, { body: trimmed });
+      setNoteDraft('');
+      toast.success('Note added to thread');
+      await queryClient.invalidateQueries({ queryKey: ['admin-contact-enquiry', id] });
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: { message?: string } } } };
+      toast.error(e.response?.data?.error?.message ?? 'Could not save note. Try again.');
+    } finally {
+      setAddingNote(false);
+    }
+  }
+
+  async function deleteNote(noteId: string) {
+    if (!confirm('Delete this note? This cannot be undone.')) return;
+    try {
+      await adminApi.delete(`/api/v1/admin/contact-enquiries/${id}/notes/${noteId}`);
+      toast.success('Note removed');
+      await queryClient.invalidateQueries({ queryKey: ['admin-contact-enquiry', id] });
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { error?: { message?: string } } } };
+      toast.error(e.response?.data?.error?.message ?? 'Could not delete note.');
     }
   }
 
@@ -229,41 +271,98 @@ export default function ContactEnquiryDetailPage() {
         </div>
       )}
 
-      {/* Status / notes */}
+      {/* Status — auto-saves on change */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-4">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Triage</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs text-slate-400 mb-1.5">Status</label>
+            <label className="block text-xs text-slate-400 mb-1.5">
+              Status {savingStatus && <span className="text-slate-500">· saving…</span>}
+            </label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value as Status)}
-              className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-700 rounded-lg text-slate-200 outline-none focus:border-teal-500"
+              onChange={(e) => {
+                const v = e.target.value as Status;
+                setStatus(v);
+                void saveStatus(v);
+              }}
+              disabled={savingStatus}
+              className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-700 rounded-lg text-slate-200 outline-none focus:border-teal-500 disabled:opacity-50"
             >
               {STATUSES.map((st) => <option key={st} value={st}>{STATUS_STYLE[st].label}</option>)}
             </select>
           </div>
         </div>
-        <div className="mt-4">
-          <label className="block text-xs text-slate-400 mb-1.5">Internal notes <span className="text-slate-600">(not sent to enquirer)</span></label>
+      </div>
+
+      {/* Internal notes thread (admin-only — not emailed) */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-4">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+          <StickyNote size={12} /> Internal notes ({data.notes.length})
+          <span className="ml-2 font-normal normal-case text-[10px] text-slate-600">
+            Visible to admins only · not sent to enquirer
+          </span>
+        </h2>
+
+        {/* Composer */}
+        <div className="space-y-2 mb-4">
           <textarea
             rows={3}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Anything the team should know about this enquiry…"
-            className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 outline-none resize-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15"
+            value={noteDraft}
+            onChange={(e) => setNoteDraft(e.target.value)}
+            placeholder="Add a note for the team — actions taken, context, follow-up reminders…"
+            maxLength={5000}
+            className="w-full px-3 py-2 text-sm bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 outline-none resize-y focus:border-teal-500 focus:ring-2 focus:ring-teal-500/15"
           />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-slate-600">{noteDraft.length} / 5000</span>
+            <button
+              type="button"
+              onClick={() => { void addNote(); }}
+              disabled={addingNote || noteDraft.trim().length === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-teal-500/15 text-teal-300 border border-teal-500/30 hover:bg-teal-500/25 disabled:opacity-50"
+            >
+              <Plus size={12} /> {addingNote ? 'Adding…' : 'Add note'}
+            </button>
+          </div>
         </div>
-        <div className="flex justify-end mt-3">
-          <button
-            type="button"
-            onClick={() => { void saveMeta(); }}
-            disabled={savingMeta}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 disabled:opacity-50"
-          >
-            <Save size={12} /> {savingMeta ? 'Saving…' : 'Save'}
-          </button>
-        </div>
+
+        {/* Legacy single-field admin_notes — show as a banner if present so
+            anything written before the threaded model isn't invisible. */}
+        {data.admin_notes && data.admin_notes.trim().length > 0 && (
+          <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2.5 text-xs text-amber-200/90">
+            <strong className="text-amber-300">Legacy note (single field):</strong>
+            <div className="mt-1 whitespace-pre-wrap text-amber-100/80">{data.admin_notes}</div>
+          </div>
+        )}
+
+        {/* Thread */}
+        {data.notes.length === 0 ? (
+          <p className="text-xs text-slate-500 italic">No notes yet. Add one above to start a thread.</p>
+        ) : (
+          <div className="space-y-3">
+            {data.notes.map((n) => (
+              <div key={n.id} className="border border-slate-800 rounded-lg p-3 bg-slate-950/40 group">
+                <div className="flex items-start justify-between gap-3 mb-1.5">
+                  <div className="text-[11px] text-slate-500">
+                    <span className="text-slate-300 font-medium">{n.author.full_name}</span>
+                    <span className="mx-1.5">·</span>
+                    {new Date(n.created_at).toLocaleString('en-AU')}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { void deleteNote(n.id); }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10"
+                    title="Delete note"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+                <div className="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed">{n.body}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Reply composer */}

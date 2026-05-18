@@ -249,6 +249,12 @@ export async function contactRoutes(
                 sent_by: { select: { id: true, full_name: true, email: true } },
               },
             },
+            notes: {
+              orderBy: { created_at: 'asc' },
+              include: {
+                author: { select: { id: true, full_name: true, email: true } },
+              },
+            },
             responded_by: { select: { id: true, full_name: true } },
           },
         });
@@ -266,50 +272,139 @@ export async function contactRoutes(
   );
 
   // ─── PATCH /admin/contact-enquiries/:id ────────────────────────────────────
-  // Update status and/or admin_notes. Does NOT send an email — for that use
-  // the response endpoint below.
+  // Status-only updates. admin_notes is no longer accepted here — internal
+  // notes are now a threaded model (POST /notes below).
 
   app.patch(
     '/admin/contact-enquiries/:id',
     { preHandler: [authenticate, requireAdmin] },
     async (req, reply) => {
       const { id } = req.params as { id: string };
-      const body = req.body as { status?: unknown; admin_notes?: unknown };
+      const body = req.body as { status?: unknown };
 
-      const updates: Record<string, unknown> = {};
-      if (typeof body.status === 'string') {
-        if (!(ALLOWED_STATUSES as readonly string[]).includes(body.status)) {
-          return reply.status(400).send({
-            success: false,
-            error: { code: 'VALIDATION_ERROR', message: `status must be one of ${ALLOWED_STATUSES.join(', ')}` },
-          });
-        }
-        updates.status = body.status;
-      }
-      if (typeof body.admin_notes === 'string') {
-        updates.admin_notes = body.admin_notes.slice(0, 5000);
-      }
-      if (Object.keys(updates).length === 0) {
+      if (typeof body.status !== 'string') {
         return reply.status(400).send({
           success: false,
-          error: { code: 'VALIDATION_ERROR', message: 'Provide status or admin_notes to update.' },
+          error: { code: 'VALIDATION_ERROR', message: 'status is required (use /notes endpoints for internal notes).' },
+        });
+      }
+      if (!(ALLOWED_STATUSES as readonly string[]).includes(body.status)) {
+        return reply.status(400).send({
+          success: false,
+          error: { code: 'VALIDATION_ERROR', message: `status must be one of ${ALLOWED_STATUSES.join(', ')}` },
         });
       }
 
       try {
         const updated = await prisma.contactEnquiry.update({
           where: { id },
-          data: updates,
-          select: { id: true, status: true, admin_notes: true, updated_at: true },
+          data: { status: body.status as EnquiryStatus },
+          select: { id: true, status: true, updated_at: true },
         });
         void writeAudit(prisma, {
           actorId: req.user!.userId,
           actionType: 'CONTACT_ENQUIRY_UPDATED',
           entityType: 'ContactEnquiry',
           entityId: id,
-          metadata: updates,
+          metadata: { status: body.status },
         });
         return reply.status(200).send({ success: true, data: updated });
+      } catch (err) {
+        return handleError(reply, err);
+      }
+    },
+  );
+
+  // ─── POST /admin/contact-enquiries/:id/notes ──────────────────────────────
+  // Append an internal note to the enquiry's thread. Notes are admin-only —
+  // they are NOT emailed to the enquirer (for that, use /responses).
+
+  app.post(
+    '/admin/contact-enquiries/:id/notes',
+    { preHandler: [authenticate, requireAdmin] },
+    async (req, reply) => {
+      const { id } = req.params as { id: string };
+      const body = req.body as { body?: unknown };
+      const noteBody = typeof body.body === 'string' ? body.body.trim() : '';
+
+      if (!noteBody || noteBody.length < 1 || noteBody.length > 5000) {
+        return reply.status(400).send({
+          success: false,
+          error: { code: 'VALIDATION_ERROR', message: 'Note body is required (1–5000 characters).' },
+        });
+      }
+
+      try {
+        const enquiryExists = await prisma.contactEnquiry.findUnique({
+          where: { id }, select: { id: true },
+        });
+        if (!enquiryExists) {
+          return reply.status(404).send({
+            success: false,
+            error: { code: 'NOT_FOUND', message: 'Enquiry not found.' },
+          });
+        }
+
+        const note = await prisma.contactEnquiryNote.create({
+          data: { enquiry_id: id, author_user_id: req.user!.userId, body: noteBody },
+          include: { author: { select: { id: true, full_name: true, email: true } } },
+        });
+
+        void writeAudit(prisma, {
+          actorId: req.user!.userId,
+          actionType: 'CONTACT_ENQUIRY_NOTE_ADDED',
+          entityType: 'ContactEnquiry',
+          entityId: id,
+          metadata: { note_id: note.id },
+        });
+
+        return reply.status(201).send({ success: true, data: note });
+      } catch (err) {
+        return handleError(reply, err);
+      }
+    },
+  );
+
+  // ─── DELETE /admin/contact-enquiries/:id/notes/:noteId ────────────────────
+  // Only the note's author or PLATFORM_ADMIN can delete it. Hard delete is
+  // fine here because the audit log preserves the create + delete actions.
+
+  app.delete(
+    '/admin/contact-enquiries/:id/notes/:noteId',
+    { preHandler: [authenticate, requireAdmin] },
+    async (req, reply) => {
+      const { id, noteId } = req.params as { id: string; noteId: string };
+      try {
+        const note = await prisma.contactEnquiryNote.findUnique({
+          where: { id: noteId },
+          select: { id: true, enquiry_id: true, author_user_id: true },
+        });
+        if (!note || note.enquiry_id !== id) {
+          return reply.status(404).send({
+            success: false,
+            error: { code: 'NOT_FOUND', message: 'Note not found.' },
+          });
+        }
+
+        const isAuthor = note.author_user_id === req.user!.userId;
+        const isPlatformAdmin = req.user!.accountType === 'PLATFORM_ADMIN';
+        if (!isAuthor && !isPlatformAdmin) {
+          return reply.status(403).send({
+            success: false,
+            error: { code: 'FORBIDDEN', message: 'Only the author or a platform admin can delete this note.' },
+          });
+        }
+
+        await prisma.contactEnquiryNote.delete({ where: { id: noteId } });
+        void writeAudit(prisma, {
+          actorId: req.user!.userId,
+          actionType: 'CONTACT_ENQUIRY_NOTE_DELETED',
+          entityType: 'ContactEnquiry',
+          entityId: id,
+          metadata: { note_id: noteId, original_author: note.author_user_id },
+        });
+
+        return reply.status(200).send({ success: true, data: { message: 'Note removed.' } });
       } catch (err) {
         return handleError(reply, err);
       }
