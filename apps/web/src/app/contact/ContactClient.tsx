@@ -102,10 +102,10 @@ export default function ContactClient() {
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { icon: Mail, label: 'General enquiries', value: 'hello@talvex.com.au', href: 'mailto:hello@talvex.com.au' },
-                    { icon: Mail, label: 'Enterprise sales', value: 'enterprise@talvex.com.au', href: 'mailto:enterprise@talvex.com.au' },
-                    { icon: Mail, label: 'Support', value: 'support@talvex.com.au', href: 'mailto:support@talvex.com.au' },
-                    { icon: Mail, label: 'Press & media', value: 'press@talvex.com.au', href: 'mailto:press@talvex.com.au' },
+                    { icon: Mail, label: 'General enquiries', value: 'hello@talvexit.com.au', href: 'mailto:hello@talvexit.com.au' },
+                    { icon: Mail, label: 'Enterprise sales', value: 'enterprise@talvexit.com.au', href: 'mailto:enterprise@talvexit.com.au' },
+                    { icon: Mail, label: 'Support', value: 'support@talvexit.com.au', href: 'mailto:support@talvexit.com.au' },
+                    { icon: Mail, label: 'Press & media', value: 'press@talvexit.com.au', href: 'mailto:press@talvexit.com.au' },
                   ].map(({ icon: Icon, label, value, href }) => (
                     <div key={label} className="flex items-start gap-3">
                       <div
