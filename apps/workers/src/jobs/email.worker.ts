@@ -214,6 +214,34 @@ type EmailJobPayload =
       reason: string;
       cancelled_by: 'customer' | 'contractor' | 'admin';
       order_url: string;
+    }
+  // ── Contact form (public /contact page) ────────────────────────────────
+  | {
+      type: 'contact-enquiry-admin';
+      to: string;
+      enquiry_id: string;
+      name: string;
+      email: string;
+      phone: string | null;
+      enquiry_type: string;
+      message: string;
+      ip_address: string;
+      admin_url: string;
+    }
+  | {
+      type: 'contact-enquiry-ack';
+      to: string;
+      name: string;
+      enquiry_type: string;
+      message: string;
+    }
+  | {
+      type: 'contact-enquiry-response';
+      to: string;
+      name: string;
+      subject: string;
+      body: string;
+      admin_name: string;
     };
 
 // ─── Email builders ───────────────────────────────────────────────────────────
@@ -1304,6 +1332,89 @@ function buildKycRescheduleDecision(p: {
   };
 }
 
+// ── Contact form builders ─────────────────────────────────────────────────
+
+function buildContactEnquiryAdmin(p: {
+  to: string;
+  enquiry_id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  enquiry_type: string;
+  message: string;
+  ip_address: string;
+  admin_url: string;
+}) {
+  // Plain inline HTML — Outlook/Gmail strip <style> blocks. Body kept
+  // information-dense; the visual style matches the rest of the platform's
+  // transactional emails (teal accent, off-white card).
+  return {
+    to: { email: p.to },
+    subject: `New contact enquiry — ${p.enquiry_type}`,
+    replyTo: { email: p.email, name: p.name },
+    html: `
+      <div style="font-family:sans-serif;max-width:560px;margin:auto">
+        <h2 style="color:#0d9488">New contact enquiry</h2>
+        <p>A new message has been submitted via the public contact form.</p>
+        <table style="width:100%;border-collapse:collapse;margin:16px 0;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
+          <tr><td style="padding:8px 12px;background:#f8fafc;font-weight:600;width:140px">From</td><td style="padding:8px 12px">${escape(p.name)} &lt;${escape(p.email)}&gt;</td></tr>
+          ${p.phone ? `<tr><td style="padding:8px 12px;background:#f8fafc;font-weight:600">Phone</td><td style="padding:8px 12px">${escape(p.phone)}</td></tr>` : ''}
+          <tr><td style="padding:8px 12px;background:#f8fafc;font-weight:600">Enquiry type</td><td style="padding:8px 12px">${escape(p.enquiry_type)}</td></tr>
+          <tr><td style="padding:8px 12px;background:#f8fafc;font-weight:600">IP address</td><td style="padding:8px 12px;color:#475569">${escape(p.ip_address)}</td></tr>
+        </table>
+        <div style="background:#f8fafc;border-left:3px solid #0d9488;padding:12px 16px;border-radius:4px;white-space:pre-wrap;color:#334155">${escape(p.message)}</div>
+        <p style="margin-top:24px">
+          <a href="${p.admin_url}"
+             style="display:inline-block;padding:10px 20px;background:#0d9488;color:#fff;border-radius:6px;text-decoration:none;font-weight:bold;font-size:14px">
+            Open in admin
+          </a>
+        </p>
+        <p style="color:#94a3b8;font-size:11px;margin-top:32px">
+          Reply directly to this email or use the admin panel. Replies via email go to
+          ${escape(p.name)} &lt;${escape(p.email)}&gt; — replies via the admin panel are also recorded in the enquiry thread.
+        </p>
+      </div>
+    `,
+  };
+}
+
+function buildContactEnquiryAck(p: { to: string; name: string; enquiry_type: string; message: string }) {
+  return {
+    to: { email: p.to, name: p.name },
+    subject: 'We received your enquiry — TalvexIT',
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:auto">
+        <h2 style="color:#0d9488">Thanks ${escape(p.name)} — we got it</h2>
+        <p>This is to confirm we received your enquiry. Our team typically responds within one business day.</p>
+        <p style="margin:16px 0 6px;color:#475569;font-size:13px"><strong>Your message</strong> (${escape(p.enquiry_type)}):</p>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:12px 16px;border-radius:6px;white-space:pre-wrap;color:#334155;font-size:13px">${escape(p.message)}</div>
+        <p style="color:#94a3b8;font-size:12px;margin-top:24px">
+          No reply required to this email. We will respond from the same address.
+        </p>
+        <p style="color:#94a3b8;font-size:11px">TalvexIT · Operated by Waveful Digital Platforms · ABN 49 602 081 005</p>
+      </div>
+    `,
+  };
+}
+
+function buildContactEnquiryResponse(p: { to: string; name: string; subject: string; body: string; admin_name: string }) {
+  return {
+    to: { email: p.to, name: p.name },
+    subject: p.subject,
+    html: `
+      <div style="font-family:sans-serif;max-width:560px;margin:auto;color:#334155;font-size:14px;line-height:1.6">
+        <p>Hi ${escape(p.name)},</p>
+        <div style="white-space:pre-wrap">${escape(p.body)}</div>
+        <p style="margin-top:24px">${escape(p.admin_name)}<br><span style="color:#94a3b8;font-size:12px">TalvexIT team</span></p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
+        <p style="color:#94a3b8;font-size:11px">
+          This is a reply to a message you sent through the TalvexIT contact form. Reply directly to this email if you have follow-up questions — your reply will reach our team.
+        </p>
+      </div>
+    `,
+  };
+}
+
 function escape(s: string): string {
   return s
     .replace(/&/g, '&amp;')
@@ -1452,6 +1563,16 @@ export const emailWorker = new Worker<EmailJobPayload>(
         break;
       case 'kyc-reschedule-decision':
         await sendEmail(buildKycRescheduleDecision(data));
+        break;
+      // ── Contact form ────────────────────────────────────────────────────
+      case 'contact-enquiry-admin':
+        await sendEmail(buildContactEnquiryAdmin(data));
+        break;
+      case 'contact-enquiry-ack':
+        await sendEmail(buildContactEnquiryAck(data));
+        break;
+      case 'contact-enquiry-response':
+        await sendEmail(buildContactEnquiryResponse(data));
         break;
       default:
         console.warn(`[email] Unknown job type: ${(data as { type: string }).type}`);

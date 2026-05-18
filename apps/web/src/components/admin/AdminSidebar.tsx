@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   LayoutDashboard, Users, Video, Shield, CalendarClock,
   ShoppingBag, Scale, Fingerprint, ScrollText, Activity, Settings, Building2, CreditCard, Wallet, Globe,
-  FileSearch, FileSignature, UserCheck, Package, ListTree,
+  FileSearch, FileSignature, UserCheck, Package, ListTree, Mail,
 } from 'lucide-react';
 import adminApi from '@/lib/api';
 
@@ -38,6 +38,9 @@ const NAV: NavSection[] = [
   { title: 'Subscriptions', items: [
     { label: 'Plans',             href: '/admin/subscriptions',          Icon: Package },
     { label: 'Subscriber Accounts', href: '/admin/subscriptions/accounts', Icon: ListTree },
+  ]},
+  { title: 'Support', items: [
+    { label: 'Contact Enquiries', href: '/admin/contact-enquiries', Icon: Mail, badgeKey: 'CONTACT_NEW' },
   ]},
   { title: 'Compliance', items: [
     { label: 'AML Screening', href: '/admin/aml',       Icon: Fingerprint },

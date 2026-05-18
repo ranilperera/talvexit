@@ -79,6 +79,8 @@ model User {
   aml_checks_triggered           AmlCheck[]                   @relation("AmlTrigger")
   aml_checks_received            AmlCheck[]                   @relation("AmlSubject")
   audit_logs                     AuditLog[]
+  contact_enquiries_responded    ContactEnquiry[]             @relation("ContactEnquiryResponder")
+  contact_enquiry_responses_sent ContactEnquiryResponse[]     @relation("ContactEnquiryResponseAuthor")
   change_requests_decided        ChangeRequest[]              @relation("ChangeRequestDecider")
   change_requests_raised         ChangeRequest[]              @relation("ChangeRequestRaiser")
   sent_company_invitations       CompanyInvitation[]          @relation("InvitationSender")
@@ -143,7 +145,7 @@ model User {
   // ── B2B service-invoice payment instructions (Phase 5) ──────────────────
   // JSON shape: { stripe?: {...}, bank_au?: {...}, bank_swift?: {...},
   //               paypal?: {...}, wise?: {...}, other?: {...} }
-  payment_methods            Json              @default("{}")
+  payment_methods Json @default("{}")
 
   // ── Admin sanctions (Phase 3: subscription-only marketplace) ─────────────
   // Suspend = reversible; Ban = permanent (still reversible by admin, but UX
@@ -472,22 +474,22 @@ model Order {
   // supplier confirms receipt. Only used for orders created on/after the
   // direct-payment cutover; pre-cutover orders continue to use the legacy
   // escrow path (stripe_payment_intent_id / payout_record / etc.).
-  payment_method               PaymentMethod?
-  payment_reference            String?
-  payment_amount_reported_aud  Decimal?  @db.Decimal(10, 2)
-  customer_reported_paid_at    DateTime?
-  supplier_confirmed_paid_at   DateTime?
-  payment_evidence_blob_path   String?
-  payment_evidence_file_name   String?
-  payment_dispute_reason       String?
-  payment_dispute_raised_at    DateTime?
+  payment_method              PaymentMethod?
+  payment_reference           String?
+  payment_amount_reported_aud Decimal?       @db.Decimal(10, 2)
+  customer_reported_paid_at   DateTime?
+  supplier_confirmed_paid_at  DateTime?
+  payment_evidence_blob_path  String?
+  payment_evidence_file_name  String?
+  payment_dispute_reason      String?
+  payment_dispute_raised_at   DateTime?
   // Append-only log of every evidence the customer has reported. Each entry
   // is an OrderPaymentEvidenceEntry (see packages/shared) with id, blob_path,
   // file_name, uploaded_at, payment_method/reference/amount, status, and
   // (when REJECTED) the supplier's dispute_reason. The legacy
   // payment_evidence_blob_path/file_name fields above always point at the
   // most recent entry for back-compat.
-  payment_evidence_history     Json      @default("[]")
+  payment_evidence_history    Json           @default("[]")
 
   @@index([customer_id])
   @@index([contractor_user_id])
@@ -627,48 +629,48 @@ model OrgInsuranceCertificate {
 }
 
 model VideoSession {
-  id                     String             @id @default(cuid())
-  session_type           SessionType
-  room_name              String             @unique
-  host_user_id           String
-  participant_user_id    String
-  contractor_profile_id  String?
-  order_id               String?
-  host_consent_at        DateTime?
-  participant_consent_at DateTime?
-  livekit_room_name      String?
-  egress_id              String?
-  recording_blob_path    String?
-  recording_duration_s   Int?
-  status                 SessionStatus      @default(SCHEDULED)
-  scheduled_at           DateTime
-  started_at             DateTime?
-  recording_started_at   DateTime?
-  ended_at               DateTime?
-  cancellation_reason    String?
-  kyc_outcome            KycOutcome?
-  kyc_outcome_notes      String?
-  kyc_reviewed_by        String?
-  kyc_reviewed_at        DateTime?
+  id                         String                   @id @default(cuid())
+  session_type               SessionType
+  room_name                  String                   @unique
+  host_user_id               String
+  participant_user_id        String
+  contractor_profile_id      String?
+  order_id                   String?
+  host_consent_at            DateTime?
+  participant_consent_at     DateTime?
+  livekit_room_name          String?
+  egress_id                  String?
+  recording_blob_path        String?
+  recording_duration_s       Int?
+  status                     SessionStatus            @default(SCHEDULED)
+  scheduled_at               DateTime
+  started_at                 DateTime?
+  recording_started_at       DateTime?
+  ended_at                   DateTime?
+  cancellation_reason        String?
+  kyc_outcome                KycOutcome?
+  kyc_outcome_notes          String?
+  kyc_reviewed_by            String?
+  kyc_reviewed_at            DateTime?
   // Reschedule-request flow (contractor proposes a different time;
   // admin approves or rejects). Only meaningful while status=SCHEDULED.
   // reschedule_request_status NULL  = no active request
   //                           PENDING_REVIEW = contractor proposed, awaiting admin
   //                           APPROVED       = admin accepted (scheduled_at moved)
   //                           REJECTED       = admin declined (scheduled_at unchanged)
-  reschedule_request_status   RescheduleRequestStatus?
-  reschedule_proposed_at      DateTime?
-  reschedule_comment          String?
-  reschedule_requested_by_id  String?
-  reschedule_requested_at     DateTime?
-  reschedule_decided_by_id    String?
-  reschedule_decided_at       DateTime?
-  reschedule_admin_notes      String?
-  created_at             DateTime           @default(now())
-  updated_at             DateTime           @updatedAt
-  contractor_profile     ContractorProfile? @relation(fields: [contractor_profile_id], references: [id])
-  host_user              User               @relation("SessionHost", fields: [host_user_id], references: [id])
-  participant_user       User               @relation("SessionParticipant", fields: [participant_user_id], references: [id])
+  reschedule_request_status  RescheduleRequestStatus?
+  reschedule_proposed_at     DateTime?
+  reschedule_comment         String?
+  reschedule_requested_by_id String?
+  reschedule_requested_at    DateTime?
+  reschedule_decided_by_id   String?
+  reschedule_decided_at      DateTime?
+  reschedule_admin_notes     String?
+  created_at                 DateTime                 @default(now())
+  updated_at                 DateTime                 @updatedAt
+  contractor_profile         ContractorProfile?       @relation(fields: [contractor_profile_id], references: [id])
+  host_user                  User                     @relation("SessionHost", fields: [host_user_id], references: [id])
+  participant_user           User                     @relation("SessionParticipant", fields: [participant_user_id], references: [id])
 
   @@index([contractor_profile_id])
   @@index([host_user_id])
@@ -868,18 +870,18 @@ model ChangeRequest {
 }
 
 model Dispute {
-  id                        String              @id @default(cuid())
-  order_id                  String              @unique
+  id                        String          @id @default(cuid())
+  order_id                  String          @unique
   raised_by_user_id         String
   grounds                   DisputeGrounds
   description               String
-  evidence_blob_paths       String[]            @default([])
+  evidence_blob_paths       String[]        @default([])
   assigned_at               DateTime?
   arbitrator_notes          String?
   outcome                   DisputeOutcome?
   determined_at             DateTime?
-  created_at                DateTime            @default(now())
-  updated_at                DateTime            @updatedAt
+  created_at                DateTime        @default(now())
+  updated_at                DateTime        @updatedAt
   arbitrator_notes_at       DateTime?
   arbitrator_profile_id     String?
   arbitrator_recommendation String?
@@ -887,8 +889,8 @@ model Dispute {
   assigned_admin_id         String?
   determined_by_id          String?
   payment_action_status     String?
-  payment_amount_aud        Decimal?            @db.Decimal(10, 2)
-  status                    DisputeStatus       @default(OPEN)
+  payment_amount_aud        Decimal?        @db.Decimal(10, 2)
+  status                    DisputeStatus   @default(OPEN)
   submission_window_ends_at DateTime?
   written_reasons           String?
 
@@ -898,15 +900,15 @@ model Dispute {
   // action (POST /admin/users/:id/suspend or /ban) to actually penalise
   // either party.
   recommended_action            String?
-  recommended_supplier_action   RecommendedAction? @default(NONE)
-  recommended_customer_action   RecommendedAction? @default(NONE)
-  recommended_refund_amount_aud Decimal?           @db.Decimal(10, 2)
-  arbitrator_profile        ContractorProfile?  @relation("DisputeArbitrator", fields: [arbitrator_profile_id], references: [id])
-  assigned_admin            User?               @relation("DisputeAdmin", fields: [assigned_admin_id], references: [id])
-  determined_by             User?               @relation("DisputeDeterminer", fields: [determined_by_id], references: [id])
-  order                     Order               @relation(fields: [order_id], references: [id])
-  raised_by_user            User                @relation("DisputeRaiser", fields: [raised_by_user_id], references: [id])
-  submissions               DisputeSubmission[]
+  recommended_supplier_action   RecommendedAction?  @default(NONE)
+  recommended_customer_action   RecommendedAction?  @default(NONE)
+  recommended_refund_amount_aud Decimal?            @db.Decimal(10, 2)
+  arbitrator_profile            ContractorProfile?  @relation("DisputeArbitrator", fields: [arbitrator_profile_id], references: [id])
+  assigned_admin                User?               @relation("DisputeAdmin", fields: [assigned_admin_id], references: [id])
+  determined_by                 User?               @relation("DisputeDeterminer", fields: [determined_by_id], references: [id])
+  order                         Order               @relation(fields: [order_id], references: [id])
+  raised_by_user                User                @relation("DisputeRaiser", fields: [raised_by_user_id], references: [id])
+  submissions                   DisputeSubmission[]
 
   @@index([status])
   @@index([assigned_admin_id])
@@ -1257,7 +1259,7 @@ model ConsultingCompany {
   // Same shape as User.payment_methods. When a primary admin manages payment
   // instructions, writes go here instead of the user record so the company
   // owns its banking details.
-  payment_methods           Json             @default("{}")
+  payment_methods Json @default("{}")
 
   @@index([status])
   @@index([abn])
@@ -2316,13 +2318,13 @@ model TenderContractInvoice {
   // to match the invoice. service_period_* records when the work was
   // performed (separate from issue/due dates) — required for accrual
   // accounting and standard on most B2B invoices.
-  customer_po_number      String?
-  service_period_start    DateTime?
-  service_period_end      DateTime?
+  customer_po_number   String?
+  service_period_start DateTime?
+  service_period_end   DateTime?
 
   // Payment-completion email tracking — set when we send the customer-copy
   // and supplier-receipt emails on PAID, so a retry doesn't double-send.
-  paid_emails_sent_at     DateTime?
+  paid_emails_sent_at DateTime?
 
   // ── Direct-payment fields (Phase 2: subscription-only marketplace) ─────
   // Mirrors Order direct-payment fields. The `status` string adopts new
@@ -2593,22 +2595,22 @@ model SubscriptionPlan {
 
   // Feature limits (null = unlimited for customer plans; supplier plans use
   // hard caps post-rebuild). See docs/supplier-subscription-plan.html.
-  max_active_tasks            Int?
-  max_team_seats              Int?
-  max_bids_per_month          Int?
-  max_domain_categories       Int?
-  max_ai_requests_per_month   Int?
-  allowed_listing_items       Int?
-  max_orders_per_month        Int?
-  max_active_tenders          Int?
-  max_active_orders           Int?
-  max_active_contracts        Int?
+  max_active_tasks             Int?
+  max_team_seats               Int?
+  max_bids_per_month           Int?
+  max_domain_categories        Int?
+  max_ai_requests_per_month    Int?
+  allowed_listing_items        Int?
+  max_orders_per_month         Int?
+  max_active_tenders           Int?
+  max_active_orders            Int?
+  max_active_contracts         Int?
   // Customer-side additions — see docs/customer-subscription-plan.html
-  max_task_bookings_per_month   Int?
-  max_contracts_per_month       Int?
+  max_task_bookings_per_month  Int?
+  max_contracts_per_month      Int?
   // Quota 7 — manually-authored tenders (no AI cost). Counter-backed,
   // monthly reset. ai_scopes still gates AI-generated tenders & orders.
-  max_manual_tenders_per_month  Int?
+  max_manual_tenders_per_month Int?
 
   // Feature flags
   allow_overseas_contractors Boolean @default(false)
@@ -2693,22 +2695,22 @@ model Subscription {
   // Period boundaries follow the subscription anniversary (period_start +
   // 1 month, calendar-aware). The reset is performed lazily inside
   // SubscriptionService.rolloverIfDue() — no cron required.
-  current_task_count         Int       @default(0)  // supplier-side: tasks published
-  current_project_count      Int       @default(0)
-  current_bid_count          Int       @default(0)  // supplier-side: tender bids
-  current_ai_request_count   Int       @default(0)  // customer-side: AI scopes
-  current_order_count        Int       @default(0)  // customer-side: total orders
-  current_tender_count       Int       @default(0)  // legacy — kept for back-compat
+  current_task_count          Int       @default(0) // supplier-side: tasks published
+  current_project_count       Int       @default(0)
+  current_bid_count           Int       @default(0) // supplier-side: tender bids
+  current_ai_request_count    Int       @default(0) // customer-side: AI scopes
+  current_order_count         Int       @default(0) // customer-side: total orders
+  current_tender_count        Int       @default(0) // legacy — kept for back-compat
   // Customer-side counters added with the customer subscription rebuild
-  current_task_booking_count   Int       @default(0)  // customer Quota 1
-  current_contract_count       Int       @default(0)  // customer Quota 5
-  current_manual_tender_count  Int       @default(0)  // customer Quota 7 — manual tenders
-  usage_reset_at               DateTime?
+  current_task_booking_count  Int       @default(0) // customer Quota 1
+  current_contract_count      Int       @default(0) // customer Quota 5
+  current_manual_tender_count Int       @default(0) // customer Quota 7 — manual tenders
+  usage_reset_at              DateTime?
 
   // Anniversary period boundaries — used by the lazy rollover. Set on
   // subscription creation; period_end is recalculated each rollover.
-  period_start               DateTime?
-  period_end                 DateTime?
+  period_start DateTime?
+  period_end   DateTime?
 
   // Relations
   plan       SubscriptionPlan   @relation(fields: [plan_id], references: [id])
@@ -2740,15 +2742,15 @@ model Subscription {
 //
 // Retention: 36 months. A daily prune job removes rows older than that.
 model SubscriptionUsageHistory {
-  id              String       @id @default(cuid())
-  subscription    Subscription @relation(fields: [subscription_id], references: [id])
-  subscription_id String
+  id                   String       @id @default(cuid())
+  subscription         Subscription @relation(fields: [subscription_id], references: [id])
+  subscription_id      String
   // Snapshotted plan reference — plan can change between periods, the
   // history row needs to reflect what was in force at the time.
-  plan_id         String
-  plan_name       String
-  period_start    DateTime
-  period_end      DateTime
+  plan_id              String
+  plan_name            String
+  period_start         DateTime
+  period_end           DateTime
   // Counters consumed during the closed period
   task_bookings_used   Int          @default(0)
   orders_used          Int          @default(0)
@@ -2756,12 +2758,12 @@ model SubscriptionUsageHistory {
   contracts_used       Int          @default(0)
   manual_tenders_used  Int          @default(0)
   // Limits as they were on the plan at the time (null = unlimited)
-  task_bookings_limit   Int?
-  orders_limit          Int?
-  ai_scopes_limit       Int?
-  contracts_limit       Int?
-  manual_tenders_limit  Int?
-  archived_at         DateTime    @default(now())
+  task_bookings_limit  Int?
+  orders_limit         Int?
+  ai_scopes_limit      Int?
+  contracts_limit      Int?
+  manual_tenders_limit Int?
+  archived_at          DateTime     @default(now())
 
   @@index([subscription_id, period_end])
   @@map("subscription_usage_history")
@@ -2892,8 +2894,8 @@ model ServiceInvoice {
   stripe_payment_intent_id String?
 
   // Phase 5.2 — magic-link public access + overdue tracking
-  public_view_token_hash  String?  @unique
-  last_reminder_sent_at   DateTime?
+  public_view_token_hash String?   @unique
+  last_reminder_sent_at  DateTime?
 
   sent_at    DateTime?
   created_at DateTime  @default(now())
@@ -2940,4 +2942,64 @@ model PaymentEvidence {
   @@index([service_invoice_id])
   @@index([status])
   @@map("payment_evidence")
+}
+
+// ─── CONTACT ENQUIRY ──────────────────────────────────────────────────────────
+// Public contact-form submissions plus the admin response thread. Every
+// /contact submission persists here before the email worker fires (the old
+// fire-and-forget queue-only path silently dropped jobs because the worker
+// had no handler — see commit message of this migration).
+
+enum ContactEnquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+  SPAM
+}
+
+model ContactEnquiry {
+  id           String  @id @default(cuid())
+  // Submission fields (everything the form collects + audit metadata)
+  name         String
+  email        String
+  phone        String?
+  enquiry_type String
+  message      String  @db.Text
+  ip_address   String?
+  user_agent   String?
+
+  // Triage state
+  status               ContactEnquiryStatus @default(NEW)
+  admin_notes          String?              @db.Text
+  responded_at         DateTime?
+  responded_by_user_id String?
+  responded_by         User?                @relation("ContactEnquiryResponder", fields: [responded_by_user_id], references: [id])
+
+  responses ContactEnquiryResponse[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([status, created_at])
+  @@index([email])
+  @@map("contact_enquiries")
+}
+
+model ContactEnquiryResponse {
+  id              String         @id @default(cuid())
+  enquiry         ContactEnquiry @relation(fields: [enquiry_id], references: [id], onDelete: Cascade)
+  enquiry_id      String
+  // Admin who composed the reply
+  sent_by_user_id String
+  sent_by         User           @relation("ContactEnquiryResponseAuthor", fields: [sent_by_user_id], references: [id])
+
+  subject String
+  body    String   @db.Text
+  // Snapshot of the email payload at send time — useful for audit and for
+  // building "view sent message" in the admin UI without re-querying.
+  sent_at DateTime @default(now())
+
+  @@index([enquiry_id, sent_at])
+  @@map("contact_enquiry_responses")
 }

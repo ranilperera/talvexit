@@ -277,7 +277,7 @@ export function buildApp() {
     engagementPaymentService,
     subscriptionGuards,
   });
-  app.register(contactRoutes, { prefix: '/api/v1', emailQueue: emailQueue as never });
+  app.register(contactRoutes, { prefix: '/api/v1', emailQueue: emailQueue as never, prisma });
   app.register(domainRoutes, { prefix: '/api/v1', prisma });
   app.register(subscriptionRoutes, { prefix: '/api/v1', subscriptionService });
   app.register(serviceInvoiceRoutes, { prefix: '/api/v1', serviceInvoiceService });

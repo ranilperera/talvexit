@@ -18,6 +18,7 @@ type FormState = 'idle' | 'submitting' | 'success' | 'error';
 export default function ContactClient() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [enquiryType, setEnquiryType] = useState('');
   const [message, setMessage] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
@@ -36,7 +37,15 @@ export default function ContactClient() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, enquiry_type: enquiryType, message }),
+          // Phone is optional — only send when provided so the server-side
+          // light validator doesn't reject empty strings.
+          body: JSON.stringify({
+            name,
+            email,
+            enquiry_type: enquiryType,
+            message,
+            ...(phone.trim() ? { phone: phone.trim() } : {}),
+          }),
         },
       );
       if (!res.ok) {
@@ -192,6 +201,23 @@ export default function ContactClient() {
                             style={inputStyle}
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold mb-1.5" style={{ color: t.mutedColor }}>
+                          Phone number <span style={{ color: t.mutedColor, fontWeight: 400 }}>(optional)</span>
+                        </label>
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+61 4XX XXX XXX"
+                          autoComplete="tel"
+                          style={inputStyle}
+                        />
+                        <p className="text-[11px] mt-1" style={{ color: t.mutedColor }}>
+                          Include country code if outside Australia.
+                        </p>
                       </div>
 
                       <div>
