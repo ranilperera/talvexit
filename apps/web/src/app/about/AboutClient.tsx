@@ -46,7 +46,7 @@ export default function AboutClient() {
       >
         <div className="max-w-4xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: t.eyebrowColor }}>
-            About talvex.com.au
+            About TalvexIT
           </p>
           <h1 className="font-display font-bold text-4xl md:text-5xl mb-8 leading-tight" style={{ color: t.headlineColor }}>
             We built the infrastructure<br />
@@ -56,7 +56,7 @@ export default function AboutClient() {
             The problem was obvious: enterprises needed senior L2/L3 IT talent urgently but had no way to properly vet contractors, generate compliant purchase orders, or maintain an audit trail — without a full procurement department.
           </p>
           <p className="text-lg max-w-2xl" style={{ color: t.bodyColor }}>
-            Generic freelance marketplaces offered none of this. Staffing agencies took weeks and charged retainers. We built talvex.com.au to fill the gap — structured, verifiable, compliant IT procurement on demand.
+            Generic freelance marketplaces offered none of this. Staffing agencies took weeks and charged retainers. We built TalvexIT to fill the gap — structured, verifiable, compliant IT procurement on demand.
           </p>
         </div>
       </section>

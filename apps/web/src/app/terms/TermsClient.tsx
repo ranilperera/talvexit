@@ -11,9 +11,9 @@ const OPERATOR_ABN        = '49 602 081 005';
 const PLATFORM_BRAND      = 'TalvexIT';
 const PLATFORM_DOMAIN     = 'talvexit.com';
 
-const LEGAL_EMAIL    = 'legal@talvexit.com';
-const SUPPORT_EMAIL  = 'support@talvexit.com';
-const SECURITY_EMAIL = 'security@talvexit.com';
+const LEGAL_EMAIL    = 'legal@talvexit.com.au';
+const SUPPORT_EMAIL  = 'support@talvexit.com.au';
+const SECURITY_EMAIL = 'security@talvexit.com.au';
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (

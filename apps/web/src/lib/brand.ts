@@ -1,8 +1,10 @@
-// Email addresses default to the talvexIT brand but each can be overridden
-// per-deployment via a NEXT_PUBLIC_ env var (which Next.js inlines at build
-// time). Use the BRAND.email.* helpers in the UI rather than hard-coding the
-// address in a string, so changing the contact in one place updates every
-// surface.
+// Brand:        TalvexIT (proper-cased word — always render this exactly).
+// Web domain:   talvexit.com (primary live site; we also own talvexit.com.au).
+// Email domain: talvexit.com.au (Australian business convention).
+//
+// DNS is case-insensitive, but lowercase is the convention for domains in
+// links and printed copy. Use BRAND.* in the UI rather than hard-coding so
+// a rebrand is a one-line edit.
 const ENV_SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
 const ENV_LEGAL_EMAIL = process.env.NEXT_PUBLIC_LEGAL_EMAIL;
 const ENV_COMPLIANCE_EMAIL = process.env.NEXT_PUBLIC_COMPLIANCE_EMAIL;
@@ -13,15 +15,15 @@ export const BRAND = {
   fullTagline: 'Senior IT expertise marketplace.',
   legalName:   'Waveful Digital Platforms',
   tradingAs:   'TalvexIT',
-  domain:      'talvexIT.com',
+  domain:      'talvexit.com',
   email: {
-    support:    ENV_SUPPORT_EMAIL    ?? 'support@talvexIT.com.au',
-    legal:      ENV_LEGAL_EMAIL      ?? 'legal@talvexIT.com.au',
-    compliance: ENV_COMPLIANCE_EMAIL ?? 'compliance@talvexIT.com.au',
+    support:    ENV_SUPPORT_EMAIL    ?? 'support@talvexit.com.au',
+    legal:      ENV_LEGAL_EMAIL      ?? 'legal@talvexit.com.au',
+    compliance: ENV_COMPLIANCE_EMAIL ?? 'compliance@talvexit.com.au',
   },
   social: {
-    linkedin: 'https://linkedin.com/company/talvexIT',
-    twitter:  'https://twitter.com/talvexIT',
+    linkedin: 'https://linkedin.com/company/talvexit',
+    twitter:  'https://twitter.com/talvexit',
   },
   colors: {
     primary:     '#1D9E75',

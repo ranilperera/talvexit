@@ -3,8 +3,8 @@ import PublicPageShell, { theme as t } from '@/components/public/PublicPageShell
 
 const EFFECTIVE_DATE = '1 March 2026';
 const LAST_UPDATED   = '16 May 2026';
-const CONTACT_EMAIL  = 'privacy@talvexit.com';
-const SECURITY_EMAIL = 'security@talvexit.com';
+const CONTACT_EMAIL  = 'privacy@talvexit.com.au';
+const SECURITY_EMAIL = 'security@talvexit.com.au';
 const OPERATOR_LEGAL_NAME = 'Waveful Digital Platforms';
 const OPERATOR_ABN = '49 602 081 005';
 const PLATFORM_BRAND = 'TalvexIT';

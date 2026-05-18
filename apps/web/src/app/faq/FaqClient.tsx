@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react';
 
 const OPERATOR_SHORT  = 'Waveful';
 const PLATFORM_BRAND  = 'TalvexIT';
-const SUPPORT_EMAIL   = 'support@talvexit.com';
+const SUPPORT_EMAIL   = 'support@talvexit.com.au';
 
 interface QA {
   q: string;
@@ -402,7 +402,7 @@ const GROUPS: Group[] = [
         a: (
           <>
             Email{' '}
-            <a href={`mailto:privacy@talvexit.com`} style={{ color: t.accentBg }}>privacy@talvexit.com</a>
+            <a href={`mailto:privacy@talvexit.com.au`} style={{ color: t.accentBg }}>privacy@talvexit.com.au</a>
             . Under the Australian Privacy Act and the GDPR (where applicable)
             you have the right to access, correct, port, and (subject to legal
             retention obligations) erase your personal information. We respond

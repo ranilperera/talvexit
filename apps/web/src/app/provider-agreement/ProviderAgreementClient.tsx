@@ -10,7 +10,7 @@ const OPERATOR_SHORT      = 'Waveful';
 const OPERATOR_ABN        = '49 602 081 005';
 const PLATFORM_BRAND      = 'TalvexIT';
 const PLATFORM_DOMAIN     = 'talvexit.com';
-const LEGAL_EMAIL         = 'legal@talvexit.com';
+const LEGAL_EMAIL         = 'legal@talvexit.com.au';
 
 const clauses = [
   // ── 1 ──────────────────────────────────────────────────────────────────

@@ -4,7 +4,7 @@ import ContactClient from './ContactClient';
 export const metadata: Metadata = {
   title: 'Contact Us',
   description:
-    'Get in touch with the talvex.com.au team. Enterprise enquiries, partnership proposals, or general questions — we\'re here to help.',
+    'Get in touch with the TalvexIT team. Enterprise enquiries, partnership proposals, or general questions — we\'re here to help.',
 };
 
 export default function ContactPage() {

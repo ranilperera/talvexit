@@ -809,7 +809,7 @@ const DOC_CONFIGS = [
   {
     type: 'BOARD_RESOLUTION',
     title: 'Board Resolution',
-    desc: 'Authorising use of talvex.com.au for procurement',
+    desc: 'Authorising use of TalvexIT for procurement',
   },
   {
     type: 'TAX_CERTIFICATE',

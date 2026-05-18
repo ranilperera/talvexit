@@ -180,7 +180,7 @@ export default function AdminSidebar() {
         </div>
         <div className="mt-3 px-2.5 text-[10px] text-slate-600 leading-relaxed">
           <p>Version: {process.env.NEXT_PUBLIC_APP_VERSION ?? '0.0.0'}</p>
-          <p>© {new Date().getFullYear()} talvexIT.com</p>
+          <p>© {new Date().getFullYear()} TalvexIT · talvexit.com</p>
         </div>
       </div>
     </aside>
