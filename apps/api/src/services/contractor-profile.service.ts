@@ -322,6 +322,7 @@ export class ContractorProfileService {
       gst_registered: boolean;
       is_foreign_entity: boolean;
       provider_agreement_signed: boolean;
+      provider_agreement_version: string;
     },
     meta?: { ip?: string; userAgent?: string },
   ): Promise<void> {
@@ -342,7 +343,10 @@ export class ContractorProfileService {
       },
     });
 
-    // Record a ProviderTaxDeclaration so compliance team can see no_abn_reason
+    // Record a ProviderTaxDeclaration so compliance team can see no_abn_reason.
+    // form_version now tracks the Provider Agreement version the contractor
+    // accepted at this point in time, so the declaration row evidences which
+    // binding text was in force at acceptance.
     if (data.no_abn_reason) {
       await this.prisma.providerTaxDeclaration.create({
         data: {
@@ -356,7 +360,7 @@ export class ContractorProfileService {
           signed_by_user_id: userId,
           ip_address: meta?.ip ?? null,
           user_agent: meta?.userAgent ?? null,
-          form_version: '2026-01',
+          form_version: data.provider_agreement_version,
         },
       });
     }
@@ -366,12 +370,19 @@ export class ContractorProfileService {
       actionType: 'TAX_DECLARATION_SAVED',
       entityType: 'User',
       entityId: userId,
+      // Records the binding version, IP, UA, timestamp — together with the
+      // server-side validation in the route handler, this satisfies the
+      // electronic-signature evidence requirements under the Electronic
+      // Transactions Act 1999 (Cth).
       metadata: {
         has_abn: !!data.abn,
         no_abn_reason: data.no_abn_reason ?? null,
         gst_registered: data.gst_registered,
         is_foreign_entity: data.is_foreign_entity,
         provider_agreement_signed: data.provider_agreement_signed,
+        provider_agreement_version: data.provider_agreement_version,
+        ip_address: meta?.ip ?? null,
+        user_agent: meta?.userAgent ?? null,
       },
     });
   }

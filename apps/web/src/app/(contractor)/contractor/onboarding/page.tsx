@@ -25,36 +25,60 @@ const STEP_LABELS = [
 ];
 
 
-const AGREEMENT_TEXT = `INDEPENDENT CONTRACTOR PLATFORM AGREEMENT v1.0
+// Version is recorded with the user's acceptance (see contractorService.
+// saveTaxDeclaration audit metadata) so the binding text is traceable to a
+// specific point in time. The canonical document lives at /provider-agreement
+// — do NOT inline a copy here. The previous version of this file embedded a
+// stale "v1.0" text claiming 20% commission, which contradicted the actual
+// published agreement and was a real legal exposure.
+const PROVIDER_AGREEMENT_VERSION = 'v2.1-2026';
 
-This agreement governs your participation as an independent contractor on the onys.online platform.
-
-1. INDEPENDENT CONTRACTOR STATUS
-You are an independent contractor, not an employee of onys.online. You are responsible for your own taxes, superannuation, and insurance obligations.
-
-2. COMMISSION
-onys.online charges a commission of 20% on all completed orders. This is deducted automatically before payout.
-
-3. OBLIGATIONS
-You agree to:
-- Deliver work as described in each task scope
-- Maintain valid professional indemnity and public liability insurance
-- Comply with all applicable laws and regulations
-- Not engage in discriminatory or fraudulent behaviour
-
-4. INTELLECTUAL PROPERTY
-All work product delivered to customers is the customer's property unless otherwise agreed in writing.
-
-5. CONFIDENTIALITY
-You agree to treat all customer information and credentials as strictly confidential.
-
-6. DISPUTE RESOLUTION
-All disputes are subject to the platform dispute resolution process. The platform decision is binding.
-
-7. TERMINATION
-Either party may terminate this agreement with 30 days written notice. Immediate termination applies for fraud or serious misconduct.
-
-By clicking "I Agree", you confirm you have read, understood, and accept all terms of this agreement.`;
+// Key terms surfaced as a checklist preview in step 6. Each item summarises
+// a clause in the canonical Provider Agreement v2.1; the user clicks through
+// for the binding text. Keep the wording neutral and link-out for the full
+// terms — this is a summary, not a substitute.
+const PROVIDER_AGREEMENT_KEY_TERMS: { title: string; detail: string }[] = [
+  {
+    title: 'Subscription only · zero commission on engagements',
+    detail:
+      'You pay a monthly or annual subscription for platform access. Waveful does not take any commission, percentage cut, or per-engagement fee from amounts you receive from customers (clauses 2 & 4).',
+  },
+  {
+    title: 'You supply the services in your own name and ABN',
+    detail:
+      'Each engagement is a direct service contract between you and the customer. Waveful is not a party to that contract and is not liable for the services you provide (clause 3).',
+  },
+  {
+    title: 'Direct payment on your nominated rail',
+    detail:
+      'Customers pay you directly via the payment rail you choose (Stripe link, AU bank, SWIFT, PayPal, Wise, or another). Funds never pass through Waveful. Customer non-payment is your collection matter (clauses 4 & 5).',
+  },
+  {
+    title: 'Tax invoicing, GST, and ABN withholding',
+    detail:
+      'You issue Tax Invoices in your own legal name. GST is collected and remitted by you. If you don\'t supply a valid ABN, Australian customers are required to withhold 47% under the Taxation Administration Act 1953 (Cth) (clauses 6 & 7).',
+  },
+  {
+    title: 'Insurance and ongoing verification',
+    detail:
+      'You must hold and maintain professional indemnity and public liability insurance appropriate to your service category. Lapsed insurance, expired KYC, or a cancelled ABN suspends your account (clause 9).',
+  },
+  {
+    title: 'Confidentiality and Australian Privacy Act compliance',
+    detail:
+      'You keep customer information confidential and comply with the Privacy Act 1988 (Cth) and the Australian Privacy Principles when handling personal information (clause 10).',
+  },
+  {
+    title: 'Australian Consumer Law preserved',
+    detail:
+      'Nothing in the agreement excludes any guarantee or right that cannot be excluded under the Australian Consumer Law (clause 14).',
+  },
+  {
+    title: 'Governed by Victorian law · electronic acceptance under ETA 1999',
+    detail:
+      'The agreement is governed by the laws of Victoria. Your acceptance is recorded with your IP, user-agent, and timestamp under the Electronic Transactions Act 1999 (Cth) (clauses 16 & 17).',
+  },
+];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -707,7 +731,7 @@ function Step5TaxUI({ data, onChange }: { data: Step6TaxData; onChange: (d: Step
         <p className="text-xs text-slate-400 leading-relaxed">
           By checking the box below you accept the{' '}
           <a href="/provider-agreement" target="_blank" rel="noreferrer" className="text-teal-400 underline underline-offset-2">
-            Provider Agreement v1.0
+            Provider Agreement {PROVIDER_AGREEMENT_VERSION}
           </a>{' '}
           which sets out the terms for providers using the TalvexIT platform.
           TalvexIT is subscription-only with zero commission on engagements — you invoice your customer directly in your own name and they pay you direct on your nominated rail.
@@ -720,7 +744,7 @@ function Step5TaxUI({ data, onChange }: { data: Step6TaxData; onChange: (d: Step
             className="mt-0.5 rounded border-slate-600 bg-slate-800 accent-teal-500"
           />
           <span className="text-sm text-slate-300">
-            I accept the Provider Agreement
+            I accept the Provider Agreement {PROVIDER_AGREEMENT_VERSION}
           </span>
         </label>
       </div>
@@ -728,40 +752,77 @@ function Step5TaxUI({ data, onChange }: { data: Step6TaxData; onChange: (d: Step
   );
 }
 
-// Step 6 (UI) = Step 7 (API) — Agreement
+// Step 6 (UI) = Step 7 (API) — Provider Agreement acceptance.
+// Renders a key-terms summary linking out to the canonical document at
+// /provider-agreement. The user must open the full document (we track that
+// they did) and tick the acceptance box. Server records IP + UA + timestamp
+// + version on the acceptance side, satisfying the Electronic Transactions
+// Act 1999 (Cth) requirements for a binding electronic signature.
 function Step6UI({ accepted, onAccept }: { accepted: boolean; onAccept: (v: boolean) => void }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [scrolledToBottom, setScrolledToBottom] = useState(false);
-
-  function handleScroll() {
-    const el = scrollRef.current;
-    if (!el) return;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-      setScrolledToBottom(true);
-    }
-  }
+  const [openedFullAgreement, setOpenedFullAgreement] = useState(false);
 
   return (
-    <div className="space-y-4">
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className="h-80 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl p-4 text-xs text-slate-300 leading-relaxed whitespace-pre-wrap font-mono"
-      >
-        {AGREEMENT_TEXT}
+    <div className="space-y-5">
+      <div className="rounded-xl bg-teal-500/5 border border-teal-500/30 p-4 text-xs text-teal-200/90 leading-relaxed">
+        <p>
+          The terms below are a <strong className="text-teal-100">plain-English summary</strong> of the
+          full TalvexIT Provider Agreement {PROVIDER_AGREEMENT_VERSION}. The binding
+          document is at <a
+            href="/provider-agreement"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setOpenedFullAgreement(true)}
+            className="text-teal-300 underline underline-offset-2 font-semibold"
+          >/provider-agreement</a>
+          {' '}— please open it in a new tab and review before accepting.
+        </p>
       </div>
-      {!scrolledToBottom && (
-        <p className="text-xs text-amber-400">Scroll to the bottom to continue</p>
+
+      <div className="rounded-xl border border-slate-700 bg-slate-800 divide-y divide-slate-700/60">
+        {PROVIDER_AGREEMENT_KEY_TERMS.map((term, i) => (
+          <div key={i} className="px-4 py-3">
+            <p className="text-sm font-semibold text-slate-100">{term.title}</p>
+            <p className="text-xs text-slate-400 mt-1 leading-relaxed">{term.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      <a
+        href="/provider-agreement"
+        target="_blank"
+        rel="noreferrer"
+        onClick={() => setOpenedFullAgreement(true)}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 text-sm text-slate-200 hover:bg-slate-800 transition-colors no-underline"
+      >
+        Open full Provider Agreement {PROVIDER_AGREEMENT_VERSION} ↗
+      </a>
+
+      {!openedFullAgreement && (
+        <p className="text-xs text-amber-400">
+          Open the full agreement at least once before ticking the box below.
+        </p>
       )}
-      <label className={clsx('flex items-start gap-3 cursor-pointer', !scrolledToBottom && 'opacity-50 pointer-events-none')}>
+
+      <label
+        className={clsx(
+          'flex items-start gap-3 cursor-pointer p-3 rounded-lg border',
+          openedFullAgreement
+            ? 'border-slate-700 bg-slate-800'
+            : 'border-slate-800 bg-slate-900 opacity-50 pointer-events-none',
+        )}
+      >
         <input
           type="checkbox"
           checked={accepted}
           onChange={(e) => onAccept(e.target.checked)}
+          disabled={!openedFullAgreement}
           className="mt-0.5 rounded border-slate-600 bg-slate-800 accent-teal-500"
         />
-        <span className="text-sm text-slate-300">
-          I have read and agree to the Independent Contractor Platform Agreement v1.0
+        <span className="text-sm text-slate-200 leading-relaxed">
+          I have read and agree to the <strong className="text-slate-100">TalvexIT Provider Agreement {PROVIDER_AGREEMENT_VERSION}</strong>{' '}
+          published at <span className="text-teal-400">/provider-agreement</span>, including the clauses limiting
+          {' '}Waveful&apos;s liability for the services I provide and confirming Waveful is not responsible
+          for non-payment by my customers.
         </span>
       </label>
     </div>
@@ -913,6 +974,10 @@ export default function OnboardingPage() {
           gst_registered: stepTax.gst_registered,
           is_foreign_entity: stepTax.is_foreign_entity,
           provider_agreement_signed: true,
+          // Record which version of the agreement the contractor accepted.
+          // The API persists this in the audit log + tax declaration so we
+          // can prove later which text was binding at acceptance time.
+          provider_agreement_version: PROVIDER_AGREEMENT_VERSION,
         });
         return true;
       } catch (err: unknown) {

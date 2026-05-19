@@ -305,6 +305,7 @@ export async function contractorRoutes(
       gst_registered?: unknown;
       is_foreign_entity?: unknown;
       provider_agreement_signed?: unknown;
+      provider_agreement_version?: unknown;
     };
 
     if (typeof body.gst_registered !== 'boolean') {
@@ -333,6 +334,19 @@ export async function contractorRoutes(
       ? body.no_abn_reason.trim()
       : undefined;
 
+    // Accept the client-supplied agreement version, with a strict whitelist.
+    // Any value not in the whitelist (including missing / undefined / unknown
+    // future versions sent from a stale client) collapses to the current
+    // canonical version so audit metadata is never empty or attacker-supplied.
+    const CURRENT_PROVIDER_AGREEMENT_VERSION = 'v2.1-2026';
+    const ACCEPTED_AGREEMENT_VERSIONS = new Set<string>([CURRENT_PROVIDER_AGREEMENT_VERSION]);
+    const rawVersion = typeof body.provider_agreement_version === 'string'
+      ? body.provider_agreement_version.trim()
+      : '';
+    const agreementVersion = ACCEPTED_AGREEMENT_VERSIONS.has(rawVersion)
+      ? rawVersion
+      : CURRENT_PROVIDER_AGREEMENT_VERSION;
+
     try {
       await contractorService.saveTaxDeclaration(
         req.user!.userId,
@@ -342,6 +356,7 @@ export async function contractorRoutes(
           gst_registered: body.gst_registered,
           is_foreign_entity: body.is_foreign_entity,
           provider_agreement_signed: true,
+          provider_agreement_version: agreementVersion,
         },
         extractMeta(req),
       );
